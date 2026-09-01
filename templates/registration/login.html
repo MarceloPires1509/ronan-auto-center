@@ -1,6 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="pt-BR" class="light">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,7 +18,14 @@
     
     <div class="max-w-md w-full bg-white rounded-lg shadow-md p-8 border border-gray-200">
         <div class="flex justify-center mb-6">
-            <img src="{% static 'img/logo.png' %}" alt="Ronan Auto Center" class="h-24 object-contain">
+            {% if config_global.logo %}
+                <img src="{{ config_global.logo.url }}" alt="{{ config_global.nome_loja }}" class="h-24 object-contain">
+            {% else %}
+                <h1 class="text-primary font-bold text-2xl flex items-center gap-2">
+                    <i data-lucide="wrench" class="w-8 h-8"></i>
+                    {{ config_global.nome_loja|default:'Ronan Auto Center' }}
+                </h1>
+            {% endif %}
         </div>
         
         <h2 class="text-center text-xl font-semibold text-gray-800 mb-6">Acesso ao Sistema</h2>

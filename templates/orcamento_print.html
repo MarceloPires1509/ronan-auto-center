@@ -21,14 +21,20 @@
         </div>
 
         <!-- Cabeçalho -->
-        <div class="flex justify-between items-center border-b pb-6 mb-6">
+        <div class="flex justify-between items-start border-b pb-6 mb-6">
             <div>
-                <h1 class="text-3xl font-black text-blue-600">Ronan Auto Center</h1>
-                <p class="text-gray-500 text-sm mt-1">Serviços Automotivos de Qualidade</p>
+                {% if config_global.logo %}
+                    <img src="{{ config_global.logo.url }}" alt="{{ config_global.nome_loja }}" style="max-height: 80px;" class="mb-2">
+                {% else %}
+                    <h1 class="text-3xl font-bold text-gray-900">{{ config_global.nome_loja|default:'Oficina Padrão' }}</h1>
+                {% endif %}
+                <p class="text-gray-500 mt-2 whitespace-pre-line">{{ config_global.endereco_completo|default:'Endereço não configurado' }}</p>
+                <p class="text-gray-500">Telefone: {{ config_global.telefone|default:'(00) 0000-0000' }}</p>
             </div>
             <div class="text-right">
-                <h2 class="text-xl font-bold text-gray-800">ORÇAMENTO #{{ orcamento.id|stringformat:"04d" }}</h2>
-                <p class="text-gray-500 text-sm">Data: {{ orcamento.criado_em|date:"d/m/Y" }}</p>
+                <h2 class="text-2xl font-bold text-gray-700">ORÇAMENTO</h2>
+                <p class="text-gray-500 font-medium">Nº {{ orcamento.id|stringformat:"04d" }}</p>
+                <p class="text-gray-500 mt-2">Data: {{ orcamento.data_criacao|date:"d/m/Y" }}</p>
                 <span class="inline-block mt-2 px-2 py-1 text-xs font-bold uppercase rounded {% if orcamento.status == 'APROVADO' %}bg-green-100 text-green-800{% else %}bg-yellow-100 text-yellow-800{% endif %}">
                     {{ orcamento.status }}
                 </span>

@@ -4,9 +4,25 @@ from django.contrib.auth.models import User
 class Perfil(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='perfil')
     telefone = models.CharField(max_length=20, blank=True, null=True)
+    
+    # Permissões
+    acesso_clientes = models.BooleanField(default=True)
+    acesso_estoque = models.BooleanField(default=True)
+    acesso_servicos = models.BooleanField(default=True)
+    acesso_orcamentos = models.BooleanField(default=True)
+    acesso_configuracoes = models.BooleanField(default=False)
 
     def __str__(self):
         return self.user.username
+
+class Configuracao(models.Model):
+    nome_loja = models.CharField(max_length=255, default='Ronan Auto Center')
+    endereco_completo = models.TextField(blank=True, null=True)
+    telefone = models.CharField(max_length=20, blank=True, null=True)
+    logo = models.ImageField(upload_to='logos/', blank=True, null=True)
+    
+    def __str__(self):
+        return self.nome_loja
 
 class Cliente(models.Model):
     nome = models.CharField(max_length=255)
