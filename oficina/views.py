@@ -160,8 +160,16 @@ def excluir_servico(request, id):
 # --- ORÇAMENTOS E PDV ---
 @login_required
 def lista_orcamentos(request):
-    orcamentos = Orcamento.objects.filter(arquivado=False).order_by('-criado_em')
-    return render(request, 'orcamentos.html', {'orcamentos': orcamentos})
+    query = request.GET.get('q', '')
+    if query:
+        from django.db.models import Q
+        orcamentos = Orcamento.objects.filter(
+            Q(cliente__nome__icontains=query) | Q(id__icontains=query) | Q(status__icontains=query),
+            arquivado=False
+        ).order_by('-criado_em')
+    else:
+        orcamentos = Orcamento.objects.filter(arquivado=False).order_by('-criado_em')
+    return render(request, 'orcamentos.html', {'orcamentos': orcamentos, 'query': query})
 
 @login_required
 def novo_orcamento(request):
