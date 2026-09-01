@@ -44,7 +44,7 @@
                                 {% endif %}
                             </td>
                             <td class="px-6 py-4 text-right">
-                                <form action="{% url 'excluir_peca' peca.id %}" method="POST" class="inline">
+                                <form action="{% url 'arquivar_peca' peca.id %}" method="POST" class="inline">
                                     {% csrf_token %}
                                     <button type="submit" class="text-red-500 hover:text-red-700 font-medium">
                                         Excluir

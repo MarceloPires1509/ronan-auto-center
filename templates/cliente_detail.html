@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block header_title %}Perfil do Cliente{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Breadcrumb e Título -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div class="flex items-center gap-4">
+            <a href="{% url 'lista_clientes' %}" class="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
+                &larr; Voltar
+            </a>
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ cliente.nome }}</h1>
+        </div>
+        
+        <div class="flex gap-2">
+            <a href="{% url 'exportar_historico_cliente' cliente.id %}" class="bg-green-600 text-white px-4 py-2 rounded-md font-medium hover:bg-green-700 transition-colors flex items-center gap-2">
+                <i data-lucide="file-spreadsheet" class="w-4 h-4"></i> Exportar Histórico
+            </a>
+        </div>
+    </div>
+
+    <!-- Dados do Cliente -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg border dark:border-gray-700 shadow-sm p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div>
+            <p class="text-sm text-gray-500 dark:text-gray-400 font-medium">Telefone</p>
+            <p class="font-semibold text-gray-900 dark:text-white mt-1">{{ cliente.telefone|default:"Não informado" }}</p>
+        </div>
+        <div>
+            <p class="text-sm text-gray-500 dark:text-gray-400 font-medium">E-mail</p>
+            <p class="font-semibold text-gray-900 dark:text-white mt-1">{{ cliente.email|default:"Não informado" }}</p>
+        </div>
+        <div>
+            <p class="text-sm text-gray-500 dark:text-gray-400 font-medium">Veículo</p>
+            <p class="font-semibold text-gray-900 dark:text-white mt-1">{{ cliente.veiculo|default:"Não informado" }}</p>
+        </div>
+        <div>
+            <p class="text-sm text-gray-500 dark:text-gray-400 font-medium">Placa</p>
+            <p class="font-semibold text-gray-900 dark:text-white mt-1 uppercase">{{ cliente.placa|default:"-" }}</p>
+        </div>
+    </div>
+
+    <!-- Histórico de Serviços / Orçamentos -->
+    <h2 class="text-xl font-bold text-gray-900 dark:text-white pt-4">Histórico de Orçamentos e Serviços</h2>
+    
+    <div class="bg-white dark:bg-gray-800 rounded-lg border dark:border-gray-700 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left">
+                <thead class="text-xs text-gray-500 dark:text-gray-400 uppercase bg-gray-50 dark:bg-gray-900/50">
+                    <tr>
+                        <th class="px-6 py-3 font-medium">ID / Data</th>
+                        <th class="px-6 py-3 font-medium">Status</th>
+                        <th class="px-6 py-3 font-medium text-right">Peças</th>
+                        <th class="px-6 py-3 font-medium text-right">Mão de Obra</th>
+                        <th class="px-6 py-3 font-medium text-right">Total</th>
+                        <th class="px-6 py-3 font-medium text-center">Ações</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                    {% for orc in orcamentos %}
+                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                        <td class="px-6 py-4">
+                            <div class="font-semibold text-gray-900 dark:text-white">#{{ orc.id|stringformat:"04d" }}</div>
+                            <div class="text-xs text-gray-500">{{ orc.criado_em|date:"d/m/Y H:i" }}</div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="inline-block px-2 py-1 text-xs font-semibold rounded-full 
+                                {% if orc.status == 'APROVADO' %}bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400
+                                {% elif orc.status == 'REJEITADO' %}bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400
+                                {% else %}bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400{% endif %}">
+                                {{ orc.get_status_display }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-right">R$ {{ orc.total_pecas }}</td>
+                        <td class="px-6 py-4 text-right">R$ {{ orc.total_mao_de_obra }}</td>
+                        <td class="px-6 py-4 text-right font-bold text-gray-900 dark:text-white">R$ {{ orc.total }}</td>
+                        <td class="px-6 py-4 text-center">
+                            <a href="{% url 'imprimir_orcamento' orc.id %}" target="_blank" class="text-primary hover:underline font-medium">Ver / Imprimir</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+                            Nenhum histórico encontrado para este cliente.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

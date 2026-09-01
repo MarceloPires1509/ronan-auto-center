@@ -51,7 +51,7 @@ def dashboard(request):
     orcamentos_pendentes = Orcamento.objects.filter(status='PENDENTE').count()
     pecas_baixo_estoque = Peca.objects.filter(estoque__lte=5).count()
     
-    ultimos_orcamentos = Orcamento.objects.all().order_by('-criado_em')[:5]
+    ultimos_orcamentos = Orcamento.objects.filter(arquivado=False).order_by('-criado_em')[:5]
 
     context = {
         'receita_bruta': "{:,.2f}".format(receita_bruta).replace(',', 'X').replace('.', ',').replace('X', '.'),
@@ -66,7 +66,7 @@ def dashboard(request):
 # --- CLIENTES ---
 @login_required
 def lista_clientes(request):
-    clientes = Cliente.objects.all().order_by('-criado_em')
+    clientes = Cliente.objects.filter(arquivado=False).order_by('-criado_em')
     return render(request, 'clientes.html', {'clientes': clientes})
 
 @login_required
@@ -94,7 +94,7 @@ def excluir_cliente(request, id):
 # --- PEÇAS (ESTOQUE) ---
 @login_required
 def lista_pecas(request):
-    pecas = Peca.objects.all().order_by('nome')
+    pecas = Peca.objects.filter(arquivado=False).order_by('nome')
     return render(request, 'pecas.html', {'pecas': pecas})
 
 @login_required
@@ -128,7 +128,7 @@ def excluir_peca(request, id):
 # --- SERVIÇOS ---
 @login_required
 def lista_servicos(request):
-    servicos = Servico.objects.all().order_by('nome')
+    servicos = Servico.objects.filter(arquivado=False).order_by('nome')
     return render(request, 'servicos.html', {'servicos': servicos})
 
 @login_required
@@ -160,7 +160,7 @@ def excluir_servico(request, id):
 # --- ORÇAMENTOS E PDV ---
 @login_required
 def lista_orcamentos(request):
-    orcamentos = Orcamento.objects.all().order_by('-criado_em')
+    orcamentos = Orcamento.objects.filter(arquivado=False).order_by('-criado_em')
     return render(request, 'orcamentos.html', {'orcamentos': orcamentos})
 
 @login_required
@@ -211,9 +211,9 @@ def novo_orcamento(request):
             return redirect('lista_orcamentos')
 
     # GET request context
-    clientes = Cliente.objects.all().order_by('nome')
-    pecas = Peca.objects.all().order_by('nome')
-    servicos = Servico.objects.all().order_by('nome')
+    clientes = Cliente.objects.filter(arquivado=False).order_by('nome')
+    pecas = Peca.objects.filter(arquivado=False).order_by('nome')
+    servicos = Servico.objects.filter(arquivado=False).order_by('nome')
     
     context = {
         'clientes': clientes,
@@ -303,7 +303,7 @@ def exportar_orcamentos_excel(request):
     worksheet.append(columns)
 
     # Data
-    for orc in Orcamento.objects.all().order_by('-data_criacao'):
+    for orc in Orcamento.objects.filter(arquivado=False).order_by('-data_criacao'):
         worksheet.append([
             orc.id,
             orc.cliente.nome if orc.cliente else 'Não Informado',
@@ -312,6 +312,74 @@ def exportar_orcamentos_excel(request):
             orc.total_pecas,
             orc.total_servicos,
             orc.total_geral
+        ])
+
+    workbook.save(response)
+    return response
+@login_required
+def arquivar_cliente(request, id):
+    obj = get_object_or_404(Cliente, id=id)
+    if request.method == 'POST':
+        obj.arquivado = True
+        obj.save()
+    return redirect('lista_clientes')
+
+@login_required
+def arquivar_peca(request, id):
+    obj = get_object_or_404(Peca, id=id)
+    if request.method == 'POST':
+        obj.arquivado = True
+        obj.save()
+    return redirect('lista_pecas')
+
+@login_required
+def arquivar_servico(request, id):
+    obj = get_object_or_404(Servico, id=id)
+    if request.method == 'POST':
+        obj.arquivado = True
+        obj.save()
+    return redirect('lista_servicos')
+
+@login_required
+def arquivar_orcamento(request, id):
+    obj = get_object_or_404(Orcamento, id=id)
+    if request.method == 'POST':
+        obj.arquivado = True
+        obj.save()
+    return redirect('lista_orcamentos')
+
+
+@login_required
+def detalhe_cliente(request, id):
+    cliente = get_object_or_404(Cliente, id=id)
+    # Mostra historico de orcamentos
+    orcamentos = cliente.orcamentos.filter(arquivado=False).order_by('-criado_em')
+    return render(request, 'cliente_detail.html', {'cliente': cliente, 'orcamentos': orcamentos})
+
+@login_required
+def exportar_historico_cliente(request, id):
+    cliente = get_object_or_404(Cliente, id=id)
+    orcamentos = cliente.orcamentos.filter(arquivado=False).order_by('-criado_em')
+    
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    filename = f'historico_{cliente.nome.replace(" ", "_")}.xlsx'
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+
+    workbook = openpyxl.Workbook()
+    worksheet = workbook.active
+    worksheet.title = 'Historico'
+
+    columns = ['ID', 'Data', 'Status', 'Valor Pecas', 'Valor Servicos', 'Valor Total']
+    worksheet.append(columns)
+
+    for orc in orcamentos:
+        worksheet.append([
+            orc.id,
+            orc.criado_em.strftime('%d/%m/%Y %H:%M'),
+            orc.get_status_display(),
+            orc.total_pecas,
+            orc.total_mao_de_obra,
+            orc.total
         ])
 
     workbook.save(response)

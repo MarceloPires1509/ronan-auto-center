@@ -68,7 +68,7 @@
                                     🖨️
                                 </a>
 
-                                <form action="{% url 'excluir_orcamento' orcamento.id %}" method="POST" class="inline">
+                                <form action="{% url 'arquivar_orcamento' orcamento.id %}" method="POST" class="inline">
                                     {% csrf_token %}
                                     <button type="submit" class="text-red-500 hover:text-red-700 font-medium px-2 py-1" title="Excluir">
                                         &times;

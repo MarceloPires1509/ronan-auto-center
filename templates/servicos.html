@@ -36,7 +36,7 @@
                             <td class="px-6 py-4">R$ {{ servico.custo_mecanico }}</td>
                             <td class="px-6 py-4 font-medium text-green-600">R$ {{ servico.preco_venda }}</td>
                             <td class="px-6 py-4 text-right">
-                                <form action="{% url 'excluir_servico' servico.id %}" method="POST" class="inline">
+                                <form action="{% url 'arquivar_servico' servico.id %}" method="POST" class="inline">
                                     {% csrf_token %}
                                     <button type="submit" class="text-red-500 hover:text-red-700 font-medium">
                                         Excluir

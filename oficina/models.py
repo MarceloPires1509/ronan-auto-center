@@ -32,6 +32,7 @@ class Cliente(models.Model):
     placa = models.CharField(max_length=20, blank=True, null=True)
     criado_em = models.DateTimeField(auto_now_add=True)
     atualizado_em = models.DateTimeField(auto_now=True)
+    arquivado = models.BooleanField(default=False)
 
     def __str__(self):
         return self.nome
@@ -43,6 +44,7 @@ class Peca(models.Model):
     preco_venda = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     estoque = models.IntegerField(default=0)
     criado_em = models.DateTimeField(auto_now_add=True)
+    arquivado = models.BooleanField(default=False)
 
     def __str__(self):
         return self.nome
@@ -53,6 +55,7 @@ class Servico(models.Model):
     custo_mecanico = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     preco_venda = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     criado_em = models.DateTimeField(auto_now_add=True)
+    arquivado = models.BooleanField(default=False)
 
     def __str__(self):
         return self.nome
@@ -70,6 +73,7 @@ class Orcamento(models.Model):
     total = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     criado_em = models.DateTimeField(auto_now_add=True)
     atualizado_em = models.DateTimeField(auto_now=True)
+    arquivado = models.BooleanField(default=False)
 
     def __str__(self):
         return f"Orçamento #{self.id} - {self.cliente.nome}"
