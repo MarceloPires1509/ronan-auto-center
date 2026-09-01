@@ -73,6 +73,14 @@
                 <button onclick="setThemeColor('#475569', '#334155')" class="w-5 h-5 rounded-full bg-slate-600"></button>
             </div>
         </div>
+        <script>
+        document.addEventListener('input', function(e) {
+            if(e.target.name === 'telefone' || e.target.id === 'telefone') {
+                let x = e.target.value.replace(/\D/g, '').match(/(\d{0,2})(\d{0,5})(\d{0,4})/);
+                e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
+            }
+        });
+        </script>
     </aside>
 
     <!-- Main Content -->
@@ -101,6 +109,13 @@
                     <a href="{% url 'novo_usuario' %}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
                         + Novo Usuário
                     </a>
+                    <hr class="dark:border-gray-700">
+                    <form method="POST" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="w-full text-left block px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 font-medium">
+                            Sair do Sistema
+                        </button>
+                    </form>
                 </div>
             </div>
         </header>

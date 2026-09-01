@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Cliente, Peca, Servico, Orcamento, ItemOrcamento, Perfil
 import json
@@ -7,6 +8,7 @@ import json
 from django.db.models import Sum, F
 from django.utils import timezone
 
+@login_required
 def novo_usuario(request):
     if request.method == 'POST':
         nome = request.POST.get('nome')
@@ -24,6 +26,7 @@ def novo_usuario(request):
             
     return render(request, 'usuario_form.html')
 
+@login_required
 def dashboard(request):
     agora = timezone.now()
     mes_atual = agora.month
@@ -59,10 +62,12 @@ def dashboard(request):
     return render(request, 'dashboard.html', context)
 
 # --- CLIENTES ---
+@login_required
 def lista_clientes(request):
     clientes = Cliente.objects.all().order_by('-criado_em')
     return render(request, 'clientes.html', {'clientes': clientes})
 
+@login_required
 def novo_cliente(request):
     if request.method == 'POST':
         nome = request.POST.get('nome')
@@ -77,6 +82,7 @@ def novo_cliente(request):
             
     return render(request, 'cliente_form.html')
 
+@login_required
 def excluir_cliente(request, id):
     cliente = get_object_or_404(Cliente, id=id)
     if request.method == 'POST':
@@ -84,10 +90,12 @@ def excluir_cliente(request, id):
     return redirect('lista_clientes')
 
 # --- PEÇAS (ESTOQUE) ---
+@login_required
 def lista_pecas(request):
     pecas = Peca.objects.all().order_by('nome')
     return render(request, 'pecas.html', {'pecas': pecas})
 
+@login_required
 def nova_peca(request):
     if request.method == 'POST':
         nome = request.POST.get('nome')
@@ -108,6 +116,7 @@ def nova_peca(request):
             
     return render(request, 'peca_form.html')
 
+@login_required
 def excluir_peca(request, id):
     peca = get_object_or_404(Peca, id=id)
     if request.method == 'POST':
@@ -115,10 +124,12 @@ def excluir_peca(request, id):
     return redirect('lista_pecas')
 
 # --- SERVIÇOS ---
+@login_required
 def lista_servicos(request):
     servicos = Servico.objects.all().order_by('nome')
     return render(request, 'servicos.html', {'servicos': servicos})
 
+@login_required
 def novo_servico(request):
     if request.method == 'POST':
         nome = request.POST.get('nome')
@@ -137,6 +148,7 @@ def novo_servico(request):
             
     return render(request, 'servico_form.html')
 
+@login_required
 def excluir_servico(request, id):
     servico = get_object_or_404(Servico, id=id)
     if request.method == 'POST':
@@ -144,10 +156,12 @@ def excluir_servico(request, id):
     return redirect('lista_servicos')
 
 # --- ORÇAMENTOS E PDV ---
+@login_required
 def lista_orcamentos(request):
     orcamentos = Orcamento.objects.all().order_by('-criado_em')
     return render(request, 'orcamentos.html', {'orcamentos': orcamentos})
 
+@login_required
 def novo_orcamento(request):
     if request.method == 'POST':
         cliente_id = request.POST.get('cliente_id')
@@ -206,12 +220,14 @@ def novo_orcamento(request):
     }
     return render(request, 'orcamento_form.html', context)
 
+@login_required
 def excluir_orcamento(request, id):
     orcamento = get_object_or_404(Orcamento, id=id)
     if request.method == 'POST':
         orcamento.delete()
     return redirect('lista_orcamentos')
 
+@login_required
 def aprovar_orcamento(request, id):
     orcamento = get_object_or_404(Orcamento, id=id)
     orcamento.status = 'APROVADO'
@@ -225,6 +241,7 @@ def aprovar_orcamento(request, id):
             
     return redirect('lista_orcamentos')
 
+@login_required
 def imprimir_orcamento(request, id):
     orcamento = get_object_or_404(Orcamento, id=id)
     return render(request, 'orcamento_print.html', {'orcamento': orcamento})
