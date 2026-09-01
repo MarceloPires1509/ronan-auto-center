@@ -5,13 +5,13 @@
 {% block content %}
 <div class="space-y-6">
     <div class="flex justify-between items-center">
-        <h1 class="text-2xl font-bold text-gray-900">Estoque de Peças</h1>
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Estoque de Peças</h1>
         <a href="{% url 'nova_peca' %}" class="bg-blue-600 text-white px-4 py-2 rounded-md font-medium hover:bg-blue-700 transition-colors">
             + Novo Produto
         </a>
     </div>
 
-    <div class="bg-white rounded-lg border shadow-sm overflow-hidden">
+    <div class="bg-white dark:bg-gray-800 rounded-lg border dark:border-gray-700 shadow-sm overflow-hidden">
         {% if not pecas %}
             <div class="p-8 text-center text-gray-500">
                 Nenhum produto cadastrado no estoque ainda.
@@ -19,7 +19,7 @@
         {% else %}
             <div class="overflow-x-auto">
                 <table class="w-full text-sm text-left">
-                    <thead class="text-xs text-gray-500 uppercase bg-gray-50">
+                    <thead class="text-xs text-gray-500 dark:text-gray-400 uppercase bg-gray-50 dark:bg-gray-900/50">
                         <tr>
                             <th class="px-6 py-3 font-medium">Nome</th>
                             <th class="px-6 py-3 font-medium">Descrição</th>
@@ -29,9 +29,9 @@
                             <th class="px-6 py-3 font-medium text-right">Ações</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-200 text-gray-900">
+                    <tbody class="divide-y divide-gray-200 dark:divide-gray-700 text-gray-900 dark:text-gray-100">
                         {% for peca in pecas %}
-                        <tr class="hover:bg-gray-50 transition-colors">
+                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                             <td class="px-6 py-4 font-medium">{{ peca.nome }}</td>
                             <td class="px-6 py-4 truncate max-w-xs">{{ peca.descricao|default:"-" }}</td>
                             <td class="px-6 py-4">R$ {{ peca.preco_custo }}</td>
