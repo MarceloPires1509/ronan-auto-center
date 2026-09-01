@@ -37,19 +37,19 @@
             </a>
         </div>
         <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
-            <a href="/" class="flex items-center gap-3 px-3 py-2 bg-primary text-white rounded-md font-medium">
+            <a href="{% url 'dashboard' %}" class="flex items-center gap-3 px-3 py-2 rounded-md font-medium {% if request.resolver_match.url_name == 'dashboard' %}bg-primary text-white{% else %}text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700{% endif %}">
                 <i data-lucide="home" class="w-5 h-5"></i> Dashboard
             </a>
-            <a href="/clientes/" class="flex items-center gap-3 px-3 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md">
+            <a href="{% url 'lista_clientes' %}" class="flex items-center gap-3 px-3 py-2 rounded-md font-medium {% if 'clientes' in request.path %}bg-primary text-white{% else %}text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700{% endif %}">
                 <i data-lucide="users" class="w-5 h-5"></i> Clientes
             </a>
-            <a href="/pecas/" class="flex items-center gap-3 px-3 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md">
+            <a href="{% url 'lista_pecas' %}" class="flex items-center gap-3 px-3 py-2 rounded-md font-medium {% if 'pecas' in request.path %}bg-primary text-white{% else %}text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700{% endif %}">
                 <i data-lucide="package" class="w-5 h-5"></i> Estoque
             </a>
-            <a href="/servicos/" class="flex items-center gap-3 px-3 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md">
+            <a href="{% url 'lista_servicos' %}" class="flex items-center gap-3 px-3 py-2 rounded-md font-medium {% if 'servicos' in request.path %}bg-primary text-white{% else %}text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700{% endif %}">
                 <i data-lucide="wrench" class="w-5 h-5"></i> Serviços
             </a>
-            <a href="/orcamentos/" class="flex items-center gap-3 px-3 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md">
+            <a href="{% url 'lista_orcamentos' %}" class="flex items-center gap-3 px-3 py-2 rounded-md font-medium {% if 'orcamentos' in request.path %}bg-primary text-white{% else %}text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700{% endif %}">
                 <i data-lucide="shopping-cart" class="w-5 h-5"></i> Orçamentos / PDV
             </a>
         </nav>
