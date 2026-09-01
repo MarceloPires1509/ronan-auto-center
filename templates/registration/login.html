@@ -21,10 +21,7 @@
             {% if config_global.logo %}
                 <img src="{{ config_global.logo.url }}" alt="{{ config_global.nome_loja }}" class="h-24 object-contain">
             {% else %}
-                <h1 class="text-primary font-bold text-2xl flex items-center gap-2">
-                    <i data-lucide="wrench" class="w-8 h-8"></i>
-                    {{ config_global.nome_loja|default:'Ronan Auto Center' }}
-                </h1>
+                <img src="{% static 'img/logo.png' %}" alt="Ronan Auto Center" class="h-24 object-contain">
             {% endif %}
         </div>
         

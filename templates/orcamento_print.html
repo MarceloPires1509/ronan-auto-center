@@ -26,7 +26,7 @@
                 {% if config_global.logo %}
                     <img src="{{ config_global.logo.url }}" alt="{{ config_global.nome_loja }}" style="max-height: 80px;" class="mb-2">
                 {% else %}
-                    <h1 class="text-3xl font-bold text-gray-900">{{ config_global.nome_loja|default:'Oficina Padrão' }}</h1>
+                    <img src="{% static 'img/logo.png' %}" alt="Ronan Auto Center" style="max-height: 80px;" class="mb-2">
                 {% endif %}
                 <p class="text-gray-500 mt-2 whitespace-pre-line">{{ config_global.endereco_completo|default:'Endereço não configurado' }}</p>
                 <p class="text-gray-500">Telefone: {{ config_global.telefone|default:'(00) 0000-0000' }}</p>
