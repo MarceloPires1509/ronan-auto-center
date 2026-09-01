@@ -6,21 +6,25 @@
 <div class="space-y-6">
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <!-- Cards -->
-        <div class="p-4 bg-white dark:bg-gray-800 rounded-lg border dark:border-gray-700 shadow-sm transition-colors">
-            <h3 class="text-gray-500 dark:text-gray-400 text-xs font-medium uppercase">Receita Bruta (Mês)</h3>
-            <p class="text-2xl font-bold mt-2 text-gray-900 dark:text-white">R$ {{ receita_bruta|default:"0,00" }}</p>
+        <div class="p-5 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl border dark:border-gray-700 shadow-md transform transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-primary/50 relative overflow-hidden group">
+            <div class="absolute -right-4 -top-4 w-24 h-24 bg-primary/10 rounded-full blur-xl group-hover:bg-primary/20 transition-all duration-300"></div>
+            <h3 class="text-gray-500 relative z-10 dark:text-gray-400 text-xs font-medium uppercase">Receita Bruta (Mês)</h3>
+            <p class="text-2xl relative z-10 font-bold mt-2 text-gray-900 dark:text-white">R$ {{ receita_bruta|default:"0,00" }}</p>
         </div>
-        <div class="p-4 bg-white dark:bg-gray-800 rounded-lg border dark:border-gray-700 shadow-sm transition-colors">
-            <h3 class="text-gray-500 dark:text-gray-400 text-xs font-medium uppercase">Receita Líquida</h3>
-            <p class="text-2xl font-bold mt-2 text-green-600 dark:text-green-400">R$ {{ receita_liquida|default:"0,00" }}</p>
+        <div class="p-5 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl border dark:border-gray-700 shadow-md transform transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-primary/50 relative overflow-hidden group">
+            <div class="absolute -right-4 -top-4 w-24 h-24 bg-green-500/10 rounded-full blur-xl group-hover:bg-green-500/20 transition-all duration-300"></div>
+            <h3 class="text-gray-500 relative z-10 dark:text-gray-400 text-xs font-medium uppercase">Receita Líquida</h3>
+            <p class="text-2xl relative z-10 font-bold mt-2 text-green-600 dark:text-green-400">R$ {{ receita_liquida|default:"0,00" }}</p>
         </div>
-        <div class="p-4 bg-white dark:bg-gray-800 rounded-lg border dark:border-gray-700 shadow-sm transition-colors">
-            <h3 class="text-gray-500 dark:text-gray-400 text-xs font-medium uppercase">Orçamentos Pendentes</h3>
-            <p class="text-2xl font-bold mt-2 text-yellow-600 dark:text-yellow-400">{{ orcamentos_pendentes|default:"0" }}</p>
+        <div class="p-5 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl border dark:border-gray-700 shadow-md transform transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-primary/50 relative overflow-hidden group">
+            <div class="absolute -right-4 -top-4 w-24 h-24 bg-yellow-500/10 rounded-full blur-xl group-hover:bg-yellow-500/20 transition-all duration-300"></div>
+            <h3 class="text-gray-500 relative z-10 dark:text-gray-400 text-xs font-medium uppercase">Orçamentos Pendentes</h3>
+            <p class="text-2xl relative z-10 font-bold mt-2 text-yellow-600 dark:text-yellow-400">{{ orcamentos_pendentes|default:"0" }}</p>
         </div>
-        <div class="p-4 bg-white dark:bg-gray-800 rounded-lg border dark:border-gray-700 shadow-sm transition-colors">
-            <h3 class="text-gray-500 dark:text-gray-400 text-xs font-medium uppercase">Peças Estoque Baixo</h3>
-            <p class="text-2xl font-bold mt-2 text-red-600 dark:text-red-400">{{ pecas_baixo_estoque|default:"0" }}</p>
+        <div class="p-5 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl border dark:border-gray-700 shadow-md transform transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-primary/50 relative overflow-hidden group">
+            <div class="absolute -right-4 -top-4 w-24 h-24 bg-red-500/10 rounded-full blur-xl group-hover:bg-red-500/20 transition-all duration-300"></div>
+            <h3 class="text-gray-500 relative z-10 dark:text-gray-400 text-xs font-medium uppercase">Peças Estoque Baixo</h3>
+            <p class="text-2xl relative z-10 font-bold mt-2 text-red-600 dark:text-red-400">{{ pecas_baixo_estoque|default:"0" }}</p>
         </div>
     </div>
 

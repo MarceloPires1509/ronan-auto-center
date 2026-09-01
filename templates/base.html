@@ -145,12 +145,20 @@
                 </div>
             </div>
             <div class="flex items-center gap-3 relative">
-                <button onclick="document.getElementById('user-menu').classList.toggle('hidden')" class="text-gray-500 hover:text-gray-900 dark:text-gray-300 focus:outline-none">
-                    <i data-lucide="user-circle" class="w-8 h-8"></i>
+                <div class="text-right hidden sm:block mr-2">
+                    <p class="text-sm font-bold text-gray-900 dark:text-white">{{ request.user.first_name|default:request.user.username }}</p>
+                    <p class="text-xs text-primary dark:text-primary_hover font-medium">{% if request.user.is_superuser %}Administrador{% else %}Colaborador{% endif %}</p>
+                </div>
+                <button onclick="document.getElementById('user-menu').classList.toggle('hidden')" class="text-gray-500 hover:text-gray-900 dark:text-gray-300 focus:outline-none transition-transform hover:scale-110">
+                    <i data-lucide="user-circle" class="w-9 h-9"></i>
                 </button>
                 
                 <!-- Dropdown Menu -->
-                <div id="user-menu" class="hidden absolute right-0 top-10 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg border dark:border-gray-700 py-1 z-50">
+                <div id="user-menu" class="hidden absolute right-0 top-12 mt-2 w-56 bg-white dark:bg-gray-800 rounded-lg shadow-xl border dark:border-gray-700 py-2 z-50">
+                    <div class="px-4 py-3 border-b dark:border-gray-700 sm:hidden">
+                        <p class="text-sm font-bold text-gray-900 dark:text-white">{{ request.user.first_name|default:request.user.username }}</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">{{ request.user.username }}</p>
+                    </div>
                     <a href="{% url 'novo_usuario' %}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
                         + Novo Usuário
                     </a>
