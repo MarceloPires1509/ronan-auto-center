@@ -88,7 +88,7 @@
             </a>
             {% endif %}
             
-            {% if request.user.perfil.acesso_configuracoes %}
+            {% if request.user.is_superuser or request.user.perfil.acesso_configuracoes %}
             <a href="{% url 'configuracoes' %}" class="flex items-center gap-3 px-3 py-2 rounded-md font-medium {% if 'config' in request.path %}bg-primary text-white{% else %}text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700{% endif %}">
                 <i data-lucide="settings" class="w-5 h-5"></i> Configurações
             </a>

@@ -254,7 +254,7 @@ from .models import Configuracao
 
 @login_required
 def configuracoes(request):
-    if not request.user.perfil.acesso_configuracoes:
+    if not request.user.is_superuser and not request.user.perfil.acesso_configuracoes:
         messages.error(request, 'Você não tem permissão para acessar as configurações.')
         return redirect('dashboard')
         
