@@ -31,23 +31,24 @@
                     </thead>
                     <tbody class="divide-y divide-gray-200 dark:divide-gray-700 text-gray-900 dark:text-gray-100 flex flex-col sm:table-row-group">
                         {% for peca in pecas %}
-                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                            <td class="px-6 py-4 font-medium">{{ peca.nome }}</td>
-                            <td class="px-6 py-4 truncate max-w-xs">{{ peca.descricao|default:"-" }}</td>
-                            <td class="px-6 py-4">R$ {{ peca.preco_custo }}</td>
-                            <td class="px-6 py-4 font-medium text-green-600">R$ {{ peca.preco_venda }}</td>
-                            <td class="px-6 py-4 text-center">
+                        <tr class="flex flex-col sm:table-row hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors p-4 sm:p-0">
+                            <td class="px-2 sm:px-6 py-1 sm:py-4 font-bold text-lg sm:text-sm">{{ peca.nome }}</td>
+                            <td class="px-2 sm:px-6 py-1 sm:py-4 truncate max-w-xs"><span class="sm:hidden font-medium text-gray-500 text-xs uppercase mr-2">Desc: </span>{{ peca.descricao|default:"-" }}</td>
+                            <td class="px-2 sm:px-6 py-1 sm:py-4"><span class="sm:hidden font-medium text-gray-500 text-xs uppercase mr-2">Custo: </span>R$ {{ peca.preco_custo }}</td>
+                            <td class="px-2 sm:px-6 py-1 sm:py-4 font-medium text-green-600"><span class="sm:hidden font-medium text-gray-500 text-xs uppercase mr-2">Venda: </span>R$ {{ peca.preco_venda }}</td>
+                            <td class="px-2 sm:px-6 py-1 sm:py-4 sm:text-center">
+                                <span class="sm:hidden font-medium text-gray-500 text-xs uppercase mr-2">Qtd: </span>
                                 {% if peca.estoque <= 5 %}
                                     <span class="px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs font-bold">{{ peca.estoque }}</span>
                                 {% else %}
                                     <span class="px-2 py-1 bg-gray-100 text-gray-800 rounded-full text-xs font-bold">{{ peca.estoque }}</span>
                                 {% endif %}
                             </td>
-                            <td class="px-6 py-4 text-right">
+                            <td class="px-2 sm:px-6 py-3 sm:py-4 sm:text-right mt-2 sm:mt-0 border-t sm:border-0 dark:border-gray-700 flex justify-end">
                                 <form action="{% url 'arquivar_peca' peca.id %}" method="POST" class="inline">
                                     {% csrf_token %}
-                                    <button type="submit" class="text-red-500 hover:text-red-700 font-medium">
-                                        Excluir
+                                    <button type="submit" class="text-yellow-600 dark:text-yellow-400 hover:underline font-medium" onclick="return confirm('Deseja arquivar esta peça?')">
+                                        Arquivar
                                     </button>
                                 </form>
                             </td>
