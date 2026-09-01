@@ -1,9 +1,28 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Cliente, Peca, Servico, Orcamento, ItemOrcamento
+from django.contrib.auth.models import User
+from django.contrib import messages
+from .models import Cliente, Peca, Servico, Orcamento, ItemOrcamento, Perfil
 import json
 
 from django.db.models import Sum, F
 from django.utils import timezone
+
+def novo_usuario(request):
+    if request.method == 'POST':
+        nome = request.POST.get('nome')
+        telefone = request.POST.get('telefone')
+        email = request.POST.get('email')
+        senha = request.POST.get('senha')
+        
+        if User.objects.filter(username=email).exists():
+            messages.error(request, 'Este e-mail já está cadastrado.')
+        else:
+            user = User.objects.create_user(username=email, email=email, password=senha, first_name=nome)
+            Perfil.objects.create(user=user, telefone=telefone)
+            messages.success(request, 'Usuário criado com sucesso!')
+            return redirect('dashboard')
+            
+    return render(request, 'usuario_form.html')
 
 def dashboard(request):
     agora = timezone.now()
