@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="pt-BR" class="light">
 <head>
@@ -30,11 +31,10 @@
 
     <!-- Sidebar -->
     <aside class="w-64 bg-white dark:bg-gray-800 border-r dark:border-gray-700 flex flex-col hidden sm:flex h-full transition-colors duration-200">
-        <div class="p-4 border-b dark:border-gray-700">
-            <h1 class="text-primary font-bold text-xl flex items-center gap-2">
-                <i data-lucide="wrench" class="w-6 h-6"></i>
-                Ronan Auto Center
-            </h1>
+        <div class="p-4 border-b dark:border-gray-700 flex justify-center">
+            <a href="{% url 'dashboard' %}" class="block transform transition-transform duration-300 hover:scale-105 hover:opacity-90">
+                <img src="{% static 'img/logo.png' %}" alt="Ronan Auto Center" class="h-14 object-contain">
+            </a>
         </div>
         <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
             <a href="/" class="flex items-center gap-3 px-3 py-2 bg-primary text-white rounded-md font-medium">
@@ -89,12 +89,12 @@
         <!-- Header -->
         <header class="h-16 border-b dark:border-gray-700 bg-white dark:bg-gray-800 flex items-center justify-between px-4 sm:px-6 transition-colors duration-200">
             <div class="flex items-center gap-4">
-                <button class="sm:hidden text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white dark:text-gray-300">
+                <button class="sm:hidden text-gray-500 hover:text-gray-900 dark:text-gray-300">
                     <i data-lucide="menu" class="w-6 h-6"></i>
                 </button>
-                <div class="sm:hidden font-bold text-primary text-lg">
-                    Ronan Auto Center
-                </div>
+                <a href="{% url 'dashboard' %}" class="sm:hidden block transform transition-transform duration-300 hover:scale-105">
+                    <img src="{% static 'img/logo.png' %}" alt="Ronan Auto Center" class="h-8 object-contain">
+                </a>
                 <div class="hidden sm:block font-semibold text-lg text-gray-900 dark:text-white">
                     {% block header_title %}Visão Geral{% endblock %}
                 </div>
