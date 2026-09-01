@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block header_title %}Serviços / Mão de Obra{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <div class="flex justify-between items-center">
+        <h1 class="text-2xl font-bold text-gray-900">Serviços / Mão de Obra</h1>
+        <a href="{% url 'novo_servico' %}" class="bg-blue-600 text-white px-4 py-2 rounded-md font-medium hover:bg-blue-700 transition-colors">
+            + Novo Serviço
+        </a>
+    </div>
+
+    <div class="bg-white rounded-lg border shadow-sm overflow-hidden">
+        {% if not servicos %}
+            <div class="p-8 text-center text-gray-500">
+                Nenhum serviço cadastrado ainda.
+            </div>
+        {% else %}
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left">
+                    <thead class="text-xs text-gray-500 uppercase bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 font-medium">Nome</th>
+                            <th class="px-6 py-3 font-medium">Descrição</th>
+                            <th class="px-6 py-3 font-medium">Custo (Mecânico)</th>
+                            <th class="px-6 py-3 font-medium">Preço de Venda</th>
+                            <th class="px-6 py-3 font-medium text-right">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200 text-gray-900">
+                        {% for servico in servicos %}
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="px-6 py-4 font-medium">{{ servico.nome }}</td>
+                            <td class="px-6 py-4 truncate max-w-xs">{{ servico.descricao|default:"-" }}</td>
+                            <td class="px-6 py-4">R$ {{ servico.custo_mecanico }}</td>
+                            <td class="px-6 py-4 font-medium text-green-600">R$ {{ servico.preco_venda }}</td>
+                            <td class="px-6 py-4 text-right">
+                                <form action="{% url 'excluir_servico' servico.id %}" method="POST" class="inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="text-red-500 hover:text-red-700 font-medium">
+                                        Excluir
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

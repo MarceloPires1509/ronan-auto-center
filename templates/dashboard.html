@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block header_title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Cards -->
+        <div class="p-4 bg-white dark:bg-gray-800 rounded-lg border dark:border-gray-700 shadow-sm transition-colors">
+            <h3 class="text-gray-500 dark:text-gray-400 text-xs font-medium uppercase">Receita Bruta (Mês)</h3>
+            <p class="text-2xl font-bold mt-2 text-gray-900 dark:text-white">R$ {{ receita_bruta|default:"0,00" }}</p>
+        </div>
+        <div class="p-4 bg-white dark:bg-gray-800 rounded-lg border dark:border-gray-700 shadow-sm transition-colors">
+            <h3 class="text-gray-500 dark:text-gray-400 text-xs font-medium uppercase">Receita Líquida</h3>
+            <p class="text-2xl font-bold mt-2 text-green-600 dark:text-green-400">R$ {{ receita_liquida|default:"0,00" }}</p>
+        </div>
+        <div class="p-4 bg-white dark:bg-gray-800 rounded-lg border dark:border-gray-700 shadow-sm transition-colors">
+            <h3 class="text-gray-500 dark:text-gray-400 text-xs font-medium uppercase">Orçamentos Pendentes</h3>
+            <p class="text-2xl font-bold mt-2 text-yellow-600 dark:text-yellow-400">{{ orcamentos_pendentes|default:"0" }}</p>
+        </div>
+        <div class="p-4 bg-white dark:bg-gray-800 rounded-lg border dark:border-gray-700 shadow-sm transition-colors">
+            <h3 class="text-gray-500 dark:text-gray-400 text-xs font-medium uppercase">Peças Estoque Baixo</h3>
+            <p class="text-2xl font-bold mt-2 text-red-600 dark:text-red-400">{{ pecas_baixo_estoque|default:"0" }}</p>
+        </div>
+    </div>
+
+    <div class="bg-white dark:bg-gray-800 rounded-lg border dark:border-gray-700 shadow-sm overflow-hidden transition-colors">
+        <div class="px-6 py-4 border-b dark:border-gray-700 flex justify-between items-center">
+            <h2 class="font-semibold text-lg dark:text-white">Últimos Orçamentos</h2>
+            <a href="/orcamentos/novo/" class="bg-primary text-white px-4 py-2 rounded-md font-medium text-sm hover:bg-primary_hover transition-colors">
+                + Novo Orçamento
+            </a>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left">
+                <thead class="text-xs text-gray-500 dark:text-gray-400 uppercase bg-gray-50 dark:bg-gray-900/50">
+                    <tr>
+                        <th class="px-6 py-3 font-medium">Cliente</th>
+                        <th class="px-6 py-3 font-medium">Data</th>
+                        <th class="px-6 py-3 font-medium">Valor</th>
+                        <th class="px-6 py-3 font-medium">Status</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200 dark:divide-gray-700 text-gray-900 dark:text-gray-100">
+                    {% for orcamento in ultimos_orcamentos %}
+                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                        <td class="px-6 py-4 font-medium">{{ orcamento.cliente.nome }}</td>
+                        <td class="px-6 py-4 text-gray-500 dark:text-gray-400">{{ orcamento.criado_em|date:"d/m/Y" }}</td>
+                        <td class="px-6 py-4 font-medium">R$ {{ orcamento.total }}</td>
+                        <td class="px-6 py-4">
+                            <span class="px-2.5 py-1 {% if orcamento.status == 'APROVADO' %}bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400{% else %}bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400{% endif %} rounded-full text-xs font-semibold uppercase">
+                                {{ orcamento.status }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">Nenhum orçamento recente.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

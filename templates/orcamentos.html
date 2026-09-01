@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block header_title %}Orçamentos e PDV{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <div class="flex justify-between items-center">
+        <h1 class="text-2xl font-bold text-gray-900">Orçamentos e Vendas</h1>
+        <a href="{% url 'novo_orcamento' %}" class="bg-blue-600 text-white px-4 py-2 rounded-md font-medium hover:bg-blue-700 transition-colors">
+            + Novo Orçamento
+        </a>
+    </div>
+
+    <div class="bg-white rounded-lg border shadow-sm overflow-hidden">
+        {% if not orcamentos %}
+            <div class="p-8 text-center text-gray-500">
+                Nenhum orçamento gerado ainda.
+            </div>
+        {% else %}
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left">
+                    <thead class="text-xs text-gray-500 uppercase bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 font-medium">Data</th>
+                            <th class="px-6 py-3 font-medium">Cliente</th>
+                            <th class="px-6 py-3 font-medium">Peças</th>
+                            <th class="px-6 py-3 font-medium">Mão de Obra</th>
+                            <th class="px-6 py-3 font-medium">Total</th>
+                            <th class="px-6 py-3 font-medium">Status</th>
+                            <th class="px-6 py-3 font-medium text-right">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200 text-gray-900">
+                        {% for orcamento in orcamentos %}
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="px-6 py-4 font-medium">{{ orcamento.criado_em|date:"d/m/Y H:i" }}</td>
+                            <td class="px-6 py-4 font-medium">{{ orcamento.cliente.nome }}</td>
+                            <td class="px-6 py-4">R$ {{ orcamento.total_pecas }}</td>
+                            <td class="px-6 py-4">R$ {{ orcamento.total_mao_de_obra }}</td>
+                            <td class="px-6 py-4 font-bold text-blue-600">R$ {{ orcamento.total }}</td>
+                            <td class="px-6 py-4">
+                                <span class="px-2 py-1 {% if orcamento.status == 'APROVADO' %}bg-green-100 text-green-800{% else %}bg-yellow-100 text-yellow-800{% endif %} rounded-full text-xs font-bold uppercase">
+                                    {{ orcamento.status }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 text-right flex gap-2 justify-end">
+                                {% if orcamento.status == 'PENDENTE' %}
+                                <form action="{% url 'aprovar_orcamento' orcamento.id %}" method="POST" class="inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-bold hover:bg-green-200" title="Aprovar (Baixa Estoque)">
+                                        ✓ Aprovar
+                                    </button>
+                                </form>
+                                {% endif %}
+                                
+                                <a href="{% url 'imprimir_orcamento' orcamento.id %}" target="_blank" class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs font-bold hover:bg-blue-200" title="Imprimir PDF">
+                                    🖨️
+                                </a>
+
+                                <form action="{% url 'excluir_orcamento' orcamento.id %}" method="POST" class="inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="text-red-500 hover:text-red-700 font-medium px-2 py-1" title="Excluir">
+                                        &times;
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

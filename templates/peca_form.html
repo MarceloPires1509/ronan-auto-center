@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block header_title %}Nova Peça / Produto{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto space-y-6">
+    <div class="flex items-center gap-4">
+        <a href="{% url 'lista_pecas' %}" class="text-gray-500 hover:text-gray-900">
+            &larr; Voltar
+        </a>
+        <h1 class="text-2xl font-bold text-gray-900">Novo Produto / Peça</h1>
+    </div>
+
+    <div class="bg-white rounded-lg border shadow-sm p-6">
+        <form method="POST" action="{% url 'nova_peca' %}" class="space-y-4">
+            {% csrf_token %}
+            <div class="space-y-2">
+                <label for="nome" class="text-sm font-medium">Nome da Peça <span class="text-red-500">*</span></label>
+                <input type="text" id="nome" name="nome" required class="w-full px-3 py-2 border rounded-md bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-600">
+            </div>
+            
+            <div class="space-y-2">
+                <label for="descricao" class="text-sm font-medium">Descrição (Marca, aplicação, etc)</label>
+                <input type="text" id="descricao" name="descricao" class="w-full px-3 py-2 border rounded-md bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-600">
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="space-y-2">
+                    <label for="preco_custo" class="text-sm font-medium">Preço de Custo (R$)</label>
+                    <input type="text" id="preco_custo" name="preco_custo" placeholder="0.00" class="w-full px-3 py-2 border rounded-md bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-600">
+                </div>
+                <div class="space-y-2">
+                    <label for="preco_venda" class="text-sm font-medium">Preço de Venda (R$)</label>
+                    <input type="text" id="preco_venda" name="preco_venda" placeholder="0.00" class="w-full px-3 py-2 border rounded-md bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-600">
+                </div>
+                <div class="space-y-2">
+                    <label for="estoque" class="text-sm font-medium">Qtd em Estoque</label>
+                    <input type="number" id="estoque" name="estoque" value="1" class="w-full px-3 py-2 border rounded-md bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-600">
+                </div>
+            </div>
+
+            <div class="pt-4 flex justify-end gap-3">
+                <a href="{% url 'lista_pecas' %}" class="px-4 py-2 border rounded-md font-medium text-gray-500 hover:bg-gray-50">
+                    Cancelar
+                </a>
+                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md font-medium hover:bg-blue-700 transition-colors">
+                    Salvar Peça
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

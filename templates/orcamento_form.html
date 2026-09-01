@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+
+{% block header_title %}Novo Orçamento / Venda{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto space-y-6">
+    <div class="flex items-center gap-4">
+        <a href="{% url 'lista_orcamentos' %}" class="text-gray-500 hover:text-gray-900">
+            &larr; Voltar
+        </a>
+        <h1 class="text-2xl font-bold text-gray-900">Gerar Novo Orçamento</h1>
+    </div>
+
+    <form method="POST" action="{% url 'novo_orcamento' %}" class="space-y-6">
+        {% csrf_token %}
+        
+        <!-- Seleção de Cliente -->
+        <div class="bg-white rounded-lg border shadow-sm p-6">
+            <h2 class="text-lg font-semibold mb-4 border-b pb-2">1. Selecionar Cliente</h2>
+            <div class="space-y-2">
+                <label for="cliente_id" class="text-sm font-medium">Selecione o Cliente cadastrado <span class="text-red-500">*</span></label>
+                <select id="cliente_id" name="cliente_id" required class="w-full px-3 py-2 border rounded-md bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-600">
+                    <option value="" disabled selected>-- Escolha um cliente --</option>
+                    {% for cliente in clientes %}
+                    <option value="{{ cliente.id }}">{{ cliente.nome }} ({{ cliente.veiculo|default:"Sem veículo" }} - Placa: {{ cliente.placa|default:"N/D" }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Peças -->
+            <div class="bg-white rounded-lg border shadow-sm p-6">
+                <h2 class="text-lg font-semibold mb-4 border-b pb-2 flex justify-between items-center">
+                    2. Peças / Produtos
+                    <button type="button" onclick="addPeca()" class="text-sm bg-gray-100 px-3 py-1 rounded hover:bg-gray-200">+ Adicionar</button>
+                </h2>
+                <div id="pecas-container" class="space-y-4">
+                    <!-- Linhas de peças entrarão aqui -->
+                </div>
+            </div>
+
+            <!-- Serviços -->
+            <div class="bg-white rounded-lg border shadow-sm p-6">
+                <h2 class="text-lg font-semibold mb-4 border-b pb-2 flex justify-between items-center">
+                    3. Serviços / Mão de Obra
+                    <button type="button" onclick="addServico()" class="text-sm bg-gray-100 px-3 py-1 rounded hover:bg-gray-200">+ Adicionar</button>
+                </h2>
+                <div id="servicos-container" class="space-y-4">
+                    <!-- Linhas de serviços entrarão aqui -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Resumo -->
+        <div class="bg-blue-50 rounded-lg border border-blue-100 shadow-sm p-6 flex justify-between items-center">
+            <div>
+                <h2 class="text-xl font-bold text-blue-900">Total do Orçamento</h2>
+                <p class="text-sm text-blue-700">Peças: R$ <span id="total-pecas-lbl">0.00</span> | Mão de Obra: R$ <span id="total-servicos-lbl">0.00</span></p>
+            </div>
+            <div class="text-3xl font-black text-blue-700">
+                R$ <span id="total-geral-lbl">0.00</span>
+            </div>
+        </div>
+
+        <div class="pt-4 flex justify-end gap-3 pb-10">
+            <a href="{% url 'lista_orcamentos' %}" class="px-4 py-2 border rounded-md font-medium text-gray-500 hover:bg-gray-50">
+                Cancelar
+            </a>
+            <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-md font-medium text-lg hover:bg-blue-700 transition-colors shadow-sm">
+                Salvar Orçamento
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Dados JSON ocultos para o JS -->
+<script>
+    const pecasList = [
+        {% for peca in pecas %}
+        { id: "{{ peca.id }}", nome: "{{ peca.nome }}", preco: {{ peca.preco_venda|stringformat:"f" }} },
+        {% endfor %}
+    ];
+
+    const servicosList = [
+        {% for servico in servicos %}
+        { id: "{{ servico.id }}", nome: "{{ servico.nome }}", preco: {{ servico.preco_venda|stringformat:"f" }} },
+        {% endfor %}
+    ];
+
+    function calculateTotals() {
+        let totalPecas = 0;
+        document.querySelectorAll('.peca-row').forEach(row => {
+            const select = row.querySelector('select');
+            const qtdInput = row.querySelector('input[type="number"]');
+            if (select.value) {
+                const peca = pecasList.find(p => p.id == select.value);
+                if (peca) totalPecas += (peca.preco * (parseInt(qtdInput.value) || 1));
+            }
+        });
+
+        let totalServicos = 0;
+        document.querySelectorAll('.servico-row').forEach(row => {
+            const select = row.querySelector('select');
+            if (select.value) {
+                const servico = servicosList.find(s => s.id == select.value);
+                if (servico) totalServicos += servico.preco;
+            }
+        });
+
+        document.getElementById('total-pecas-lbl').innerText = totalPecas.toFixed(2);
+        document.getElementById('total-servicos-lbl').innerText = totalServicos.toFixed(2);
+        document.getElementById('total-geral-lbl').innerText = (totalPecas + totalServicos).toFixed(2);
+    }
+
+    function addPeca() {
+        const container = document.getElementById('pecas-container');
+        const div = document.createElement('div');
+        div.className = 'peca-row flex gap-2 items-center';
+        
+        let options = '<option value="" disabled selected>Selecione uma peça...</option>';
+        pecasList.forEach(p => {
+            options += `<option value="${p.id}">${p.nome} - R$ ${p.preco.toFixed(2)}</option>`;
+        });
+
+        div.innerHTML = `
+            <select name="peca_id[]" onchange="calculateTotals()" required class="flex-1 px-2 py-1 border rounded text-sm bg-white">
+                ${options}
+            </select>
+            <input type="number" name="peca_qtd[]" value="1" min="1" onchange="calculateTotals()" class="w-16 px-2 py-1 border rounded text-sm text-center">
+            <button type="button" onclick="this.parentElement.remove(); calculateTotals();" class="text-red-500 font-bold px-2">&times;</button>
+        `;
+        container.appendChild(div);
+    }
+
+    function addServico() {
+        const container = document.getElementById('servicos-container');
+        const div = document.createElement('div');
+        div.className = 'servico-row flex gap-2 items-center';
+        
+        let options = '<option value="" disabled selected>Selecione um serviço...</option>';
+        servicosList.forEach(s => {
+            options += `<option value="${s.id}">${s.nome} - R$ ${s.preco.toFixed(2)}</option>`;
+        });
+
+        div.innerHTML = `
+            <select name="servico_id[]" onchange="calculateTotals()" required class="flex-1 px-2 py-1 border rounded text-sm bg-white">
+                ${options}
+            </select>
+            <button type="button" onclick="this.parentElement.remove(); calculateTotals();" class="text-red-500 font-bold px-2">&times;</button>
+        `;
+        container.appendChild(div);
+    }
+
+    // Adiciona uma linha inicial vazia se as listas não estiverem vazias
+    if(pecasList.length > 0) addPeca();
+    if(servicosList.length > 0) addServico();
+</script>
+{% endblock %}

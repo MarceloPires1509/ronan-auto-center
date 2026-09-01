@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Ronan Auto Center{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: 'var(--color-primary)',
+                        primary_hover: 'var(--color-primary-hover)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --color-primary: #2563eb; /* blue-600 */
+            --color-primary-hover: #1d4ed8; /* blue-700 */
+        }
+    </style>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100 h-screen flex overflow-hidden antialiased transition-colors duration-200">
+
+    <!-- Sidebar -->
+    <aside class="w-64 bg-white dark:bg-gray-800 border-r dark:border-gray-700 flex flex-col hidden sm:flex h-full transition-colors duration-200">
+        <div class="p-4 border-b dark:border-gray-700">
+            <h1 class="text-primary font-bold text-xl flex items-center gap-2">
+                <i data-lucide="wrench" class="w-6 h-6"></i>
+                Ronan Auto Center
+            </h1>
+        </div>
+        <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
+            <a href="/" class="flex items-center gap-3 px-3 py-2 bg-primary text-white rounded-md font-medium">
+                <i data-lucide="home" class="w-5 h-5"></i> Dashboard
+            </a>
+            <a href="/clientes/" class="flex items-center gap-3 px-3 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md">
+                <i data-lucide="users" class="w-5 h-5"></i> Clientes
+            </a>
+            <a href="/pecas/" class="flex items-center gap-3 px-3 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md">
+                <i data-lucide="package" class="w-5 h-5"></i> Estoque
+            </a>
+            <a href="/servicos/" class="flex items-center gap-3 px-3 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md">
+                <i data-lucide="wrench" class="w-5 h-5"></i> Serviços
+            </a>
+            <a href="/orcamentos/" class="flex items-center gap-3 px-3 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md">
+                <i data-lucide="shopping-cart" class="w-5 h-5"></i> Orçamentos / PDV
+            </a>
+        </nav>
+        
+        <!-- Personalização de Tema (Fica no fim da Sidebar) -->
+        <div class="p-4 border-t dark:border-gray-700 space-y-3">
+            <p class="text-xs font-semibold text-gray-500 uppercase">Tema</p>
+            <div class="flex items-center justify-between">
+                <button onclick="toggleDarkMode()" class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white flex items-center gap-2 text-sm">
+                    <i data-lucide="moon" class="w-4 h-4 dark:hidden"></i>
+                    <i data-lucide="sun" class="w-4 h-4 hidden dark:block"></i>
+                    <span class="dark:hidden">Modo Escuro</span>
+                    <span class="hidden dark:block">Modo Claro</span>
+                </button>
+            </div>
+            <div class="flex items-center gap-2 mt-2">
+                <button onclick="setThemeColor('#2563eb', '#1d4ed8')" class="w-5 h-5 rounded-full bg-blue-600"></button>
+                <button onclick="setThemeColor('#16a34a', '#15803d')" class="w-5 h-5 rounded-full bg-green-600"></button>
+                <button onclick="setThemeColor('#dc2626', '#b91c1c')" class="w-5 h-5 rounded-full bg-red-600"></button>
+                <button onclick="setThemeColor('#9333ea', '#7e22ce')" class="w-5 h-5 rounded-full bg-purple-600"></button>
+                <button onclick="setThemeColor('#475569', '#334155')" class="w-5 h-5 rounded-full bg-slate-600"></button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+        
+        <!-- Header -->
+        <header class="h-16 border-b dark:border-gray-700 bg-white dark:bg-gray-800 flex items-center justify-between px-4 sm:px-6 transition-colors duration-200">
+            <div class="flex items-center gap-4">
+                <button class="sm:hidden text-gray-500 hover:text-gray-900 dark:text-gray-300">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+                <div class="sm:hidden font-bold text-primary text-lg">
+                    Ronan Auto Center
+                </div>
+                <div class="hidden sm:block font-semibold text-lg text-gray-900 dark:text-white">
+                    {% block header_title %}Visão Geral{% endblock %}
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <button class="text-gray-500 hover:text-gray-900 dark:text-gray-300">
+                    <i data-lucide="user-circle" class="w-8 h-8"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Page Content -->
+        <main class="flex-1 overflow-y-auto p-4 sm:p-6 bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+            {% block content %}
+            {% endblock %}
+        </main>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        // Carregar preferencias salvas
+        if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.classList.add('dark');
+        }
+        
+        const savedColor = localStorage.getItem('theme-color');
+        const savedHover = localStorage.getItem('theme-hover');
+        if(savedColor) {
+            document.documentElement.style.setProperty('--color-primary', savedColor);
+            document.documentElement.style.setProperty('--color-primary-hover', savedHover);
+        }
+
+        function toggleDarkMode() {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        function setThemeColor(primary, hover) {
+            document.documentElement.style.setProperty('--color-primary', primary);
+            document.documentElement.style.setProperty('--color-primary-hover', hover);
+            localStorage.setItem('theme-color', primary);
+            localStorage.setItem('theme-hover', hover);
+        }
+    </script>
+</body>
+</html>
