@@ -384,3 +384,10 @@ def exportar_historico_cliente(request, id):
 
     workbook.save(response)
     return response
+
+@login_required
+def exportar_orcamentos_pdf(request):
+    if not request.user.perfil.acesso_orcamentos:
+        return redirect('dashboard')
+    orcamentos = Orcamento.objects.filter(arquivado=False).order_by('-criado_em')
+    return render(request, 'orcamentos_list_print.html', {'orcamentos': orcamentos})

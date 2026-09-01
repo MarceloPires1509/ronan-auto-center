@@ -6,6 +6,7 @@ urlpatterns = [
     path('usuarios/novo/', views.novo_usuario, name='novo_usuario'),
     path('configuracoes/', views.configuracoes, name='configuracoes'),
     path('orcamentos/exportar/', views.exportar_orcamentos_excel, name='exportar_orcamentos_excel'),
+    path('orcamentos/exportar/pdf/', views.exportar_orcamentos_pdf, name='exportar_orcamentos_pdf'),
     
     path('clientes/', views.lista_clientes, name='lista_clientes'),
     path('clientes/novo/', views.novo_cliente, name='novo_cliente'),
