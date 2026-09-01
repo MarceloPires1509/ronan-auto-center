@@ -34,7 +34,7 @@
             <div class="text-right">
                 <h2 class="text-2xl font-bold text-gray-700">ORÇAMENTO</h2>
                 <p class="text-gray-500 font-medium">Nº {{ orcamento.id|stringformat:"04d" }}</p>
-                <p class="text-gray-500 mt-2">Data: {{ orcamento.data_criacao|date:"d/m/Y" }}</p>
+                <p class="text-gray-500 mt-2">Data: {{ orcamento.criado_em|date:"d/m/Y" }}</p>
                 <span class="inline-block mt-2 px-2 py-1 text-xs font-bold uppercase rounded {% if orcamento.status == 'APROVADO' %}bg-green-100 text-green-800{% else %}bg-yellow-100 text-yellow-800{% endif %}">
                     {{ orcamento.status }}
                 </span>

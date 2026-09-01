@@ -303,15 +303,15 @@ def exportar_orcamentos_excel(request):
     worksheet.append(columns)
 
     # Data
-    for orc in Orcamento.objects.filter(arquivado=False).order_by('-data_criacao'):
+    for orc in Orcamento.objects.filter(arquivado=False).order_by('-criado_em'):
         worksheet.append([
             orc.id,
             orc.cliente.nome if orc.cliente else 'Não Informado',
-            orc.data_criacao.strftime('%d/%m/%Y %H:%M'),
+            orc.criado_em.strftime('%d/%m/%Y %H:%M'),
             orc.get_status_display(),
             orc.total_pecas,
-            orc.total_servicos,
-            orc.total_geral
+            orc.total_mao_de_obra,
+            orc.total
         ])
 
     workbook.save(response)
