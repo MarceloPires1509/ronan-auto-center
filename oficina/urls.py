@@ -14,16 +14,19 @@ urlpatterns = [
     path('clientes/<int:id>/', views.detalhe_cliente, name='detalhe_cliente'),
     path('clientes/<int:id>/exportar/', views.exportar_historico_cliente, name='exportar_historico_cliente'),
     path('clientes/arquivar/<int:id>/', views.arquivar_cliente, name='arquivar_cliente'),
+    path('clientes/restaurar/<int:id>/', views.restaurar_cliente, name='restaurar_cliente'),
     
     path('pecas/', views.lista_pecas, name='lista_pecas'),
     path('pecas/nova/', views.nova_peca, name='nova_peca'),
     path('pecas/excluir/<int:id>/', views.excluir_peca, name='excluir_peca'),
     path('pecas/arquivar/<int:id>/', views.arquivar_peca, name='arquivar_peca'),
+    path('pecas/restaurar/<int:id>/', views.restaurar_peca, name='restaurar_peca'),
     
     path('servicos/', views.lista_servicos, name='lista_servicos'),
     path('servicos/novo/', views.novo_servico, name='novo_servico'),
     path('servicos/excluir/<int:id>/', views.excluir_servico, name='excluir_servico'),
     path('servicos/arquivar/<int:id>/', views.arquivar_servico, name='arquivar_servico'),
+    path('servicos/restaurar/<int:id>/', views.restaurar_servico, name='restaurar_servico'),
     
     path('orcamentos/', views.lista_orcamentos, name='lista_orcamentos'),
     path('orcamentos/novo/', views.novo_orcamento, name='novo_orcamento'),
