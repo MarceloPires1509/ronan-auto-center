@@ -37,29 +37,45 @@
         </div>
         <div class="overflow-x-auto">
             <table class="w-full text-sm text-left">
-                <thead class="text-xs text-gray-500 dark:text-gray-400 uppercase bg-gray-50 dark:bg-gray-900/50">
+                <thead class="hidden sm:table-header-group text-xs text-gray-500 dark:text-gray-400 uppercase bg-gray-50 dark:bg-gray-900/50">
                     <tr>
                         <th class="px-6 py-3 font-medium">Cliente</th>
                         <th class="px-6 py-3 font-medium">Data</th>
                         <th class="px-6 py-3 font-medium">Valor</th>
                         <th class="px-6 py-3 font-medium">Status</th>
+                        <th class="px-6 py-3 font-medium text-right">Ações</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-200 dark:divide-gray-700 text-gray-900 dark:text-gray-100">
+                <tbody class="divide-y divide-gray-200 dark:divide-gray-700 text-gray-900 dark:text-gray-100 flex flex-col sm:table-row-group">
                     {% for orcamento in ultimos_orcamentos %}
-                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                        <td class="px-6 py-4 font-medium">{{ orcamento.cliente.nome }}</td>
-                        <td class="px-6 py-4 text-gray-500 dark:text-gray-400">{{ orcamento.criado_em|date:"d/m/Y" }}</td>
-                        <td class="px-6 py-4 font-medium">R$ {{ orcamento.total }}</td>
-                        <td class="px-6 py-4">
+                    <tr class="flex flex-col sm:table-row hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors p-4 sm:p-0">
+                        <td class="px-2 sm:px-6 py-1 sm:py-4 font-medium"><span class="sm:hidden font-medium text-gray-500 text-xs uppercase mr-2 font-normal">Cliente: </span>{{ orcamento.cliente.nome }}</td>
+                        <td class="px-2 sm:px-6 py-1 sm:py-4 text-gray-500 dark:text-gray-400"><span class="sm:hidden font-medium text-gray-500 text-xs uppercase mr-2 font-normal">Data: </span>{{ orcamento.criado_em|date:"d/m/Y" }}</td>
+                        <td class="px-2 sm:px-6 py-1 sm:py-4 font-bold text-blue-600"><span class="sm:hidden font-medium text-gray-500 text-xs uppercase mr-2 font-normal">Total: </span>R$ {{ orcamento.total }}</td>
+                        <td class="px-2 sm:px-6 py-1 sm:py-4">
+                            <span class="sm:hidden font-medium text-gray-500 text-xs uppercase mr-2 font-normal">Status: </span>
                             <span class="px-2.5 py-1 {% if orcamento.status == 'APROVADO' %}bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400{% else %}bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400{% endif %} rounded-full text-xs font-semibold uppercase">
                                 {{ orcamento.status }}
                             </span>
                         </td>
+                        <td class="px-2 sm:px-6 py-3 sm:py-4 sm:text-right flex flex-wrap gap-2 sm:justify-end mt-2 sm:mt-0 border-t sm:border-0 dark:border-gray-700">
+                                {% if orcamento.status == 'PENDENTE' %}
+                                <form action="{% url 'aprovar_orcamento' orcamento.id %}" method="POST" class="inline m-0">
+                                    {% csrf_token %}
+                                    <button type="submit" class="bg-green-100 text-green-700 px-3 py-1 rounded text-xs font-bold hover:bg-green-200" title="Aprovar (Baixa Estoque)">
+                                        ✓ Aprovar
+                                    </button>
+                                </form>
+                                {% endif %}
+                                
+                                <a href="{% url 'imprimir_orcamento' orcamento.id %}" target="_blank" class="bg-blue-100 text-blue-700 dark:text-blue-300 px-3 py-1 rounded text-xs font-bold hover:bg-blue-200" title="Imprimir PDF">
+                                    🖨️ PDF
+                                </a>
+                        </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="4" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">Nenhum orçamento recente.</td>
+                        <td colspan="5" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">Nenhum orçamento recente.</td>
                     </tr>
                     {% endfor %}
                 </tbody>
