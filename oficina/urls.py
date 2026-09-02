@@ -33,5 +33,8 @@ urlpatterns = [
     path('orcamentos/excluir/<int:id>/', views.excluir_orcamento, name='excluir_orcamento'),
     path('orcamentos/arquivar/<int:id>/', views.arquivar_orcamento, name='arquivar_orcamento'),
     path('orcamentos/aprovar/<int:id>/', views.aprovar_orcamento, name='aprovar_orcamento'),
+    
+    path('pedidos/', views.lista_pedidos, name='lista_pedidos'),
+    path('pedidos/status/<int:id>/', views.alterar_status_pedido, name='alterar_status_pedido'),
     path('orcamentos/imprimir/<int:id>/', views.imprimir_orcamento, name='imprimir_orcamento'),
 ]

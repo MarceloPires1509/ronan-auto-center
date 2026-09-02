@@ -426,3 +426,35 @@ def restaurar_servico(request, id):
         servico.save()
         messages.success(request, 'Serviço restaurado com sucesso!')
     return redirect(reverse('lista_servicos') + '?arquivados=1')
+
+@login_required
+def lista_pedidos(request):
+    if not request.user.perfil.acesso_orcamentos:
+        return redirect('dashboard')
+    
+    query = request.GET.get('q', '')
+    if query:
+        from django.db.models import Q
+        pedidos = Orcamento.objects.filter(
+            Q(cliente__nome__icontains=query) | Q(id__icontains=query),
+            status__in=['APROVADO', 'OFICINA', 'TESTANDO', 'FINALIZADO'],
+            arquivado=False
+        ).order_by('-atualizado_em', '-criado_em')
+    else:
+        pedidos = Orcamento.objects.filter(
+            status__in=['APROVADO', 'OFICINA', 'TESTANDO', 'FINALIZADO'],
+            arquivado=False
+        ).order_by('-atualizado_em', '-criado_em')
+        
+    return render(request, 'pedidos.html', {'pedidos': pedidos, 'query': query})
+
+@login_required
+def alterar_status_pedido(request, id):
+    if request.method == 'POST' and request.user.perfil.acesso_orcamentos:
+        pedido = get_object_or_404(Orcamento, id=id)
+        novo_status = request.POST.get('status')
+        if novo_status in dict(Orcamento.STATUS_CHOICES).keys():
+            pedido.status = novo_status
+            pedido.save()
+            messages.success(request, f'Status do pedido #{pedido.id} atualizado para {pedido.get_status_display()}.')
+    return redirect('lista_pedidos')

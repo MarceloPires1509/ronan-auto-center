@@ -63,7 +63,10 @@ class Servico(models.Model):
 class Orcamento(models.Model):
     STATUS_CHOICES = (
         ('PENDENTE', 'Pendente'),
-        ('APROVADO', 'Aprovado'),
+        ('APROVADO', 'Aprovado (Aguardando)'),
+        ('OFICINA', 'Na Oficina'),
+        ('TESTANDO', 'Testando'),
+        ('FINALIZADO', 'Finalizado'),
         ('REJEITADO', 'Rejeitado'),
     )
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, related_name='orcamentos')

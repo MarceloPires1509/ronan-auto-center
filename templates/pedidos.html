@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block header_title %}Pedidos em Andamento{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <div class="flex justify-between items-center">
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Pedidos (Oficina)</h1>
+    </div>
+
+    <!-- Barra de Busca -->
+    <div class="bg-white dark:bg-gray-800 p-4 rounded-lg border dark:border-gray-700 shadow-sm flex flex-col sm:flex-row gap-4 items-center justify-between">
+        <form method="GET" action="{% url 'lista_pedidos' %}" class="w-full sm:w-96 relative">
+            <input type="text" name="q" value="{{ query|default:'' }}" placeholder="Buscar por ID, Cliente..." class="w-full pl-10 pr-4 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary">
+            <i data-lucide="search" class="w-5 h-5 absolute left-3 top-2.5 text-gray-400"></i>
+        </form>
+        {% if query %}
+            <a href="{% url 'lista_pedidos' %}" class="text-sm text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">Limpar Busca</a>
+        {% endif %}
+    </div>
+
+    <div class="bg-white dark:bg-gray-800 rounded-lg border dark:border-gray-700 shadow-sm overflow-hidden">
+        {% if not pedidos %}
+            <div class="p-8 text-center text-gray-500">
+                Nenhum pedido em andamento no momento.
+            </div>
+        {% else %}
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left">
+                    <thead class="hidden sm:table-header-group text-xs text-gray-500 dark:text-gray-400 uppercase bg-gray-50 dark:bg-gray-900/50">
+                        <tr>
+                            <th class="px-6 py-3 font-medium">ID</th>
+                            <th class="px-6 py-3 font-medium">Cliente</th>
+                            <th class="px-6 py-3 font-medium">Data</th>
+                            <th class="px-6 py-3 font-medium">Total</th>
+                            <th class="px-6 py-3 font-medium">Situação (Status)</th>
+                            <th class="px-6 py-3 font-medium text-right">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200 dark:divide-gray-700 text-gray-900 dark:text-gray-100 flex flex-col sm:table-row-group">
+                        {% for pedido in pedidos %}
+                        <tr class="flex flex-col sm:table-row hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors p-4 sm:p-0 {% if pedido.status == 'FINALIZADO' %}bg-green-50 dark:bg-green-900/10 opacity-70{% endif %}">
+                            <td class="px-2 sm:px-6 py-1 sm:py-4 font-semibold text-gray-900 dark:text-white"><span class="sm:hidden font-medium text-gray-500 text-xs uppercase mr-2">ID: </span>#{{ pedido.id|stringformat:"04d" }}</td>
+                            <td class="px-2 sm:px-6 py-1 sm:py-4 font-medium"><span class="sm:hidden font-medium text-gray-500 text-xs uppercase mr-2 font-normal">Cliente: </span>{{ pedido.cliente.nome }}</td>
+                            <td class="px-2 sm:px-6 py-1 sm:py-4"><span class="sm:hidden font-medium text-gray-500 text-xs uppercase mr-2 font-normal">Data: </span>{{ pedido.atualizado_em|date:"d/m/Y H:i" }}</td>
+                            <td class="px-2 sm:px-6 py-1 sm:py-4 font-bold text-blue-600"><span class="sm:hidden font-medium text-gray-500 text-xs uppercase mr-2 font-normal">Total: </span>R$ {{ pedido.total }}</td>
+                            <td class="px-2 sm:px-6 py-2 sm:py-4">
+                                <form action="{% url 'alterar_status_pedido' pedido.id %}" method="POST" class="flex flex-col sm:flex-row gap-2 items-start sm:items-center w-full sm:w-auto">
+                                    {% csrf_token %}
+                                    <select name="status" class="w-full sm:w-48 border rounded px-2 py-2 text-sm font-bold uppercase focus:ring-primary focus:border-primary dark:bg-gray-700 dark:border-gray-600 dark:text-white
+                                        {% if pedido.status == 'APROVADO' %}text-yellow-600 dark:text-yellow-400
+                                        {% elif pedido.status == 'OFICINA' %}text-blue-600 dark:text-blue-400
+                                        {% elif pedido.status == 'TESTANDO' %}text-purple-600 dark:text-purple-400
+                                        {% elif pedido.status == 'FINALIZADO' %}text-green-600 dark:text-green-400{% endif %}" onchange="this.form.submit()">
+                                        <option value="APROVADO" {% if pedido.status == 'APROVADO' %}selected{% endif %}>Aprovado (Fila)</option>
+                                        <option value="OFICINA" {% if pedido.status == 'OFICINA' %}selected{% endif %}>Na Oficina</option>
+                                        <option value="TESTANDO" {% if pedido.status == 'TESTANDO' %}selected{% endif %}>Testando</option>
+                                        <option value="FINALIZADO" {% if pedido.status == 'FINALIZADO' %}selected{% endif %}>Finalizado (Entregue)</option>
+                                    </select>
+                                </form>
+                            </td>
+                            <td class="px-2 sm:px-6 py-3 sm:py-4 sm:text-right mt-2 sm:mt-0 border-t sm:border-0 dark:border-gray-700 flex justify-end">
+                                <a href="{% url 'imprimir_orcamento' pedido.id %}" target="_blank" class="bg-blue-100 text-blue-700 dark:text-blue-300 px-3 py-1 rounded text-xs font-bold hover:bg-blue-200" title="Imprimir Via">
+                                    🖨️ OS
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
