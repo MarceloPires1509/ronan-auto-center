@@ -4,7 +4,7 @@ import openpyxl
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .models import Cliente, Peca, Servico, Orcamento, ItemOrcamento, Perfil, Configuracao
+from .models import Cliente, Peca, Servico, Orcamento, ItemOrcamento, Perfil, Configuracao, MovimentacaoFinanceira
 import json
 
 from django.db.models import Sum, F
