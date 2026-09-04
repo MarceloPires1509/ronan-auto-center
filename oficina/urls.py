@@ -1,7 +1,13 @@
 from django.urls import path
+from django.views.generic import TemplateView
 from . import views
 
 urlpatterns = [
+    # PWA
+    path('manifest.json', TemplateView.as_view(template_name='manifest.json', content_type='application/json'), name='manifest'),
+    path('sw.js', TemplateView.as_view(template_name='sw.js', content_type='application/javascript'), name='sw'),
+    
+    # Rotas padrão
     path('', views.dashboard, name='dashboard'),
     path('usuarios/novo/', views.novo_usuario, name='novo_usuario'),
     path('configuracoes/', views.configuracoes, name='configuracoes'),
