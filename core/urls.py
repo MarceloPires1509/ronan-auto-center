@@ -16,10 +16,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.views.generic import RedirectView
 from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
+    path('favicon.ico', RedirectView.as_view(url='/static/img/pwa_icon_192.png', permanent=True)),
+    path('.well-known/assetlinks.json', RedirectView.as_view(url='/static/assetlinks.json', permanent=True)),
     path('admin/', admin.site.urls),
     path('', include('django.contrib.auth.urls')),
     path('', include('oficina.urls')),
