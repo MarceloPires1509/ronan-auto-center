@@ -66,7 +66,7 @@ def dashboard(request):
 # --- CLIENTES ---
 @login_required
 def lista_clientes(request):
-    clientes = Cliente.objects.filter(arquivado=False).order_by('-criado_em')
+    clientes = Cliente.objects.all().order_by('-criado_em')
     return render(request, 'clientes.html', {'clientes': clientes})
 
 @login_required
@@ -75,11 +75,25 @@ def novo_cliente(request):
         nome = request.POST.get('nome')
         telefone = request.POST.get('telefone')
         email = request.POST.get('email')
+        
+        cep = request.POST.get('cep')
+        endereco = request.POST.get('endereco')
+        numero = request.POST.get('numero')
+        complemento = request.POST.get('complemento')
+        bairro = request.POST.get('bairro')
+        cidade = request.POST.get('cidade')
+        estado = request.POST.get('estado')
+        
         veiculo = request.POST.get('veiculo')
         placa = request.POST.get('placa')
         
         if nome:
-            Cliente.objects.create(nome=nome, telefone=telefone, email=email, veiculo=veiculo, placa=placa)
+            Cliente.objects.create(
+                nome=nome, telefone=telefone, email=email,
+                cep=cep, endereco=endereco, numero=numero, complemento=complemento,
+                bairro=bairro, cidade=cidade, estado=estado,
+                veiculo=veiculo, placa=placa
+            )
             return redirect('lista_clientes')
             
     return render(request, 'cliente_form.html')
@@ -219,7 +233,7 @@ def novo_orcamento(request):
             return redirect('lista_orcamentos')
 
     # GET request context
-    clientes = Cliente.objects.filter(arquivado=False).order_by('nome')
+    clientes = Cliente.objects.all().order_by('nome')
     pecas = Peca.objects.filter(arquivado=False).order_by('nome')
     servicos = Servico.objects.filter(arquivado=False).order_by('nome')
     
@@ -458,3 +472,28 @@ def alterar_status_pedido(request, id):
             pedido.save()
             messages.success(request, f'Status do pedido #{pedido.id} atualizado para {pedido.get_status_display()}.')
     return redirect('lista_pedidos')
+
+@login_required
+def editar_cliente(request, id):
+    cliente = get_object_or_404(Cliente, id=id)
+    if request.method == 'POST':
+        cliente.nome = request.POST.get('nome')
+        cliente.telefone = request.POST.get('telefone')
+        cliente.email = request.POST.get('email')
+        
+        cliente.cep = request.POST.get('cep')
+        cliente.endereco = request.POST.get('endereco')
+        cliente.numero = request.POST.get('numero')
+        cliente.complemento = request.POST.get('complemento')
+        cliente.bairro = request.POST.get('bairro')
+        cliente.cidade = request.POST.get('cidade')
+        cliente.estado = request.POST.get('estado')
+        
+        cliente.veiculo = request.POST.get('veiculo')
+        cliente.placa = request.POST.get('placa')
+        
+        cliente.save()
+        messages.success(request, 'Cliente atualizado com sucesso!')
+        return redirect('lista_clientes')
+        
+    return render(request, 'cliente_form.html', {'cliente': cliente})

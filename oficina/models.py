@@ -28,6 +28,16 @@ class Cliente(models.Model):
     nome = models.CharField(max_length=255)
     telefone = models.CharField(max_length=20, blank=True, null=True)
     email = models.EmailField(blank=True, null=True)
+    
+    # Endereço
+    cep = models.CharField(max_length=20, blank=True, null=True)
+    endereco = models.CharField(max_length=255, blank=True, null=True)
+    numero = models.CharField(max_length=20, blank=True, null=True)
+    complemento = models.CharField(max_length=100, blank=True, null=True)
+    bairro = models.CharField(max_length=100, blank=True, null=True)
+    cidade = models.CharField(max_length=100, blank=True, null=True)
+    estado = models.CharField(max_length=2, blank=True, null=True)
+    
     veiculo = models.CharField(max_length=255, blank=True, null=True)
     placa = models.CharField(max_length=20, blank=True, null=True)
     criado_em = models.DateTimeField(auto_now_add=True)
