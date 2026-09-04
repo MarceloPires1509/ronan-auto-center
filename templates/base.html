@@ -181,7 +181,7 @@
         </header>
 
         <!-- Page Content -->
-        <main class="flex-1 overflow-y-auto p-4 sm:p-6 bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+        <main class="flex-1 overflow-y-auto p-4 sm:p-6 pb-24 sm:pb-6 bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
             {% if messages %}
                 {% for message in messages %}
                 <div class="mb-4 p-4 rounded-md {% if message.tags == 'error' %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %}">
@@ -193,6 +193,32 @@
             {% block content %}
             {% endblock %}
         </main>
+    </div>
+
+    <!-- Mobile Bottom Navigation (Menu Flutuante) -->
+    <div class="sm:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t dark:border-gray-700 flex justify-around items-center p-2 z-40 pb-safe">
+        <a href="{% url 'dashboard' %}" class="flex flex-col items-center p-2 {% if request.resolver_match.url_name == 'dashboard' %}text-primary{% else %}text-gray-500 dark:text-gray-400{% endif %}">
+            <i data-lucide="home" class="w-6 h-6"></i>
+            <span class="text-[10px] font-medium mt-1">Início</span>
+        </a>
+        <a href="{% url 'lista_clientes' %}" class="flex flex-col items-center p-2 {% if request.resolver_match.url_name == 'lista_clientes' %}text-primary{% else %}text-gray-500 dark:text-gray-400{% endif %}">
+            <i data-lucide="users" class="w-6 h-6"></i>
+            <span class="text-[10px] font-medium mt-1">Clientes</span>
+        </a>
+        
+        <!-- Action Button Flutuante Central -->
+        <a href="{% url 'novo_orcamento' %}" class="-mt-8 bg-primary text-white p-4 rounded-full shadow-lg shadow-primary/40 transform transition-transform hover:scale-110 flex items-center justify-center border-4 border-gray-50 dark:border-gray-900">
+            <i data-lucide="plus" class="w-6 h-6"></i>
+        </a>
+        
+        <a href="{% url 'lista_pedidos' %}" class="flex flex-col items-center p-2 {% if request.resolver_match.url_name == 'lista_pedidos' %}text-primary{% else %}text-gray-500 dark:text-gray-400{% endif %}">
+            <i data-lucide="wrench" class="w-6 h-6"></i>
+            <span class="text-[10px] font-medium mt-1">Oficina</span>
+        </a>
+        <a href="{% url 'lista_orcamentos' %}" class="flex flex-col items-center p-2 {% if request.resolver_match.url_name == 'lista_orcamentos' %}text-primary{% else %}text-gray-500 dark:text-gray-400{% endif %}">
+            <i data-lucide="shopping-cart" class="w-6 h-6"></i>
+            <span class="text-[10px] font-medium mt-1">PDV</span>
+        </a>
     </div>
 
     <script>
