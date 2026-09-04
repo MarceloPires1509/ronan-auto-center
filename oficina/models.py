@@ -150,3 +150,23 @@ class MovimentacaoFinanceira(models.Model):
 
     def __str__(self):
         return f"{self.get_tipo_display()} - {self.descricao} (R$ {self.valor})"
+
+class Agendamento(models.Model):
+    STATUS_CHOICES = (
+        ('AGENDADO', 'Agendado'),
+        ('CONFIRMADO', 'Confirmado'),
+        ('CANCELADO', 'Cancelado'),
+        ('CONCLUIDO', 'Concluído'),
+    )
+    cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, related_name='agendamentos')
+    placa_veiculo = models.CharField(max_length=20, blank=True, null=True)
+    modelo_veiculo = models.CharField(max_length=100, blank=True, null=True)
+    data = models.DateField()
+    hora = models.TimeField()
+    descricao = models.TextField(blank=True, null=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='AGENDADO')
+    criado_em = models.DateTimeField(auto_now_add=True)
+    atualizado_em = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Agendamento #{self.id} - {self.cliente.nome} ({self.data})"

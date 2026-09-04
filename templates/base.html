@@ -102,6 +102,10 @@
                 <i data-lucide="search" class="w-5 h-5"></i> Histórico de Placa
             </a>
             
+            <a href="{% url 'agenda' %}" class="flex items-center gap-3 px-3 py-2 rounded-md font-medium {% if 'agenda' in request.path %}bg-primary text-white{% else %}text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700{% endif %}">
+                <i data-lucide="calendar" class="w-5 h-5"></i> Agenda
+            </a>
+            
             <a href="{% url 'lista_financeiro' %}" class="flex items-center gap-3 px-3 py-2 rounded-md font-medium {% if 'financeiro' in request.path %}bg-primary text-white{% else %}text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700{% endif %}">
                 <i data-lucide="dollar-sign" class="w-5 h-5"></i> Financeiro
             </a>

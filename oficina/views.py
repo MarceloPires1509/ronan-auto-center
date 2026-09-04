@@ -4,7 +4,7 @@ import openpyxl
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .models import Cliente, Peca, Servico, Orcamento, ItemOrcamento, Perfil, Configuracao, MovimentacaoFinanceira
+from .models import Cliente, Peca, Servico, Orcamento, ItemOrcamento, Perfil, Configuracao, MovimentacaoFinanceira, Agendamento
 import json
 
 from django.db.models import Sum, F
@@ -562,3 +562,39 @@ def faturar_orcamento(request, id):
         orcamento.status = 'FINALIZADO'
         orcamento.save()
         return redirect('lista_pedidos')
+
+def agenda(request):
+    hoje = timezone.now().date()
+    agendamentos = Agendamento.objects.filter(data__gte=hoje).order_by('data', 'hora')
+    clientes = Cliente.objects.all().order_by('nome')
+    return render(request, 'agenda.html', {'agendamentos': agendamentos, 'clientes': clientes, 'hoje': hoje})
+
+def novo_agendamento(request):
+    if request.method == 'POST':
+        cliente_id = request.POST.get('cliente_id')
+        placa_veiculo = request.POST.get('placa_veiculo')
+        modelo_veiculo = request.POST.get('modelo_veiculo')
+        data = request.POST.get('data')
+        hora = request.POST.get('hora')
+        descricao = request.POST.get('descricao')
+        
+        if cliente_id and data and hora:
+            cliente = get_object_or_404(Cliente, id=cliente_id)
+            Agendamento.objects.create(
+                cliente=cliente,
+                placa_veiculo=placa_veiculo,
+                modelo_veiculo=modelo_veiculo,
+                data=data,
+                hora=hora,
+                descricao=descricao
+            )
+    return redirect('agenda')
+
+def alterar_status_agendamento(request, id):
+    if request.method == 'POST':
+        agendamento = get_object_or_404(Agendamento, id=id)
+        novo_status = request.POST.get('status')
+        if novo_status in dict(Agendamento.STATUS_CHOICES):
+            agendamento.status = novo_status
+            agendamento.save()
+    return redirect('agenda')
