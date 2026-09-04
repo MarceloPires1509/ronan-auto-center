@@ -52,7 +52,7 @@ def dashboard(request):
     lista_baixo_estoque = Peca.objects.filter(estoque__lte=F('estoque_minimo'))
     pecas_baixo_estoque = lista_baixo_estoque.count()
     
-    ultimos_orcamentos = Orcamento.objects.filter(arquivado=False).order_by('-criado_em')[:5]
+    ultimos_orcamentos = Orcamento.objects.all().order_by('-criado_em')[:5]
 
     context = {
         'receita_bruta': "{:,.2f}".format(receita_bruta).replace(',', 'X').replace('.', ',').replace('X', '.'),
@@ -186,7 +186,7 @@ def lista_orcamentos(request):
             arquivado=False
         ).order_by('-criado_em')
     else:
-        orcamentos = Orcamento.objects.filter(arquivado=False).order_by('-criado_em')
+        orcamentos = Orcamento.objects.all().order_by('-criado_em')
     return render(request, 'orcamentos.html', {'orcamentos': orcamentos, 'query': query})
 
 @login_required
@@ -329,7 +329,7 @@ def exportar_orcamentos_excel(request):
     worksheet.append(columns)
 
     # Data
-    for orc in Orcamento.objects.filter(arquivado=False).order_by('-criado_em'):
+    for orc in Orcamento.objects.all().order_by('-criado_em'):
         worksheet.append([
             orc.id,
             orc.cliente.nome if orc.cliente else 'Não Informado',
@@ -343,12 +343,6 @@ def exportar_orcamentos_excel(request):
     workbook.save(response)
     return response
 @login_required
-def arquivar_cliente(request, id):
-    obj = get_object_or_404(Cliente, id=id)
-    if request.method == 'POST':
-        obj.arquivado = True
-        obj.save()
-    return redirect('lista_clientes')
 
 @login_required
 def arquivar_peca(request, id):
@@ -367,25 +361,19 @@ def arquivar_servico(request, id):
     return redirect('lista_servicos')
 
 @login_required
-def arquivar_orcamento(request, id):
-    obj = get_object_or_404(Orcamento, id=id)
-    if request.method == 'POST':
-        obj.arquivado = True
-        obj.save()
-    return redirect('lista_orcamentos')
 
 
 @login_required
 def detalhe_cliente(request, id):
     cliente = get_object_or_404(Cliente, id=id)
     # Mostra historico de orcamentos
-    orcamentos = cliente.orcamentos.filter(arquivado=False).order_by('-criado_em')
+    orcamentos = cliente.orcamentos.all().order_by('-criado_em')
     return render(request, 'cliente_detail.html', {'cliente': cliente, 'orcamentos': orcamentos})
 
 @login_required
 def exportar_historico_cliente(request, id):
     cliente = get_object_or_404(Cliente, id=id)
-    orcamentos = cliente.orcamentos.filter(arquivado=False).order_by('-criado_em')
+    orcamentos = cliente.orcamentos.all().order_by('-criado_em')
     
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     filename = f'historico_{cliente.nome.replace(" ", "_")}.xlsx'
@@ -415,7 +403,7 @@ def exportar_historico_cliente(request, id):
 def exportar_orcamentos_pdf(request):
     if not request.user.perfil.acesso_orcamentos:
         return redirect('dashboard')
-    orcamentos = Orcamento.objects.filter(arquivado=False).order_by('-criado_em')
+    orcamentos = Orcamento.objects.all().order_by('-criado_em')
     return render(request, 'orcamentos_list_print.html', {'orcamentos': orcamentos})
 
 @login_required
