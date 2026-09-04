@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block header_title %}Histórico por Placa{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto space-y-6">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Busca de Veículos</h1>
+    </div>
+
+    <div class="bg-white dark:bg-gray-800 rounded-lg border dark:border-gray-700 shadow-sm p-6">
+        <form method="GET" action="{% url 'busca_placa' %}" class="flex flex-col sm:flex-row gap-3">
+            <div class="flex-1 relative">
+                <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5"></i>
+                <input type="text" name="q" value="{{ query }}" placeholder="Digite a placa do veículo (ex: ABC-1234)..." class="w-full pl-10 pr-4 py-3 border rounded-lg bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-primary text-lg uppercase" autofocus>
+            </div>
+            <button type="submit" class="bg-primary text-white px-8 py-3 rounded-lg font-medium hover:bg-primary_hover transition-colors">
+                Buscar
+            </button>
+        </form>
+    </div>
+
+    {% if query %}
+        {% if resultados %}
+            <div class="bg-white dark:bg-gray-800 rounded-lg border dark:border-gray-700 shadow-sm overflow-hidden">
+                <div class="px-6 py-4 border-b dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
+                    <h2 class="font-semibold text-lg dark:text-white">Histórico Encontrado para "{{ query|upper }}"</h2>
+                    <p class="text-sm text-gray-500">Foram encontrados {{ resultados|length }} registros.</p>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left">
+                        <thead class="text-xs text-gray-500 dark:text-gray-400 uppercase bg-gray-50 dark:bg-gray-900/50">
+                            <tr>
+                                <th class="px-6 py-3">Data</th>
+                                <th class="px-6 py-3">Orçamento/Pedido</th>
+                                <th class="px-6 py-3">Cliente (Dono na Época)</th>
+                                <th class="px-6 py-3">Status</th>
+                                <th class="px-6 py-3 text-right">Valor</th>
+                                <th class="px-6 py-3 text-center">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                            {% for orcamento in resultados %}
+                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                                <td class="px-6 py-4 text-gray-500 dark:text-gray-400">
+                                    {{ orcamento.criado_em|date:"d/m/Y" }}
+                                </td>
+                                <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">
+                                    #{{ orcamento.id }}
+                                </td>
+                                <td class="px-6 py-4 text-gray-500 dark:text-gray-300">
+                                    {{ orcamento.cliente.nome }}
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="px-2 py-1 text-xs font-semibold rounded-full 
+                                        {% if orcamento.status == 'FINALIZADO' %}bg-green-100 text-green-700
+                                        {% elif orcamento.status == 'PENDENTE' %}bg-yellow-100 text-yellow-700
+                                        {% else %}bg-blue-100 text-blue-700{% endif %}">
+                                        {{ orcamento.get_status_display }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-right font-medium text-gray-900 dark:text-white">
+                                    R$ {{ orcamento.total }}
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    <a href="{% url 'imprimir_orcamento' orcamento.id %}" target="_blank" class="text-gray-400 hover:text-primary transition-colors" title="Ver Detalhes">
+                                        <i data-lucide="file-text" class="w-5 h-5 inline"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% else %}
+            <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-6 text-center">
+                <i data-lucide="car" class="w-12 h-12 text-yellow-400 mx-auto mb-3"></i>
+                <h3 class="text-lg font-semibold text-yellow-800 dark:text-yellow-400">Nenhum registro encontrado</h3>
+                <p class="text-yellow-700 dark:text-yellow-500 mt-1">Não encontramos nenhum orçamento ou pedido para a placa "{{ query|upper }}".</p>
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="text-center py-12 text-gray-500 dark:text-gray-400">
+            <i data-lucide="search" class="w-16 h-16 mx-auto mb-4 opacity-50"></i>
+            <p>Digite uma placa acima para buscar o histórico de manutenção do veículo.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

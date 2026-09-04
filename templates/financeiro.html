@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+
+{% block header_title %}Financeiro{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Controle Financeiro</h1>
+        <button onclick="document.getElementById('modal-movimentacao').classList.remove('hidden')" class="bg-primary text-white px-4 py-2 rounded-md font-medium text-sm hover:bg-primary_hover transition-colors flex items-center gap-2">
+            <i data-lucide="plus" class="w-4 h-4"></i> Lançar Movimentação
+        </button>
+    </div>
+
+    <!-- Cards Resumo -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="p-5 bg-white dark:bg-gray-800 rounded-lg border dark:border-gray-700 shadow-sm">
+            <h3 class="text-gray-500 dark:text-gray-400 text-xs font-medium uppercase">Receitas (Mês)</h3>
+            <p class="text-2xl font-bold mt-2 text-green-600 dark:text-green-400">R$ {{ receitas|floatformat:2 }}</p>
+        </div>
+        <div class="p-5 bg-white dark:bg-gray-800 rounded-lg border dark:border-gray-700 shadow-sm">
+            <h3 class="text-gray-500 dark:text-gray-400 text-xs font-medium uppercase">Despesas (Mês)</h3>
+            <p class="text-2xl font-bold mt-2 text-red-600 dark:text-red-400">R$ {{ despesas|floatformat:2 }}</p>
+        </div>
+        <div class="p-5 bg-white dark:bg-gray-800 rounded-lg border dark:border-gray-700 shadow-sm">
+            <h3 class="text-gray-500 dark:text-gray-400 text-xs font-medium uppercase">Saldo Líquido</h3>
+            <p class="text-2xl font-bold mt-2 {% if saldo >= 0 %}text-blue-600 dark:text-blue-400{% else %}text-red-600 dark:text-red-400{% endif %}">R$ {{ saldo|floatformat:2 }}</p>
+        </div>
+    </div>
+
+    <!-- Tabela -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg border dark:border-gray-700 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left">
+                <thead class="text-xs text-gray-500 dark:text-gray-400 uppercase bg-gray-50 dark:bg-gray-900/50">
+                    <tr>
+                        <th class="px-6 py-3">Data Venc.</th>
+                        <th class="px-6 py-3">Descrição</th>
+                        <th class="px-6 py-3">Categoria</th>
+                        <th class="px-6 py-3">Forma PGTO</th>
+                        <th class="px-6 py-3">Status</th>
+                        <th class="px-6 py-3 text-right">Valor</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                    {% for item in movimentacoes %}
+                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                        <td class="px-6 py-4 whitespace-nowrap">{{ item.data_vencimento|date:"d/m/Y" }}</td>
+                        <td class="px-6 py-4 font-medium">{{ item.descricao }}</td>
+                        <td class="px-6 py-4">
+                            {% if item.tipo == 'RECEITA' %}
+                            <span class="text-green-600 dark:text-green-400 flex items-center gap-1"><i data-lucide="arrow-up-circle" class="w-4 h-4"></i> Receita</span>
+                            {% else %}
+                            <span class="text-red-600 dark:text-red-400 flex items-center gap-1"><i data-lucide="arrow-down-circle" class="w-4 h-4"></i> Despesa</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4">{{ item.forma_pagamento|default:"-" }}</td>
+                        <td class="px-6 py-4">
+                            {% if item.status == 'PAGO' %}
+                            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-700">Pago</span>
+                            {% else %}
+                            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-700">Pendente</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 text-right font-medium {% if item.tipo == 'RECEITA' %}text-green-600 dark:text-green-400{% else %}text-red-600 dark:text-red-400{% endif %}">
+                            R$ {{ item.valor }}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="px-6 py-8 text-center text-gray-500">Nenhuma movimentação neste mês.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Nova Movimentação -->
+<div id="modal-movimentacao" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-md overflow-hidden">
+        <div class="px-6 py-4 border-b dark:border-gray-700 flex justify-between items-center">
+            <h3 class="font-bold text-lg dark:text-white">Nova Movimentação</h3>
+            <button onclick="document.getElementById('modal-movimentacao').classList.add('hidden')" class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+        <form action="{% url 'nova_movimentacao' %}" method="POST" class="p-6 space-y-4">
+            {% csrf_token %}
+            <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-2">
+                    <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Tipo</label>
+                    <select name="tipo" required class="w-full px-3 py-2 border rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white dark:border-gray-600 focus:ring-2 focus:ring-primary">
+                        <option value="RECEITA">Receita</option>
+                        <option value="DESPESA">Despesa</option>
+                    </select>
+                </div>
+                <div class="space-y-2">
+                    <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
+                    <select name="status" required class="w-full px-3 py-2 border rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white dark:border-gray-600 focus:ring-2 focus:ring-primary">
+                        <option value="PAGO">Pago</option>
+                        <option value="PENDENTE">Pendente</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="space-y-2">
+                <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Descrição</label>
+                <input type="text" name="descricao" required placeholder="Ex: Conta de Luz, Pagamento Fornecedor" class="w-full px-3 py-2 border rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white dark:border-gray-600 focus:ring-2 focus:ring-primary">
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-2">
+                    <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Valor (R$)</label>
+                    <input type="number" step="0.01" name="valor" required placeholder="0.00" class="w-full px-3 py-2 border rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white dark:border-gray-600 focus:ring-2 focus:ring-primary">
+                </div>
+                <div class="space-y-2">
+                    <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Data Vencimento</label>
+                    <input type="date" name="data_vencimento" required class="w-full px-3 py-2 border rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white dark:border-gray-600 focus:ring-2 focus:ring-primary">
+                </div>
+            </div>
+            
+            <div class="space-y-2">
+                <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Forma de Pagamento</label>
+                <select name="forma_pagamento" class="w-full px-3 py-2 border rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white dark:border-gray-600 focus:ring-2 focus:ring-primary">
+                    <option value="">Selecione...</option>
+                    <option value="PIX">PIX</option>
+                    <option value="Dinheiro">Dinheiro</option>
+                    <option value="Cartão de Crédito">Cartão de Crédito</option>
+                    <option value="Cartão de Débito">Cartão de Débito</option>
+                    <option value="Boleto">Boleto</option>
+                </select>
+            </div>
+            
+            <div class="pt-4 flex justify-end gap-3">
+                <button type="button" onclick="document.getElementById('modal-movimentacao').classList.add('hidden')" class="px-4 py-2 border rounded-md font-medium text-gray-500 hover:bg-gray-50">Cancelar</button>
+                <button type="submit" class="bg-primary text-white px-4 py-2 rounded-md font-medium hover:bg-primary_hover">Salvar</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

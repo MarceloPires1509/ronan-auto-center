@@ -49,7 +49,8 @@ def dashboard(request):
     receita_liquida = float(receita_bruta) - custo_total
     
     orcamentos_pendentes = Orcamento.objects.filter(status='PENDENTE').count()
-    pecas_baixo_estoque = Peca.objects.filter(estoque__lte=5).count()
+    lista_baixo_estoque = Peca.objects.filter(estoque__lte=F('estoque_minimo'))
+    pecas_baixo_estoque = lista_baixo_estoque.count()
     
     ultimos_orcamentos = Orcamento.objects.filter(arquivado=False).order_by('-criado_em')[:5]
 
@@ -58,6 +59,7 @@ def dashboard(request):
         'receita_liquida': "{:,.2f}".format(receita_liquida).replace(',', 'X').replace('.', ',').replace('X', '.'),
         'orcamentos_pendentes': orcamentos_pendentes,
         'pecas_baixo_estoque': pecas_baixo_estoque,
+        'lista_baixo_estoque': lista_baixo_estoque,
         'ultimos_orcamentos': ultimos_orcamentos
     }
     
@@ -119,6 +121,7 @@ def nova_peca(request):
         preco_custo = request.POST.get('preco_custo') or 0
         preco_venda = request.POST.get('preco_venda') or 0
         estoque = request.POST.get('estoque') or 0
+        estoque_minimo = request.POST.get('estoque_minimo') or 2
         
         if nome:
             Peca.objects.create(
@@ -126,7 +129,8 @@ def nova_peca(request):
                 descricao=descricao, 
                 preco_custo=str(preco_custo).replace(',', '.'), 
                 preco_venda=str(preco_venda).replace(',', '.'), 
-                estoque=estoque
+                estoque=estoque,
+                estoque_minimo=estoque_minimo
             )
             return redirect('lista_pecas')
             
@@ -497,3 +501,76 @@ def editar_cliente(request, id):
         return redirect('lista_clientes')
         
     return render(request, 'cliente_form.html', {'cliente': cliente})
+
+def busca_placa(request):
+    query = request.GET.get('q', '').strip()
+    resultados = []
+    
+    if query:
+        # Tenta buscar oramentos onde a placa_veiculo seja parecida ou a placa do cliente
+        from django.db.models import Q
+        resultados = Orcamento.objects.filter(
+            Q(placa_veiculo__icontains=query) | Q(cliente__placa__icontains=query)
+        ).order_by('-criado_em')
+        
+    return render(request, 'busca_placa.html', {'query': query, 'resultados': resultados})
+
+def lista_financeiro(request):
+    mes_atual = timezone.now().month
+    ano_atual = timezone.now().year
+    
+    movimentacoes = MovimentacaoFinanceira.objects.filter(data_vencimento__month=mes_atual, data_vencimento__year=ano_atual).order_by('data_vencimento')
+    
+    receitas = sum([m.valor for m in movimentacoes if m.tipo == 'RECEITA' and m.status == 'PAGO'])
+    despesas = sum([m.valor for m in movimentacoes if m.tipo == 'DESPESA' and m.status == 'PAGO'])
+    saldo = receitas - despesas
+    
+    return render(request, 'financeiro.html', {
+        'movimentacoes': movimentacoes,
+        'receitas': receitas,
+        'despesas': despesas,
+        'saldo': saldo
+    })
+
+def nova_movimentacao(request):
+    if request.method == 'POST':
+        tipo = request.POST.get('tipo')
+        descricao = request.POST.get('descricao')
+        valor = request.POST.get('valor')
+        data_vencimento = request.POST.get('data_vencimento')
+        status = request.POST.get('status')
+        forma_pagamento = request.POST.get('forma_pagamento')
+        
+        MovimentacaoFinanceira.objects.create(
+            tipo=tipo,
+            descricao=descricao,
+            valor=str(valor).replace(',', '.'),
+            data_vencimento=data_vencimento,
+            data_pagamento=data_vencimento if status == 'PAGO' else None,
+            status=status,
+            forma_pagamento=forma_pagamento
+        )
+        return redirect('lista_financeiro')
+    return redirect('lista_financeiro')
+
+def faturar_orcamento(request, id):
+    orcamento = get_object_or_404(Orcamento, id=id)
+    if request.method == 'POST':
+        # Aqui podemos receber parcelas
+        forma_pagamento = request.POST.get('forma_pagamento')
+        
+        # Cria uma nica parcela paga para simplificar, mas a base j permite mltiplas
+        MovimentacaoFinanceira.objects.create(
+            tipo='RECEITA',
+            descricao=f'Pagamento OS #{orcamento.id} - {orcamento.cliente.nome}',
+            valor=orcamento.total,
+            data_vencimento=timezone.now().date(),
+            data_pagamento=timezone.now().date(),
+            status='PAGO',
+            forma_pagamento=forma_pagamento,
+            orcamento=orcamento
+        )
+        
+        orcamento.status = 'FINALIZADO'
+        orcamento.save()
+        return redirect('lista_pedidos')

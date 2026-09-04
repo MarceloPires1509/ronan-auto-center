@@ -11,6 +11,11 @@ urlpatterns = [
     path('', views.dashboard, name='dashboard'),
     path('usuarios/novo/', views.novo_usuario, name='novo_usuario'),
     path('configuracoes/', views.configuracoes, name='configuracoes'),
+    path('busca-placa/', views.busca_placa, name='busca_placa'),
+    path('financeiro/', views.lista_financeiro, name='lista_financeiro'),
+    path('financeiro/nova/', views.nova_movimentacao, name='nova_movimentacao'),
+    path('pedidos/faturar/<int:id>/', views.faturar_orcamento, name='faturar_orcamento'),
+
     path('orcamentos/exportar/', views.exportar_orcamentos_excel, name='exportar_orcamentos_excel'),
     path('orcamentos/exportar/pdf/', views.exportar_orcamentos_pdf, name='exportar_orcamentos_pdf'),
     
