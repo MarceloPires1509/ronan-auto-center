@@ -87,7 +87,7 @@
             
             {% if request.user.perfil.acesso_orcamentos %}
             <a href="{% url 'lista_orcamentos' %}" class="flex items-center gap-3 px-3 py-2 rounded-md font-medium {% if 'orcamentos' in request.path %}bg-primary text-white{% else %}text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700{% endif %}">
-                <i data-lucide="shopping-cart" class="w-5 h-5"></i> Orçamentos / PDV
+                <i data-lucide="shopping-cart" class="w-5 h-5"></i> Orçamentos
             </a>
             
             <a href="{% url 'lista_pedidos' %}" class="flex items-center gap-3 px-3 py-2 rounded-md font-medium {% if 'pedidos' in request.path %}bg-primary text-white{% else %}text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700{% endif %}">
@@ -217,7 +217,7 @@
         </a>
         <a href="{% url 'lista_orcamentos' %}" class="flex flex-col items-center p-2 {% if request.resolver_match.url_name == 'lista_orcamentos' %}text-primary{% else %}text-gray-500 dark:text-gray-400{% endif %}">
             <i data-lucide="shopping-cart" class="w-6 h-6"></i>
-            <span class="text-[10px] font-medium mt-1">PDV</span>
+            <span class="text-[10px] font-medium mt-1">Orçamentos</span>
         </a>
     </div>
 
