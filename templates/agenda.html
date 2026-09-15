@@ -25,9 +25,7 @@
             document.getElementById('btn-view-lista').classList.add('text-gray-500');
             
             // Re-render calendar when shown to fix sizing issues
-            if(window.calendar) {
-                window.calendar.render();
-            }
+            if(window.calendar) { window.calendar.render(); setTimeout(() => { window.calendar.updateSize(); }, 50); }
         }
     }
 
@@ -265,9 +263,7 @@
             document.getElementById('btn-view-lista').classList.add('text-gray-500');
             
             // Re-render calendar when shown to fix sizing issues
-            if(window.calendar) {
-                window.calendar.render();
-            }
+            if(window.calendar) { window.calendar.render(); setTimeout(() => { window.calendar.updateSize(); }, 50); }
         }
     }
 
