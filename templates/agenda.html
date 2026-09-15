@@ -1,94 +1,6 @@
 {% extends 'base.html' %}
 
-{% block header_title %}Agenda
-<!-- FullCalendar -->
-<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
-<script>
-    function setView(view) {
-        if (view === 'lista') {
-            document.getElementById('view-lista').classList.remove('hidden');
-            document.getElementById('view-calendario').classList.add('hidden');
-            
-            document.getElementById('btn-view-lista').classList.add('bg-white', 'dark:bg-gray-700', 'shadow-sm', 'text-gray-900', 'dark:text-white');
-            document.getElementById('btn-view-lista').classList.remove('text-gray-500');
-            
-            document.getElementById('btn-view-calendario').classList.remove('bg-white', 'dark:bg-gray-700', 'shadow-sm', 'text-gray-900', 'dark:text-white');
-            document.getElementById('btn-view-calendario').classList.add('text-gray-500');
-        } else {
-            document.getElementById('view-lista').classList.add('hidden');
-            document.getElementById('view-calendario').classList.remove('hidden');
-            
-            document.getElementById('btn-view-calendario').classList.add('bg-white', 'dark:bg-gray-700', 'shadow-sm', 'text-gray-900', 'dark:text-white');
-            document.getElementById('btn-view-calendario').classList.remove('text-gray-500');
-            
-            document.getElementById('btn-view-lista').classList.remove('bg-white', 'dark:bg-gray-700', 'shadow-sm', 'text-gray-900', 'dark:text-white');
-            document.getElementById('btn-view-lista').classList.add('text-gray-500');
-            
-            // Re-render calendar when shown to fix sizing issues
-            if(window.calendar) { window.calendar.render(); setTimeout(() => { window.calendar.updateSize(); }, 50); }
-        }
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        var calendarEl = document.getElementById('calendar');
-        var isDarkMode = document.documentElement.classList.contains('dark');
-        
-        window.calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'dayGridMonth',
-            locale: 'pt-br',
-            headerToolbar: {
-                left: 'prev,next today',
-                center: 'title',
-                right: 'dayGridMonth,timeGridWeek,timeGridDay'
-            },
-            buttonText: {
-                today: 'Hoje',
-                month: 'Mês',
-                week: 'Semana',
-                day: 'Dia'
-            },
-            events: {{ eventos_json|safe }},
-            eventClick: function(info) {
-                alert(info.event.title + "\nStatus: " + info.event.extendedProps.status + "\nDescricão: " + (info.event.extendedProps.descricao || 'Nenhuma'));
-            },
-            dateClick: function(info) {
-                // Open modal and pre-fill date
-                document.getElementById('modal-agendamento').classList.remove('hidden');
-                document.querySelector('input[name="data"]').value = info.dateStr;
-            }
-        });
-        window.calendar.render();
-        
-        // Listen for dark mode toggles to restyle if needed (FullCalendar largely inherits, but border colors might need CSS)
-    });
-</script>
-
-<style>
-    /* FullCalendar Dark Mode Tweaks */
-    .dark .fc-theme-standard td, .dark .fc-theme-standard th, .dark .fc-theme-standard .fc-scrollgrid {
-        border-color: #374151 !important;
-    }
-    .dark .fc-col-header-cell-cushion, .dark .fc-daygrid-day-number {
-        color: #e5e7eb !important;
-    }
-    .dark .fc-button-primary {
-        background-color: #374151 !important;
-        border-color: #4b5563 !important;
-        color: #e5e7eb !important;
-    }
-    .dark .fc-button-primary:hover {
-        background-color: #4b5563 !important;
-    }
-    .dark .fc-button-primary:not(:disabled).fc-button-active, .dark .fc-button-primary:not(:disabled):active {
-        background-color: #1f2937 !important;
-        border-color: #111827 !important;
-    }
-    .fc-event {
-        cursor: pointer;
-    }
-</style>
-
-{% endblock %}
+{% block header_title %}Agenda{% endblock %}
 
 {% block content %}
 <div class="space-y-6">
@@ -263,16 +175,19 @@
             document.getElementById('btn-view-lista').classList.add('text-gray-500');
             
             // Re-render calendar when shown to fix sizing issues
-            if(window.calendar) { window.calendar.render(); setTimeout(() => { window.calendar.updateSize(); }, 50); }
+            if(window.calendar) {
+                window.calendar.render();
+                setTimeout(() => { window.calendar.updateSize(); }, 50);
+            }
         }
     }
 
     document.addEventListener('DOMContentLoaded', function() {
         var calendarEl = document.getElementById('calendar');
-        var isDarkMode = document.documentElement.classList.contains('dark');
         
         window.calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
+            height: 650, // Fix squishing bug
             locale: 'pt-br',
             headerToolbar: {
                 left: 'prev,next today',
@@ -287,7 +202,7 @@
             },
             events: {{ eventos_json|safe }},
             eventClick: function(info) {
-                alert(info.event.title + "\nStatus: " + info.event.extendedProps.status + "\nDescricão: " + (info.event.extendedProps.descricao || 'Nenhuma'));
+                alert(info.event.title + "\nStatus: " + info.event.extendedProps.status + "\nDescrição: " + (info.event.extendedProps.descricao || 'Nenhuma'));
             },
             dateClick: function(info) {
                 // Open modal and pre-fill date
@@ -296,8 +211,6 @@
             }
         });
         window.calendar.render();
-        
-        // Listen for dark mode toggles to restyle if needed (FullCalendar largely inherits, but border colors might need CSS)
     });
 </script>
 
