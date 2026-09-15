@@ -567,7 +567,36 @@ def agenda(request):
     hoje = timezone.now().date()
     agendamentos = Agendamento.objects.filter(data__gte=hoje).order_by('data', 'hora')
     clientes = Cliente.objects.all().order_by('nome')
-    return render(request, 'agenda.html', {'agendamentos': agendamentos, 'clientes': clientes, 'hoje': hoje})
+    
+    # Prepara eventos para o FullCalendar
+    todos_agendamentos = Agendamento.objects.all()
+    eventos_json = []
+    for a in todos_agendamentos:
+        cor = '#3788d8' # default (Agendado)
+        if a.status == 'CONFIRMADO':
+            cor = '#9333ea' # roxo
+        elif a.status == 'CONCLUIDO':
+            cor = '#16a34a' # verde
+        elif a.status == 'CANCELADO':
+            cor = '#dc2626' # vermelho
+            
+        eventos_json.append({
+            'id': a.id,
+            'title': f"{a.cliente.nome} - {a.modelo_veiculo or 'Veículo'}",
+            'start': f"{a.data.isoformat()}T{a.hora.isoformat()}",
+            'color': cor,
+            'extendedProps': {
+                'descricao': a.descricao,
+                'status': a.get_status_display()
+            }
+        })
+        
+    return render(request, 'agenda.html', {
+        'agendamentos': agendamentos, 
+        'clientes': clientes, 
+        'hoje': hoje,
+        'eventos_json': json.dumps(eventos_json)
+    })
 
 def novo_agendamento(request):
     if request.method == 'POST':
