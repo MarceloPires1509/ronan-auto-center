@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block header_title %}Novo Orçamento / Venda{% endblock %}
+{% block header_title %}Novo Orçamento / OS{% endblock %}
 
 {% block content %}
 <div class="max-w-4xl mx-auto space-y-6">
@@ -8,7 +8,7 @@
         <a href="{% url 'lista_orcamentos' %}" class="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
             &larr; Voltar
         </a>
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Gerar Novo Orçamento</h1>
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Gerar Novo Orçamento / OS</h1>
     </div>
 
     <form method="POST" action="{% url 'novo_orcamento' %}" class="space-y-6">
@@ -55,7 +55,7 @@
         <!-- Resumo -->
         <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-100 dark:border-blue-900/30 shadow-sm p-6 flex justify-between items-center">
             <div>
-                <h2 class="text-xl font-bold text-blue-900 dark:text-blue-100">Total do Orçamento</h2>
+                <h2 class="text-xl font-bold text-blue-900 dark:text-blue-100">Total do Orçamento / OS</h2>
                 <p class="text-sm text-blue-700 dark:text-blue-300">Peças: R$ <span id="total-pecas-lbl">0.00</span> | Mão de Obra: R$ <span id="total-servicos-lbl">0.00</span></p>
             </div>
             <div class="text-3xl font-black text-blue-700 dark:text-blue-300">
@@ -68,7 +68,7 @@
                 Cancelar
             </a>
             <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-md font-medium text-lg hover:bg-blue-700 transition-colors shadow-sm">
-                Salvar Orçamento
+                Salvar
             </button>
         </div>
     </form>

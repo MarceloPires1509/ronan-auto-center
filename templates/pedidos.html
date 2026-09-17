@@ -79,7 +79,7 @@ function abrirModalFaturar(id, total) {
                     <tbody class="divide-y divide-gray-200 dark:divide-gray-700 text-gray-900 dark:text-gray-100 flex flex-col sm:table-row-group">
                         {% for pedido in pedidos %}
                         <tr class="flex flex-col sm:table-row hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors p-4 sm:p-0 {% if pedido.status == 'FINALIZADO' %}bg-green-50 dark:bg-green-900/10 opacity-70{% endif %}">
-                            <td class="px-2 sm:px-6 py-1 sm:py-4 font-semibold text-gray-900 dark:text-white"><span class="sm:hidden font-medium text-gray-500 text-xs uppercase mr-2">ID: </span>#{{ pedido.id|stringformat:"04d" }}</td>
+                            <td class="px-2 sm:px-6 py-1 sm:py-4 font-semibold text-gray-900 dark:text-white"><span class="sm:hidden font-medium text-gray-500 text-xs uppercase mr-2"></span>OS #{{ pedido.id|stringformat:"04d" }}</td>
                             <td class="px-2 sm:px-6 py-1 sm:py-4 font-medium"><span class="sm:hidden font-medium text-gray-500 text-xs uppercase mr-2 font-normal">Cliente: </span>{{ pedido.cliente.nome }}</td>
                             <td class="px-2 sm:px-6 py-1 sm:py-4"><span class="sm:hidden font-medium text-gray-500 text-xs uppercase mr-2 font-normal">Data: </span>{{ pedido.atualizado_em|date:"d/m/Y H:i" }}</td>
                             <td class="px-2 sm:px-6 py-1 sm:py-4 font-bold text-blue-600"><span class="sm:hidden font-medium text-gray-500 text-xs uppercase mr-2 font-normal">Total: </span>R$ {{ pedido.total }}</td>

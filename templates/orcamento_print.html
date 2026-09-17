@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=800">
-    <title>Orçamento #{{ orcamento.id }} - Ronan Auto Center</title>
+    <title>{{ orcamento.tipo_documento }} #{{ orcamento.id }} - Ronan Auto Center</title>
     <script src="https://cdn.tailwindcss.com"></script>
     
     <style>
@@ -38,7 +38,7 @@
                 <p class="text-gray-500">Telefone: {{ config_global.telefone|default:'(00) 0000-0000' }}</p>
             </div>
             <div class="text-right">
-                <h2 class="text-2xl font-bold text-gray-700">ORÇAMENTO</h2>
+                <h2 class="text-2xl font-bold text-gray-700 uppercase">{{ orcamento.tipo_documento }}</h2>
                 <p class="text-gray-500 font-medium">Nº {{ orcamento.id|stringformat:"04d" }}</p>
                 <p class="text-gray-500 mt-2">Data: {{ orcamento.criado_em|date:"d/m/Y" }}</p>
                 <span class="inline-block mt-2 px-2 py-1 text-xs font-bold uppercase rounded {% if orcamento.status == 'APROVADO' %}bg-green-100 text-green-800{% else %}bg-yellow-100 text-yellow-800{% endif %}">
