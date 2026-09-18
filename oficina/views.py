@@ -521,13 +521,11 @@ def lista_pedidos(request):
         from django.db.models import Q
         pedidos = Orcamento.objects.filter(
             Q(cliente__nome__icontains=query) | Q(id__icontains=query),
-            status__in=['APROVADO', 'OFICINA', 'TESTANDO', 'FINALIZADO'],
-            arquivado=False
+            status__in=['APROVADO', 'OFICINA', 'TESTANDO', 'FINALIZADO']
         ).order_by('-atualizado_em', '-criado_em')
     else:
         pedidos = Orcamento.objects.filter(
-            status__in=['APROVADO', 'OFICINA', 'TESTANDO', 'FINALIZADO'],
-            arquivado=False
+            status__in=['APROVADO', 'OFICINA', 'TESTANDO', 'FINALIZADO']
         ).order_by('-atualizado_em', '-criado_em')
         
     return render(request, 'pedidos.html', {'pedidos': pedidos, 'query': query})
