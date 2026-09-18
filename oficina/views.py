@@ -311,6 +311,35 @@ def usuarios(request):
     return render(request, 'usuarios.html', {'usuarios': usuarios_lista})
 
 @login_required
+
+@login_required
+def excluir_usuario(request, id):
+    if not request.user.is_superuser and not request.user.perfil.acesso_configuracoes:
+        return redirect('dashboard')
+        
+    if request.method == 'POST':
+        usuario = get_object_or_404(User, id=id)
+        
+        # Count how many admins exist (superuser or with acesso_configuracoes)
+        from django.db.models import Q
+        admins_count = User.objects.filter(
+            Q(is_superuser=True) | Q(perfil__acesso_configuracoes=True)
+        ).count()
+        
+        is_this_user_admin = usuario.is_superuser or (hasattr(usuario, 'perfil') and usuario.perfil.acesso_configuracoes)
+        
+        if is_this_user_admin and admins_count <= 1:
+            messages.error(request, 'Não é possível excluir este usuário! O sistema ficaria sem nenhum administrador ativo.')
+        elif usuario.id == request.user.id:
+            messages.error(request, 'Você não pode excluir a sua própria conta.')
+        else:
+            username = usuario.username
+            usuario.delete()
+            messages.success(request, f'Usuário {username} excluído com sucesso.')
+            
+    return redirect('usuarios')
+
+@login_required
 def toggle_status_usuario(request, id):
     if not request.user.is_superuser and not request.user.perfil.acesso_configuracoes:
         return redirect('dashboard')

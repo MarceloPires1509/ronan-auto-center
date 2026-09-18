@@ -33,6 +33,11 @@
                                 <button type="submit" class="text-xs bg-green-600 text-white px-3 py-1.5 rounded hover:bg-green-700 w-full">Ativar</button>
                             {% endif %}
                         </form>
+
+                        <form method="POST" action="{% url 'excluir_usuario' u.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="text-xs bg-red-800 text-white px-3 py-1.5 rounded hover:bg-red-900 w-full" onclick="return confirm('ATENÇÃO: Deseja EXCLUIR definitivamente este usuário? Toda a conta será apagada.\nSe este for o último administrador, o sistema bloqueará a ação.')">Excluir</button>
+                        </form>
                     </div>
                 </div>
                 

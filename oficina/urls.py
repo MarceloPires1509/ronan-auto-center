@@ -13,6 +13,8 @@ urlpatterns = [
     path('configuracoes/', views.configuracoes, name='configuracoes'),
     path('usuarios/', views.usuarios, name='usuarios'),
     path('usuarios/status/<int:id>/', views.toggle_status_usuario, name='toggle_status_usuario'),
+    path('usuarios/excluir/<int:id>/', views.excluir_usuario, name='excluir_usuario'),
+
 
     path('busca-placa/', views.busca_placa, name='busca_placa'),
     path('financeiro/', views.lista_financeiro, name='lista_financeiro'),
