@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="max-w-6xl mx-auto space-y-6">
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="max-w-2xl mx-auto">
         
         <!-- Configurações Gerais da Loja -->
         <div class="bg-white dark:bg-gray-800 rounded-lg border dark:border-gray-700 shadow-sm p-6">
@@ -42,48 +42,6 @@
             </form>
         </div>
 
-        <!-- Gerenciamento de Usuários -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg border dark:border-gray-700 shadow-sm p-6 overflow-x-auto">
-            <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Gerenciar Permissões de Usuários</h2>
-            <div class="space-y-6">
-                {% for u in usuarios %}
-                <form method="POST" class="border dark:border-gray-700 p-4 rounded-lg bg-gray-50 dark:bg-gray-900/50">
-                    {% csrf_token %}
-                    <input type="hidden" name="salvar_permissoes" value="1">
-                    <input type="hidden" name="user_id" value="{{ u.id }}">
-                    
-                    <div class="flex justify-between items-center mb-3">
-                        <span class="font-bold text-gray-900 dark:text-white">{{ u.first_name }} ({{ u.username }})</span>
-                        <button type="submit" class="text-sm bg-gray-800 text-white px-3 py-1 rounded hover:bg-gray-700">Salvar</button>
-                    </div>
-                    
-                    <div class="grid grid-cols-2 gap-2 text-sm text-gray-700 dark:text-gray-300">
-                        <label class="flex items-center gap-2">
-                            <input type="checkbox" name="acesso_clientes" {% if u.perfil.acesso_clientes %}checked{% endif %}>
-                            Acessa Clientes
-                        </label>
-                        <label class="flex items-center gap-2">
-                            <input type="checkbox" name="acesso_estoque" {% if u.perfil.acesso_estoque %}checked{% endif %}>
-                            Acessa Estoque
-                        </label>
-                        <label class="flex items-center gap-2">
-                            <input type="checkbox" name="acesso_servicos" {% if u.perfil.acesso_servicos %}checked{% endif %}>
-                            Acessa Serviços
-                        </label>
-                        <label class="flex items-center gap-2">
-                            <input type="checkbox" name="acesso_orcamentos" {% if u.perfil.acesso_orcamentos %}checked{% endif %}>
-                            Acessa Orçamentos
-                        </label>
-                        <label class="flex items-center gap-2 text-red-600 dark:text-red-400 font-semibold">
-                            <input type="checkbox" name="acesso_configuracoes" {% if u.perfil.acesso_configuracoes %}checked{% endif %}>
-                            Administrador (Acessa Config)
-                        </label>
-                    </div>
-                </form>
-                {% endfor %}
-            </div>
-        </div>
-        
     </div>
 </div>
 {% endblock %}

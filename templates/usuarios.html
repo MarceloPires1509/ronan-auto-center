@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block header_title %}Usuários{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <div class="flex justify-between items-center">
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Gerenciamento de Usuários</h1>
+        <a href="{% url 'novo_usuario' %}" class="bg-primary text-white px-4 py-2 rounded-md font-medium text-sm hover:bg-primary_hover transition-colors flex items-center gap-2">
+            <i data-lucide="user-plus" class="w-4 h-4"></i> Novo Usuário
+        </a>
+    </div>
+
+    <div class="bg-white dark:bg-gray-800 rounded-lg border dark:border-gray-700 shadow-sm p-6">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {% for u in usuarios %}
+            <div class="border dark:border-gray-700 p-5 rounded-lg {% if not u.is_active %}bg-gray-100 dark:bg-gray-900 opacity-75{% else %}bg-gray-50 dark:bg-gray-900/50{% endif %}">
+                
+                <div class="flex justify-between items-start mb-4 border-b dark:border-gray-700 pb-3">
+                    <div>
+                        <h3 class="font-bold text-lg text-gray-900 dark:text-white">{{ u.first_name|default:u.username }}</h3>
+                        <p class="text-sm text-gray-500">{{ u.email|default:"Sem e-mail" }} ({{ u.username }})</p>
+                        {% if not u.is_active %}
+                        <span class="inline-block mt-1 px-2 py-0.5 bg-red-100 text-red-800 text-xs font-bold rounded-full">INATIVO</span>
+                        {% endif %}
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <form method="POST" action="{% url 'toggle_status_usuario' u.id %}">
+                            {% csrf_token %}
+                            {% if u.is_active %}
+                                <button type="submit" class="text-xs bg-red-600 text-white px-3 py-1.5 rounded hover:bg-red-700 w-full" onclick="return confirm('Deseja inativar este usuário? Ele não conseguirá mais acessar o sistema.')">Inativar</button>
+                            {% else %}
+                                <button type="submit" class="text-xs bg-green-600 text-white px-3 py-1.5 rounded hover:bg-green-700 w-full">Ativar</button>
+                            {% endif %}
+                        </form>
+                    </div>
+                </div>
+                
+                <form method="POST" action="{% url 'usuarios' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="salvar_permissoes" value="1">
+                    <input type="hidden" name="user_id" value="{{ u.id }}">
+                    
+                    <h4 class="font-semibold text-sm mb-2 text-gray-700 dark:text-gray-300">Permissões de Acesso:</h4>
+                    <div class="grid grid-cols-2 gap-3 text-sm text-gray-700 dark:text-gray-300 mb-4">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" name="acesso_clientes" class="rounded text-primary focus:ring-primary" {% if u.perfil.acesso_clientes %}checked{% endif %} {% if not u.is_active %}disabled{% endif %}>
+                            Clientes
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" name="acesso_estoque" class="rounded text-primary focus:ring-primary" {% if u.perfil.acesso_estoque %}checked{% endif %} {% if not u.is_active %}disabled{% endif %}>
+                            Estoque
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" name="acesso_servicos" class="rounded text-primary focus:ring-primary" {% if u.perfil.acesso_servicos %}checked{% endif %} {% if not u.is_active %}disabled{% endif %}>
+                            Serviços
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" name="acesso_orcamentos" class="rounded text-primary focus:ring-primary" {% if u.perfil.acesso_orcamentos %}checked{% endif %} {% if not u.is_active %}disabled{% endif %}>
+                            Orçamentos / OS
+                        </label>
+                        <label class="flex items-center gap-2 text-red-600 dark:text-red-400 font-semibold cursor-pointer col-span-2 mt-2">
+                            <input type="checkbox" name="acesso_configuracoes" class="rounded text-red-600 focus:ring-red-600" {% if u.perfil.acesso_configuracoes or u.is_superuser %}checked{% endif %} {% if u.is_superuser or not u.is_active %}disabled{% endif %}>
+                            Administrador (Acesso Total)
+                        </label>
+                    </div>
+                    
+                    <div class="flex justify-end mt-2">
+                        <button type="submit" class="text-sm bg-gray-800 dark:bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-700 dark:hover:bg-gray-600" {% if not u.is_active %}disabled{% endif %}>Salvar Permissões</button>
+                    </div>
+                </form>
+                
+            </div>
+            {% empty %}
+            <p class="text-gray-500 col-span-2">Nenhum usuário encontrado.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

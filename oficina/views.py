@@ -270,6 +270,14 @@ def aprovar_orcamento(request, id):
     return redirect('lista_orcamentos')
 
 @login_required
+
+@login_required
+def imprimir_os(request, id):
+    orcamento = get_object_or_404(Orcamento, id=id)
+    return render(request, 'os_print.html', {'orcamento': orcamento})
+
+
+@login_required
 def imprimir_orcamento(request, id):
     orcamento = get_object_or_404(Orcamento, id=id)
     return render(request, 'orcamento_print.html', {'orcamento': orcamento})
@@ -277,6 +285,47 @@ def imprimir_orcamento(request, id):
 from django.http import HttpResponse
 import openpyxl
 from .models import Configuracao
+
+
+@login_required
+def usuarios(request):
+    if not request.user.is_superuser and not request.user.perfil.acesso_configuracoes:
+        messages.error(request, 'Você não tem permissão para acessar usuários.')
+        return redirect('dashboard')
+        
+    if request.method == 'POST' and 'salvar_permissoes' in request.POST:
+        user_id = request.POST.get('user_id')
+        usuario_alvo = User.objects.get(id=user_id)
+        if usuario_alvo.is_active and not usuario_alvo.is_superuser:
+            perfil = usuario_alvo.perfil
+            perfil.acesso_clientes = request.POST.get('acesso_clientes') == 'on'
+            perfil.acesso_estoque = request.POST.get('acesso_estoque') == 'on'
+            perfil.acesso_servicos = request.POST.get('acesso_servicos') == 'on'
+            perfil.acesso_orcamentos = request.POST.get('acesso_orcamentos') == 'on'
+            perfil.acesso_configuracoes = request.POST.get('acesso_configuracoes') == 'on'
+            perfil.save()
+            messages.success(request, f'Permissões de {usuario_alvo.username} salvas!')
+        return redirect('usuarios')
+
+    usuarios_lista = User.objects.all().select_related('perfil').order_by('-is_active', 'username')
+    return render(request, 'usuarios.html', {'usuarios': usuarios_lista})
+
+@login_required
+def toggle_status_usuario(request, id):
+    if not request.user.is_superuser and not request.user.perfil.acesso_configuracoes:
+        return redirect('dashboard')
+    
+    if request.method == 'POST':
+        usuario = get_object_or_404(User, id=id)
+        if usuario.id != request.user.id and not usuario.is_superuser:
+            usuario.is_active = not usuario.is_active
+            usuario.save()
+            acao = "ativado" if usuario.is_active else "inativado"
+            messages.success(request, f'Usuário {usuario.username} foi {acao} com sucesso.')
+        else:
+            messages.error(request, 'Não é possível inativar o seu próprio usuário ou um superusuário.')
+            
+    return redirect('usuarios')
 
 @login_required
 def configuracoes(request):

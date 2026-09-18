@@ -11,6 +11,9 @@ urlpatterns = [
     path('', views.dashboard, name='dashboard'),
     path('usuarios/novo/', views.novo_usuario, name='novo_usuario'),
     path('configuracoes/', views.configuracoes, name='configuracoes'),
+    path('usuarios/', views.usuarios, name='usuarios'),
+    path('usuarios/status/<int:id>/', views.toggle_status_usuario, name='toggle_status_usuario'),
+
     path('busca-placa/', views.busca_placa, name='busca_placa'),
     path('financeiro/', views.lista_financeiro, name='lista_financeiro'),
     path('agenda/', views.agenda, name='agenda'),
