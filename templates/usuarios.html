@@ -25,18 +25,18 @@
                         {% endif %}
                     </div>
                     <div class="flex flex-col gap-2">
-                        <form method="POST" action="{% url 'toggle_status_usuario' u.id %}">
+                        <form id="form-inativar-{{ u.id }}" method="POST" action="{% url 'toggle_status_usuario' u.id %}">
                             {% csrf_token %}
                             {% if u.is_active %}
-                                <button type="submit" class="text-xs bg-red-600 text-white px-3 py-1.5 rounded hover:bg-red-700 w-full" onclick="confirmarInativacao(event, this.form)">Inativar</button>
+                                <button type="button" class="text-xs bg-red-600 text-white px-3 py-1.5 rounded hover:bg-red-700 w-full" onclick="confirmarInativacao('{{ u.id }}')">Inativar</button>
                             {% else %}
                                 <button type="submit" class="text-xs bg-green-600 text-white px-3 py-1.5 rounded hover:bg-green-700 w-full">Ativar</button>
                             {% endif %}
                         </form>
 
-                        <form method="POST" action="{% url 'excluir_usuario' u.id %}">
+                        <form id="form-excluir-{{ u.id }}" method="POST" action="{% url 'excluir_usuario' u.id %}">
                             {% csrf_token %}
-                            <button type="submit" class="text-xs bg-red-800 text-white px-3 py-1.5 rounded hover:bg-red-900 w-full" onclick="confirmarExclusao(event, this.form)">Excluir</button>
+                            <button type="button" class="text-xs bg-red-800 text-white px-3 py-1.5 rounded hover:bg-red-900 w-full" onclick="confirmarExclusao('{{ u.id }}')">Excluir</button>
                         </form>
                     </div>
                 </div>
@@ -88,8 +88,7 @@ function isDarkMode() {
     return document.documentElement.classList.contains('dark');
 }
 
-function confirmarInativacao(event, form) {
-    event.preventDefault();
+function confirmarInativacao(userId) {
     Swal.fire({
         title: 'Inativar Usuário?',
         text: "Ele não conseguirá mais acessar o sistema.",
@@ -103,13 +102,12 @@ function confirmarInativacao(event, form) {
         color: isDarkMode() ? '#fff' : '#545454'
     }).then((result) => {
         if (result.isConfirmed) {
-            form.submit();
+            document.getElementById('form-inativar-' + userId).submit();
         }
     });
 }
 
-function confirmarExclusao(event, form) {
-    event.preventDefault();
+function confirmarExclusao(userId) {
     Swal.fire({
         title: 'EXCLUIR DEFINITIVAMENTE?',
         html: "Toda a conta será apagada para sempre.<br><br><small class='text-red-500'>Se este for o último administrador, a ação será bloqueada.</small>",
@@ -123,7 +121,7 @@ function confirmarExclusao(event, form) {
         color: isDarkMode() ? '#fff' : '#545454'
     }).then((result) => {
         if (result.isConfirmed) {
-            form.submit();
+            document.getElementById('form-excluir-' + userId).submit();
         }
     });
 }
