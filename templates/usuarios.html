@@ -1,6 +1,53 @@
 {% extends 'base.html' %}
 
-{% block header_title %}Usuários{% endblock %}
+{% block header_title %}Usuários
+<script>
+function isDarkMode() {
+    return document.documentElement.classList.contains('dark');
+}
+
+function confirmarInativacao(event, form) {
+    event.preventDefault();
+    Swal.fire({
+        title: 'Inativar Usuário?',
+        text: "Ele não conseguirá mais acessar o sistema.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Sim, inativar',
+        cancelButtonText: 'Cancelar',
+        background: isDarkMode() ? '#1f2937' : '#fff',
+        color: isDarkMode() ? '#fff' : '#545454'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            form.submit();
+        }
+    });
+}
+
+function confirmarExclusao(event, form) {
+    event.preventDefault();
+    Swal.fire({
+        title: 'EXCLUIR DEFINITIVAMENTE?',
+        html: "Toda a conta será apagada para sempre.<br><br><small class='text-red-500'>Se este for o último administrador, a ação será bloqueada.</small>",
+        icon: 'error',
+        showCancelButton: true,
+        confirmButtonColor: '#991b1b',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Sim, EXCLUIR!',
+        cancelButtonText: 'Cancelar',
+        background: isDarkMode() ? '#1f2937' : '#fff',
+        color: isDarkMode() ? '#fff' : '#545454'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            form.submit();
+        }
+    });
+}
+</script>
+{% endblock %}
+
 
 {% block content %}
 <div class="space-y-6">
@@ -28,7 +75,7 @@
                         <form method="POST" action="{% url 'toggle_status_usuario' u.id %}">
                             {% csrf_token %}
                             {% if u.is_active %}
-                                <button type="submit" class="text-xs bg-red-600 text-white px-3 py-1.5 rounded hover:bg-red-700 w-full" onclick="return confirm('Deseja inativar este usuário? Ele não conseguirá mais acessar o sistema.')">Inativar</button>
+                                <button type="submit" class="text-xs bg-red-600 text-white px-3 py-1.5 rounded hover:bg-red-700 w-full" onclick="confirmarInativacao(event, this.form)">Inativar</button>
                             {% else %}
                                 <button type="submit" class="text-xs bg-green-600 text-white px-3 py-1.5 rounded hover:bg-green-700 w-full">Ativar</button>
                             {% endif %}
@@ -36,7 +83,7 @@
 
                         <form method="POST" action="{% url 'excluir_usuario' u.id %}">
                             {% csrf_token %}
-                            <button type="submit" class="text-xs bg-red-800 text-white px-3 py-1.5 rounded hover:bg-red-900 w-full" onclick="return confirm('ATENÇÃO: Deseja EXCLUIR definitivamente este usuário? Toda a conta será apagada.\nSe este for o último administrador, o sistema bloqueará a ação.')">Excluir</button>
+                            <button type="submit" class="text-xs bg-red-800 text-white px-3 py-1.5 rounded hover:bg-red-900 w-full" onclick="confirmarExclusao(event, this.form)">Excluir</button>
                         </form>
                     </div>
                 </div>
@@ -82,4 +129,51 @@
         </div>
     </div>
 </div>
+
+<script>
+function isDarkMode() {
+    return document.documentElement.classList.contains('dark');
+}
+
+function confirmarInativacao(event, form) {
+    event.preventDefault();
+    Swal.fire({
+        title: 'Inativar Usuário?',
+        text: "Ele não conseguirá mais acessar o sistema.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Sim, inativar',
+        cancelButtonText: 'Cancelar',
+        background: isDarkMode() ? '#1f2937' : '#fff',
+        color: isDarkMode() ? '#fff' : '#545454'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            form.submit();
+        }
+    });
+}
+
+function confirmarExclusao(event, form) {
+    event.preventDefault();
+    Swal.fire({
+        title: 'EXCLUIR DEFINITIVAMENTE?',
+        html: "Toda a conta será apagada para sempre.<br><br><small class='text-red-500'>Se este for o último administrador, a ação será bloqueada.</small>",
+        icon: 'error',
+        showCancelButton: true,
+        confirmButtonColor: '#991b1b',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Sim, EXCLUIR!',
+        cancelButtonText: 'Cancelar',
+        background: isDarkMode() ? '#1f2937' : '#fff',
+        color: isDarkMode() ? '#fff' : '#545454'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            form.submit();
+        }
+    });
+}
+</script>
 {% endblock %}
+
