@@ -1,53 +1,6 @@
 {% extends 'base.html' %}
 
-{% block header_title %}Usuários
-<script>
-function isDarkMode() {
-    return document.documentElement.classList.contains('dark');
-}
-
-function confirmarInativacao(event, form) {
-    event.preventDefault();
-    Swal.fire({
-        title: 'Inativar Usuário?',
-        text: "Ele não conseguirá mais acessar o sistema.",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6',
-        confirmButtonText: 'Sim, inativar',
-        cancelButtonText: 'Cancelar',
-        background: isDarkMode() ? '#1f2937' : '#fff',
-        color: isDarkMode() ? '#fff' : '#545454'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            form.submit();
-        }
-    });
-}
-
-function confirmarExclusao(event, form) {
-    event.preventDefault();
-    Swal.fire({
-        title: 'EXCLUIR DEFINITIVAMENTE?',
-        html: "Toda a conta será apagada para sempre.<br><br><small class='text-red-500'>Se este for o último administrador, a ação será bloqueada.</small>",
-        icon: 'error',
-        showCancelButton: true,
-        confirmButtonColor: '#991b1b',
-        cancelButtonColor: '#3085d6',
-        confirmButtonText: 'Sim, EXCLUIR!',
-        cancelButtonText: 'Cancelar',
-        background: isDarkMode() ? '#1f2937' : '#fff',
-        color: isDarkMode() ? '#fff' : '#545454'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            form.submit();
-        }
-    });
-}
-</script>
-{% endblock %}
-
+{% block header_title %}Usuários{% endblock %}
 
 {% block content %}
 <div class="space-y-6">
@@ -175,5 +128,5 @@ function confirmarExclusao(event, form) {
     });
 }
 </script>
-{% endblock %}
 
+{% endblock %}
