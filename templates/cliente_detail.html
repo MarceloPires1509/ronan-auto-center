@@ -52,6 +52,7 @@
                         <th class="px-6 py-3 font-medium">Status</th>
                         <th class="px-6 py-3 font-medium text-right">Peças</th>
                         <th class="px-6 py-3 font-medium text-right">Mão de Obra</th>
+                        <th class="px-6 py-3 font-medium text-right">Quilometragem</th>
                         <th class="px-6 py-3 font-medium text-right">Total</th>
                         <th class="px-6 py-3 font-medium text-center">Ações</th>
                     </tr>
@@ -77,6 +78,7 @@
                         </td>
                         <td class="px-2 sm:px-6 py-1 sm:py-4 sm:text-right"><span class="sm:hidden font-medium text-gray-500 dark:text-gray-400 text-xs uppercase mr-2 font-normal">Peças: </span>R$ {{ orc.total_pecas }}</td>
                         <td class="px-2 sm:px-6 py-1 sm:py-4 sm:text-right"><span class="sm:hidden font-medium text-gray-500 dark:text-gray-400 text-xs uppercase mr-2 font-normal">Serviços: </span>R$ {{ orc.total_mao_de_obra }}</td>
+                        <td class="px-2 sm:px-6 py-1 sm:py-4 sm:text-right text-gray-500"><span class="sm:hidden font-medium text-gray-500 dark:text-gray-400 text-xs uppercase mr-2 font-normal">Km: </span>{% if orc.quilometragem %}{{ orc.quilometragem }} km{% else %}-{% endif %}</td>
                         <td class="px-2 sm:px-6 py-1 sm:py-4 sm:text-right font-bold text-gray-900 dark:text-white"><span class="sm:hidden font-medium text-gray-500 dark:text-gray-400 text-xs uppercase mr-2 font-normal">Total: </span>R$ {{ orc.total }}</td>
                         <td class="px-2 sm:px-6 py-3 sm:py-4 sm:text-center mt-2 sm:mt-0 border-t sm:border-0 dark:border-gray-700 flex justify-end">
                             <a href="{% url 'imprimir_orcamento' orc.id %}" target="_blank" class="bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 px-4 py-2 sm:bg-transparent sm:p-0 sm:text-primary rounded sm:rounded-none text-sm sm:hover:underline font-bold sm:font-medium text-center w-full sm:w-auto">Ver / Imprimir</a>
@@ -84,7 +86,7 @@
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="6" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+                        <td colspan="7" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
                             Nenhum histórico encontrado para este cliente.
                         </td>
                     </tr>

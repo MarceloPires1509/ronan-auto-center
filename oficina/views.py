@@ -197,9 +197,19 @@ def novo_orcamento(request):
         pecas_qtds = request.POST.getlist('peca_qtd[]')
         servicos_ids = request.POST.getlist('servico_id[]')
         
+        
         if cliente_id:
             cliente = get_object_or_404(Cliente, id=cliente_id)
-            orcamento = Orcamento.objects.create(cliente=cliente)
+            quilometragem = request.POST.get('quilometragem')
+            km_val = int(quilometragem) if quilometragem and quilometragem.isdigit() else None
+            
+            orcamento = Orcamento.objects.create(
+                cliente=cliente,
+                placa_veiculo=cliente.placa,
+                modelo_veiculo=cliente.veiculo,
+                quilometragem=km_val
+            )
+
             
             total_pecas = 0.0
             total_servicos = 0.0

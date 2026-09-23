@@ -55,6 +55,7 @@
                 <div><span class="font-semibold">Telefone:</span> {{ orcamento.cliente.telefone|default:"-" }}</div>
                 <div><span class="font-semibold">Veículo:</span> {{ orcamento.cliente.veiculo|default:"-" }}</div>
                 <div><span class="font-semibold">Placa:</span> {{ orcamento.cliente.placa|default:"-" }}</div>
+                <div><span class="font-semibold">Km na Entrada:</span> {% if orcamento.quilometragem %}{{ orcamento.quilometragem }} km{% else %}-{% endif %}</div>
             </div>
         </div>
 
