@@ -9,17 +9,17 @@
     
     <style>
         body { min-width: 800px !important; margin: 0; padding: 0; font-family: 'Arial', sans-serif; background-color: #f3f4f6; }
-        .container-print { width: 800px !important; max-width: none !important; margin: 2rem auto; padding: 40px; background-color: white; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); border-radius: 8px; }
+        .container-print { width: 800px !important; max-width: none !important; margin: 2rem auto; padding: 40px; background-color: white; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); border-radius: 12px; }
         
-        /* Modernized Box Styles (Exactly matching structure but clean) */
+        /* Modernized Box Styles (Very rounded corners) */
         .info-row { display: flex; gap: 12px; margin-bottom: 12px; }
-        .info-box { border: 1.5px solid #94a3b8; border-radius: 6px; display: flex; font-size: 13px; overflow: hidden; background-color: white; }
+        .info-box { border: 1.5px solid #94a3b8; border-radius: 12px; display: flex; font-size: 13px; overflow: hidden; background-color: white; }
         .info-label { background-color: #f1f5f9; border-right: 1.5px solid #94a3b8; padding: 6px 12px; font-weight: bold; color: #334155; white-space: nowrap; font-size: 12px; text-transform: uppercase; align-items: center; display: flex; }
         .info-value { padding: 6px 12px; flex-grow: 1; text-transform: uppercase; font-weight: 600; color: #0f172a; display: flex; align-items: center; }
         
-        /* Table Styles */
-        .table-custom { width: 100%; border-collapse: separate; border-spacing: 0; border: 1.5px solid #94a3b8; border-radius: 8px; overflow: hidden; }
-        .table-custom th { border-bottom: 1.5px solid #94a3b8; border-right: 1.5px solid #94a3b8; background-color: #f1f5f9; padding: 8px; font-size: 12px; font-weight: bold; color: #334155; text-align: left; }
+        /* Table Styles (Rounded) */
+        .table-custom { width: 100%; border-collapse: separate; border-spacing: 0; border: 1.5px solid #94a3b8; border-radius: 12px; overflow: hidden; }
+        .table-custom th { border-bottom: 1.5px solid #94a3b8; border-right: 1.5px solid #94a3b8; background-color: #f1f5f9; padding: 10px 8px; font-size: 12px; font-weight: bold; color: #334155; text-align: left; }
         .table-custom th.center { text-align: center; }
         .table-custom th:last-child { border-right: none; text-align: right; }
         .table-custom td { border-bottom: 1px solid #cbd5e1; border-right: 1.5px solid #94a3b8; padding: 8px; font-size: 13px; color: #334155; }
@@ -27,12 +27,12 @@
         .table-custom td:last-child { border-right: none; text-align: right; font-weight: 600; }
         .table-custom tr:last-child td { border-bottom: none; }
         
-        .table-custom tr.obs-row td { background-color: #f8fafc; padding: 12px 8px; border-bottom: 1.5px solid #94a3b8; }
+        .table-custom tr.obs-row td { background-color: #f8fafc; padding: 14px 10px; border-bottom: 1.5px solid #94a3b8; }
         
         .total-wrapper { display: flex; justify-content: flex-end; width: 100%; margin-top: -1.5px; }
-        .total-box { border: 1.5px solid #94a3b8; border-top: none; border-radius: 0 0 8px 8px; display: flex; width: 30%; overflow: hidden; }
-        .total-label { background-color: #e2e8f0; padding: 8px 12px; font-weight: bold; font-size: 14px; border-right: 1.5px solid #94a3b8; color: #334155; }
-        .total-value { padding: 8px 12px; font-weight: 900; font-size: 15px; color: #0f172a; flex-grow: 1; text-align: right; background-color: white; }
+        .total-box { border: 1.5px solid #94a3b8; border-top: none; border-radius: 0 0 12px 12px; display: flex; width: 35%; overflow: hidden; }
+        .total-label { background-color: #e2e8f0; padding: 10px 14px; font-weight: bold; font-size: 14px; border-right: 1.5px solid #94a3b8; color: #334155; }
+        .total-value { padding: 10px 14px; font-weight: 900; font-size: 15px; color: #0f172a; flex-grow: 1; text-align: right; background-color: white; }
         
         @media print {
             body { -webkit-print-color-adjust: exact; print-color-adjust: exact; background-color: white !important; }
@@ -75,7 +75,7 @@
             </div>
         </div>
 
-        <!-- Campos Quadrados Modernizados (Grid) -->
+        <!-- Campos Arredondados Modernizados (Grid) -->
         <div class="info-row">
             <div class="info-box w-full">
                 <div class="info-label">CLIENTE:</div>
@@ -113,7 +113,7 @@
             </div>
         </div>
 
-        <div class="info-row mb-8">
+        <div class="info-row mb-10">
             <div class="info-box" style="width: 65%;">
                 <div class="info-label">FORMA DE PAGAMENTO:</div>
                 <div class="info-value"></div>
@@ -125,7 +125,7 @@
         </div>
 
         <!-- Título Centralizado -->
-        <h2 class="text-center text-lg font-black text-black uppercase mb-4 tracking-widest">{{ orcamento.tipo_documento|default:'ORÇAMENTO' }} DE PRODUTOS E SERVIÇOS</h2>
+        <h2 class="text-center text-xl font-black text-black uppercase mb-6 tracking-widest">{{ orcamento.tipo_documento|default:'ORÇAMENTO' }} DE PRODUTOS E SERVIÇOS</h2>
 
         <!-- Tabela -->
         <table class="table-custom">
@@ -160,15 +160,15 @@
                 {% endfor %}
 
                 <!-- Espaçadores para design idêntico -->
-                <tr><td style="height: 28px;"></td><td></td><td></td></tr>
-                <tr><td style="height: 28px;"></td><td></td><td></td></tr>
-                <tr><td style="height: 28px;"></td><td></td><td></td></tr>
-                <tr><td style="height: 28px;"></td><td></td><td></td></tr>
+                <tr><td style="height: 32px;"></td><td></td><td></td></tr>
+                <tr><td style="height: 32px;"></td><td></td><td></td></tr>
+                <tr><td style="height: 32px;"></td><td></td><td></td></tr>
+                <tr><td style="height: 32px;"></td><td></td><td></td></tr>
 
                 <!-- Observação -->
                 <tr class="obs-row">
                     <td colspan="3">
-                        <div style="font-weight: bold; font-size: 13px;">
+                        <div style="font-weight: bold; font-size: 14px;">
                             OBS: <span class="text-gray-500 italic font-normal ml-2">(Notas adicionais)</span>
                         </div>
                     </td>
@@ -184,10 +184,14 @@
             </div>
         </div>
 
-        <!-- Fundo de Página / Assinaturas -->
-        <div style="margin-top: 100px; padding-bottom: 20px;">
-            <div style="width: 100%; height: 20px; background-color: #cbd5e1; border-top: 1.5px solid #94a3b8; border-bottom: 1.5px solid #94a3b8;"></div>
-            <div style="width: 100%; height: 80px; border: 1.5px solid #94a3b8; border-top: none;"></div>
+        <!-- Assinaturas (Substituindo a antiga caixa preta/azul no rodapé) -->
+        <div class="mt-24 flex justify-between px-10 text-center text-xs font-bold text-gray-400 uppercase tracking-wider mb-8">
+            <div class="w-64 border-t-2 border-gray-300 pt-3 text-gray-500">
+                {{ config_global.nome_loja|default:'RONAN AUTO CENTER' }}
+            </div>
+            <div class="w-64 border-t-2 border-gray-300 pt-3 text-gray-500">
+                ASSINATURA DO CLIENTE
+            </div>
         </div>
         
     </div>
