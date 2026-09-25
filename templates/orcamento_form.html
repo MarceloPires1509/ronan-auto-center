@@ -198,6 +198,31 @@
             showCancelButton: true,
             confirmButtonText: 'Salvar Cliente',
             cancelButtonText: 'Cancelar',
+            didOpen: () => {
+                const telInput = document.getElementById('swal-tel');
+                telInput.addEventListener('input', function(e) {
+                    let v = e.target.value.replace(/\D/g, "");
+                    if (v.length > 11) v = v.slice(0, 11);
+                    if (v.length > 2) {
+                        if (v.length > 6) {
+                            v = `(${v.slice(0,2)}) ${v.slice(2,7)}-${v.slice(7)}`;
+                        } else {
+                            v = `(${v.slice(0,2)}) ${v.slice(2)}`;
+                        }
+                    }
+                    e.target.value = v;
+                });
+                
+                const placaInput = document.getElementById('swal-placa');
+                placaInput.addEventListener('input', function(e) {
+                    let v = e.target.value.replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
+                    if (v.length > 7) v = v.slice(0, 7);
+                    if (v.length > 3) {
+                        v = `${v.slice(0,3)}-${v.slice(3)}`;
+                    }
+                    e.target.value = v;
+                });
+            },
             preConfirm: () => {
                 const nome = document.getElementById('swal-nome').value;
                 if (!nome) {
@@ -252,6 +277,19 @@
                     Swal.fire('Erro', 'Ocorreu um erro ao salvar o cliente.', 'error');
                 });
             }
+        });
+    }
+
+    // Mascara para a placa na OS
+    const osPlacaInput = document.querySelector('input[name="placa_veiculo"]');
+    if (osPlacaInput) {
+        osPlacaInput.addEventListener('input', function(e) {
+            let v = e.target.value.replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
+            if (v.length > 7) v = v.slice(0, 7);
+            if (v.length > 3) {
+                v = `${v.slice(0,3)}-${v.slice(3)}`;
+            }
+            e.target.value = v;
         });
     }
 </script>
