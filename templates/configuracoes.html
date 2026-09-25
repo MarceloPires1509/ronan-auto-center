@@ -23,10 +23,37 @@
                     <input type="text" name="telefone" id="telefone" value="{{ config.telefone|default:'' }}" class="w-full px-3 py-2 border dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none">
                 </div>
 
-                <div class="space-y-2">
-                    <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Endereço Completo</label>
-                    <textarea name="endereco_completo" rows="3" class="w-full px-3 py-2 border dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none">{{ config.endereco_completo|default:'' }}</textarea>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="space-y-2 md:col-span-1">
+                        <label class="text-sm font-medium text-gray-700 dark:text-gray-300">CEP</label>
+                        <input type="text" id="cep_loja" placeholder="00000-000" class="w-full px-3 py-2 border dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none">
+                    </div>
+                    <div class="space-y-2 md:col-span-3">
+                        <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Endereço Completo</label>
+                        <textarea name="endereco_completo" id="endereco_completo" rows="3" class="w-full px-3 py-2 border dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none">{{ config.endereco_completo|default:'' }}</textarea>
+                    </div>
                 </div>
+
+                <script>
+                    document.getElementById('cep_loja').addEventListener('input', function(e) {
+                        let v = e.target.value.replace(/\D/g, "");
+                        if (v.length > 8) v = v.slice(0, 8);
+                        if (v.length > 5) v = v.slice(0, 5) + "-" + v.slice(5);
+                        e.target.value = v;
+
+                        if (v.replace(/\D/g, "").length === 8) {
+                            fetch(`https://viacep.com.br/ws/${v.replace(/\D/g, "")}/json/`)
+                            .then(response => response.json())
+                            .then(data => {
+                                if (!data.erro) {
+                                    const enderecoInput = document.getElementById('endereco_completo');
+                                    enderecoInput.value = `${data.logradouro}\nBairro: ${data.bairro}\n${data.localidade}/${data.uf}`;
+                                    enderecoInput.focus();
+                                }
+                            });
+                        }
+                    });
+                </script>
 
                 <div class="space-y-2">
                     <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Logo (Usada na impressão)</label>
