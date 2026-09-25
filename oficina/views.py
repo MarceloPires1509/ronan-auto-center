@@ -554,6 +554,18 @@ def alterar_status_pedido(request, id):
         pedido = get_object_or_404(Orcamento, id=id)
         novo_status = request.POST.get('status')
         if novo_status in dict(Orcamento.STATUS_CHOICES).keys():
+            if novo_status == 'FINALIZADO' and pedido.pagamentos.count() == 0:
+                MovimentacaoFinanceira.objects.create(
+                    tipo='RECEITA',
+                    descricao=f'Pagamento OS #{pedido.id} - {pedido.cliente.nome}',
+                    valor=pedido.total,
+                    data_vencimento=timezone.now().date(),
+                    data_pagamento=timezone.now().date(),
+                    status='PAGO',
+                    forma_pagamento='Dinheiro', # Padrão
+                    orcamento=pedido
+                )
+            
             pedido.status = novo_status
             pedido.save()
             messages.success(request, f'Status do pedido #{pedido.id} atualizado para {pedido.get_status_display()}.')
@@ -602,6 +614,20 @@ from datetime import datetime, date
 
 @login_required
 def lista_financeiro(request):
+    # Auto-correção de divergência: Se houver OS FINALIZADA sem lançamento, cria retroativo
+    orcamentos_sem_pagamento = Orcamento.objects.filter(status='FINALIZADO', pagamentos__isnull=True)
+    for o in orcamentos_sem_pagamento:
+        MovimentacaoFinanceira.objects.create(
+            tipo='RECEITA',
+            descricao=f'Pagamento OS #{o.id} - {o.cliente.nome}',
+            valor=o.total,
+            data_vencimento=o.criado_em.date() if o.criado_em else timezone.now().date(),
+            data_pagamento=o.criado_em.date() if o.criado_em else timezone.now().date(),
+            status='PAGO',
+            forma_pagamento='Dinheiro (Retroativo)',
+            orcamento=o
+        )
+
     mes_atual = timezone.now().month
     ano_atual = timezone.now().year
     
