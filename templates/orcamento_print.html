@@ -8,162 +8,166 @@
     <script src="https://cdn.tailwindcss.com"></script>
     
     <style>
-        body { min-width: 800px !important; margin: 0; padding: 0; font-family: 'Arial', sans-serif; }
-        .container-print { width: 800px !important; max-width: none !important; margin: 0 auto; padding: 20px; }
-        
-        /* Box and border styles matching the PDF */
-        .info-box { border: 2px solid #333; margin-bottom: 8px; display: flex; font-size: 13px; }
-        .info-label { background-color: #e5e7eb; border-right: 2px solid #333; padding: 4px 8px; font-weight: bold; white-space: nowrap; }
-        .info-value { padding: 4px 8px; flex-grow: 1; text-transform: uppercase; }
-        
-        .table-custom { width: 100%; border-collapse: collapse; border: 2px solid #333; margin-bottom: 20px; }
-        .table-custom th { border: 2px solid #333; background-color: #e5e7eb; padding: 6px; font-size: 13px; font-weight: bold; text-align: left; }
-        .table-custom td { border: 1px solid #333; padding: 6px; font-size: 12px; }
-        .table-custom tr.obs-row td { border-top: 2px solid #333; padding: 10px 6px; font-weight: bold; }
-        .table-custom tr.total-row td { border-top: 2px solid #333; border-bottom: 2px solid #333; font-weight: bold; font-size: 14px; }
-        .total-bg { background-color: #e5e7eb; text-align: center !important; border-right: 2px solid #333 !important; }
+        body { min-width: 800px !important; margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f3f4f6; }
+        .container-print { width: 800px !important; max-width: none !important; margin: 2rem auto; padding: 40px; background-color: white; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); border-radius: 0.5rem; }
         
         @media print {
             body { -webkit-print-color-adjust: exact; print-color-adjust: exact; background-color: white !important; }
+            .container-print { margin: 0; padding: 20px; box-shadow: none; border-radius: 0; }
             .no-print { display: none !important; }
-            @page { size: A4; margin: 0.5cm; }
+            @page { size: A4; margin: 1cm; }
         }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-900">
+<body class="text-gray-800">
 
-    <div class="container-print bg-white relative">
+    <div class="container-print relative">
         <div class="no-print absolute top-0 right-0 flex gap-3 mt-4 mr-4">
-            <a href="{% url 'lista_orcamentos' %}" class="bg-gray-200 px-4 py-2 rounded text-sm hover:bg-gray-300 transition-colors">Voltar</a>
-            <button onclick="window.print()" class="bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700 font-bold transition-colors">🖨️ Imprimir PDF</button>
+            <a href="{% url 'lista_orcamentos' %}" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm hover:bg-gray-300 font-medium transition-colors">Voltar</a>
+            <button onclick="window.print()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 font-bold shadow-sm transition-colors flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                Imprimir PDF
+            </button>
         </div>
 
         <!-- Cabeçalho (Logo Esquerda, Textos Direita) -->
-        <div class="flex justify-between items-center mb-6">
+        <div class="flex justify-between items-center mb-8 border-b border-gray-200 pb-6">
             <div class="w-1/2">
                 {% if config_global.logo %}
-                    <img src="{{ config_global.logo.url }}" alt="{{ config_global.nome_loja }}" style="max-height: 100px; max-width: 250px; object-fit: contain;">
+                    <img src="{{ config_global.logo.url }}" alt="{{ config_global.nome_loja }}" style="max-height: 90px; max-width: 250px; object-fit: contain;">
                 {% else %}
-                    <img src="{% static 'img/logo.png' %}" alt="Ronan Auto Center" style="max-height: 100px; max-width: 250px; object-fit: contain;">
+                    <img src="{% static 'img/logo.png' %}" alt="Ronan Auto Center" style="max-height: 90px; max-width: 250px; object-fit: contain;">
                 {% endif %}
             </div>
-            <div class="w-1/2 text-right text-sm font-bold leading-relaxed">
-                <h1 class="text-lg uppercase">{{ config_global.nome_loja|default:'RONAN AUTO CENTER' }}</h1>
-                <p>CNPJ: 42.274.453/0001-56</p>
-                <p class="uppercase whitespace-pre-line">{{ config_global.endereco_completo|default:'RUA T39 QD01 LT02 SETOR BUENO
-GOIÂNIA/GO' }}</p>
-                <p>TEL: {{ config_global.telefone|default:'(62) 98245-7476' }}</p>
-                <p class="mt-4">DATA: {{ orcamento.criado_em|date:"d/m/Y" }}</p>
+            <div class="w-1/2 text-right text-sm text-gray-600 leading-relaxed">
+                <h1 class="text-xl font-black text-gray-900 uppercase tracking-tight">{{ config_global.nome_loja|default:'RONAN AUTO CENTER' }}</h1>
+                <p class="font-medium">CNPJ: 42.274.453/0001-56</p>
+                {% if config_global.endereco_completo %}
+                    <p class="uppercase whitespace-pre-line mt-1">{{ config_global.endereco_completo }}</p>
+                {% else %}
+                    <p class="uppercase mt-1">RUA T39 QD01 LT02 SETOR BUENO<br>GOIÂNIA/GO</p>
+                {% endif %}
+                <p class="mt-1 font-medium text-gray-800">TEL: {{ config_global.telefone|default:'(62) 98245-7476' }}</p>
             </div>
         </div>
 
-        <!-- Título do Documento -->
-        <h2 class="text-center text-xl font-black uppercase mb-4 tracking-wider">{{ orcamento.tipo_documento }} DE PRODUTOS E SERVIÇOS</h2>
-
-        <!-- Blocos de Informação do Cliente (Estilo PDF) -->
-        <div class="info-box">
-            <div class="info-label">CLIENTE:</div>
-            <div class="info-value">{{ orcamento.cliente.nome }}</div>
-        </div>
-        
-        <div class="flex gap-2">
-            <div class="info-box flex-grow" style="flex: 2;">
-                <div class="info-label">MODELO:</div>
-                <div class="info-value">{{ orcamento.cliente.veiculo|default:'' }}</div>
-            </div>
-            <div class="info-box flex-grow" style="flex: 1;">
-                <div class="info-label">PLACA:</div>
-                <div class="info-value">{{ orcamento.cliente.placa|default:'' }}</div>
-            </div>
-            <div class="info-box flex-grow" style="flex: 1;">
-                <div class="info-label">DESCONTO:</div>
-                <div class="info-value"></div>
+        <!-- Título do Documento e Data -->
+        <div class="flex justify-between items-end mb-6">
+            <h2 class="text-2xl font-black text-gray-900 uppercase tracking-wide">{{ orcamento.tipo_documento|default:'ORÇAMENTO' }} DE PRODUTOS E SERVIÇOS</h2>
+            <div class="text-right">
+                <p class="text-sm text-gray-500 font-medium">Nº DO DOCUMENTO</p>
+                <p class="text-xl font-bold text-gray-900">{{ orcamento.id|stringformat:"04d" }}</p>
+                <p class="text-sm text-gray-500 mt-1">Data: <span class="font-medium text-gray-800">{{ orcamento.criado_em|date:"d/m/Y" }}</span></p>
             </div>
         </div>
 
-        <div class="flex gap-2">
-            <div class="info-box flex-grow">
-                <div class="info-label">KM:</div>
-                <div class="info-value">{% if orcamento.quilometragem %}{{ orcamento.quilometragem }}{% endif %}</div>
-            </div>
-            <div class="info-box flex-grow">
-                <div class="info-label">ANO:</div>
-                <div class="info-value"></div>
-            </div>
-            <div class="info-box flex-grow">
-                <div class="info-label">COR:</div>
-                <div class="info-value"></div>
-            </div>
-        </div>
+        <!-- Blocos de Informação do Cliente (Modernizado) -->
+        <div class="bg-gray-50 rounded-xl border border-gray-200 p-5 mb-8">
+            <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4 border-b border-gray-200 pb-2">Informações do Cliente e Veículo</h3>
+            
+            <div class="grid grid-cols-12 gap-y-4 gap-x-6 text-sm">
+                <!-- Cliente -->
+                <div class="col-span-12">
+                    <span class="text-gray-500 font-medium block text-xs uppercase">Cliente</span>
+                    <span class="font-bold text-gray-900 uppercase text-base">{{ orcamento.cliente.nome }}</span>
+                </div>
+                
+                <!-- Veículo Row -->
+                <div class="col-span-6">
+                    <span class="text-gray-500 font-medium block text-xs uppercase">Modelo</span>
+                    <span class="font-semibold text-gray-900 uppercase">{{ orcamento.cliente.veiculo|default:'-' }}</span>
+                </div>
+                <div class="col-span-3">
+                    <span class="text-gray-500 font-medium block text-xs uppercase">Placa</span>
+                    <span class="font-semibold text-gray-900 uppercase">{{ orcamento.cliente.placa|default:'-' }}</span>
+                </div>
+                <div class="col-span-3">
+                    <span class="text-gray-500 font-medium block text-xs uppercase">Cor</span>
+                    <span class="font-semibold text-gray-900 uppercase">-</span>
+                </div>
 
-        <div class="flex gap-2 mb-6">
-            <div class="info-box flex-grow" style="flex: 2;">
-                <div class="info-label">FORMA DE PAGAMENTO:</div>
-                <div class="info-value"></div>
-            </div>
-            <div class="info-box flex-grow" style="flex: 1;">
-                <div class="info-label">NÚMERO DE O.S:</div>
-                <div class="info-value text-center font-bold">{{ orcamento.id|stringformat:"04d" }}</div>
+                <!-- Detalhes Row -->
+                <div class="col-span-3">
+                    <span class="text-gray-500 font-medium block text-xs uppercase">Quilometragem (Km)</span>
+                    <span class="font-semibold text-gray-900 uppercase">{% if orcamento.quilometragem %}{{ orcamento.quilometragem }}{% else %}-{% endif %}</span>
+                </div>
+                <div class="col-span-3">
+                    <span class="text-gray-500 font-medium block text-xs uppercase">Ano</span>
+                    <span class="font-semibold text-gray-900 uppercase">-</span>
+                </div>
+                <div class="col-span-3">
+                    <span class="text-gray-500 font-medium block text-xs uppercase">Desconto</span>
+                    <span class="font-semibold text-gray-900 uppercase">-</span>
+                </div>
+                <div class="col-span-3">
+                    <span class="text-gray-500 font-medium block text-xs uppercase">Forma de Pagamento</span>
+                    <span class="font-semibold text-gray-900 uppercase">-</span>
+                </div>
             </div>
         </div>
 
         <!-- Tabela Unificada de Produtos e Serviços -->
-        <table class="table-custom">
-            <thead>
-                <tr>
-                    <th style="width: 10%; text-align: center; border-right: 2px solid #333;">QUANT.</th>
-                    <th style="width: 70%; border-right: 2px solid #333;">DESCRIÇÃO</th>
-                    <th style="width: 20%; text-align: center;">VALOR (R$)</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Loop nas Peças -->
-                {% for item in orcamento.itens.all %}
-                    {% if item.tipo == 'PECA' %}
+        <div class="border border-gray-200 rounded-xl overflow-hidden mb-6">
+            <table class="w-full text-sm text-left">
+                <thead class="bg-gray-100 text-gray-600 uppercase text-xs font-bold border-b border-gray-200">
                     <tr>
-                        <td style="text-align: center; border-right: 2px solid #333;">{{ item.quantidade }}</td>
-                        <td style="border-right: 2px solid #333;">{{ item.nome }}</td>
-                        <td style="text-align: right;">{{ item.preco_total }}</td>
+                        <th class="px-4 py-3 text-center w-24">Quant.</th>
+                        <th class="px-4 py-3">Descrição (Peças e Serviços)</th>
+                        <th class="px-4 py-3 text-right w-32">Valor (R$)</th>
                     </tr>
-                    {% endif %}
-                {% endfor %}
-                
-                <!-- Loop nos Serviços -->
-                {% for item in orcamento.itens.all %}
-                    {% if item.tipo == 'SERVICO' %}
-                    <tr>
-                        <td style="text-align: center; border-right: 2px solid #333;"></td>
-                        <td style="border-right: 2px solid #333;">{{ item.nome }}</td>
-                        <td style="text-align: right;">{{ item.preco_total }}</td>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    <!-- Loop nas Peças -->
+                    {% for item in orcamento.itens.all %}
+                        {% if item.tipo == 'PECA' %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-3 text-center font-medium text-gray-700">{{ item.quantidade }}</td>
+                            <td class="px-4 py-3 text-gray-800">{{ item.nome }}</td>
+                            <td class="px-4 py-3 text-right font-medium text-gray-800">{{ item.preco_total }}</td>
+                        </tr>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    <!-- Loop nos Serviços -->
+                    {% for item in orcamento.itens.all %}
+                        {% if item.tipo == 'SERVICO' %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-3 text-center font-medium text-gray-400">-</td>
+                            <td class="px-4 py-3 text-gray-800">{{ item.nome }}</td>
+                            <td class="px-4 py-3 text-right font-medium text-gray-800">{{ item.preco_total }}</td>
+                        </tr>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    <!-- Observações -->
+                    <tr class="bg-gray-50/50">
+                        <td colspan="3" class="px-4 py-4 min-h-[80px]">
+                            <span class="text-xs font-bold text-gray-500 uppercase block mb-1">Observações:</span>
+                            <div class="w-full border-b border-dotted border-gray-300 mt-6"></div>
+                            <div class="w-full border-b border-dotted border-gray-300 mt-6"></div>
+                        </td>
                     </tr>
-                    {% endif %}
-                {% endfor %}
-
-                <!-- Linhas em branco para preencher espaço (opcional, pode ser feito via JS ou deixar fixo) -->
-                <tr><td style="border-right: 2px solid #333; height: 24px;"></td><td style="border-right: 2px solid #333;"></td><td></td></tr>
-                <tr><td style="border-right: 2px solid #333; height: 24px;"></td><td style="border-right: 2px solid #333;"></td><td></td></tr>
-                <tr><td style="border-right: 2px solid #333; height: 24px;"></td><td style="border-right: 2px solid #333;"></td><td></td></tr>
-
-                <!-- Linha de Observação -->
-                <tr class="obs-row">
-                    <td colspan="3" style="min-height: 60px;">OBS: </td>
-                </tr>
-                
-                <!-- Linha de Total -->
-                <tr class="total-row">
-                    <td colspan="2" class="total-bg">TOTAL GERAL</td>
-                    <td style="text-align: right;">{{ orcamento.total }}</td>
-                </tr>
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+            
+            <!-- Resumo Financeiro no Rodapé da Tabela -->
+            <div class="bg-gray-800 text-white px-4 py-4 flex justify-between items-center">
+                <div class="text-sm font-medium text-gray-300 uppercase tracking-wider">
+                    Total Geral
+                </div>
+                <div class="text-xl font-black">
+                    R$ {{ orcamento.total }}
+                </div>
+            </div>
+        </div>
 
         <!-- Assinaturas -->
-        <div class="mt-16 flex justify-between px-10 text-center text-sm font-bold uppercase">
-            <div class="w-64 border-t-2 border-gray-800 pt-2">
+        <div class="mt-20 flex justify-between px-8 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">
+            <div class="w-64 border-t border-gray-300 pt-3">
                 {{ config_global.nome_loja|default:'RONAN AUTO CENTER' }}
             </div>
-            <div class="w-64 border-t-2 border-gray-800 pt-2">
-                ASSINATURA DO CLIENTE
+            <div class="w-64 border-t border-gray-300 pt-3">
+                Assinatura do Cliente
             </div>
         </div>
         

@@ -93,6 +93,13 @@ class Orcamento(models.Model):
     def __str__(self):
         return f"Orçamento #{self.id} - {self.cliente.nome}"
 
+    @property
+    def tipo_documento(self):
+        if self.status in ['PENDENTE', 'REJEITADO']:
+            return 'ORÇAMENTO'
+        return 'ORDEM DE SERVIÇO'
+
+
 class ItemOrcamento(models.Model):
     TIPO_CHOICES = (
         ('PECA', 'Peça'),
