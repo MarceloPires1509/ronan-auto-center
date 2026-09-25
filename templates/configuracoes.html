@@ -42,6 +42,22 @@
             </form>
         </div>
 
+        <!-- Personalização de Tema -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg border dark:border-gray-700 shadow-sm p-6 mt-6">
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Aparência do Sistema</h2>
+            <div class="space-y-4">
+                <p class="text-sm font-medium text-gray-700 dark:text-gray-300">Cor Principal (Realce)</p>
+                <div class="flex items-center gap-3">
+                    <button onclick="setThemeColor('#2563eb', '#1d4ed8')" class="w-8 h-8 rounded-full bg-blue-600 ring-2 ring-transparent hover:ring-blue-400 focus:outline-none transition-transform hover:scale-110" title="Azul"></button>
+                    <button onclick="setThemeColor('#16a34a', '#15803d')" class="w-8 h-8 rounded-full bg-green-600 ring-2 ring-transparent hover:ring-green-400 focus:outline-none transition-transform hover:scale-110" title="Verde"></button>
+                    <button onclick="setThemeColor('#dc2626', '#b91c1c')" class="w-8 h-8 rounded-full bg-red-600 ring-2 ring-transparent hover:ring-red-400 focus:outline-none transition-transform hover:scale-110" title="Vermelho"></button>
+                    <button onclick="setThemeColor('#9333ea', '#7e22ce')" class="w-8 h-8 rounded-full bg-purple-600 ring-2 ring-transparent hover:ring-purple-400 focus:outline-none transition-transform hover:scale-110" title="Roxo"></button>
+                    <button onclick="setThemeColor('#475569', '#334155')" class="w-8 h-8 rounded-full bg-slate-600 ring-2 ring-transparent hover:ring-slate-400 focus:outline-none transition-transform hover:scale-110" title="Cinza"></button>
+                </div>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">Clique em uma cor para aplicá-la imediatamente ao painel e aos botões.</p>
+            </div>
+        </div>
+
     </div>
 </div>
 {% endblock %}
