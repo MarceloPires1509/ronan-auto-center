@@ -1,8 +1,10 @@
 from django.urls import path
 from django.views.generic import TemplateView
 from . import views
+from . import api_views
 
 urlpatterns = [
+    path('api/clientes/criar/', api_views.api_criar_cliente, name='api_criar_cliente'),
     # PWA
     path('manifest.json', TemplateView.as_view(template_name='manifest.json', content_type='application/json'), name='manifest'),
     path('sw.js', TemplateView.as_view(template_name='sw.js', content_type='application/javascript'), name='sw'),
