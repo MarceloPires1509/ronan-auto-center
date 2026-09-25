@@ -8,25 +8,31 @@
     <script src="https://cdn.tailwindcss.com"></script>
     
     <style>
-        body { min-width: 800px !important; margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f3f4f6; }
-        .container-print { width: 800px !important; max-width: none !important; margin: 2rem auto; padding: 40px; background-color: white; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); border-radius: 0.5rem; }
+        body { min-width: 800px !important; margin: 0; padding: 0; font-family: 'Arial', sans-serif; background-color: #f3f4f6; }
+        .container-print { width: 800px !important; max-width: none !important; margin: 2rem auto; padding: 40px; background-color: white; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); border-radius: 8px; }
         
-        /* Modernized Box Styles (Matches the PDF structure but modern) */
-        .info-box { border: 1px solid #cbd5e1; border-radius: 6px; margin-bottom: 12px; display: flex; font-size: 13px; overflow: hidden; background-color: #f8fafc; box-shadow: inset 0 1px 2px rgba(0,0,0,0.02); }
-        .info-label { background-color: #e2e8f0; border-right: 1px solid #cbd5e1; padding: 8px 12px; font-weight: bold; color: #475569; white-space: nowrap; font-size: 12px; text-transform: uppercase; }
-        .info-value { padding: 8px 12px; flex-grow: 1; text-transform: uppercase; font-weight: 600; color: #0f172a; background-color: white; }
+        /* Modernized Box Styles (Exactly matching structure but clean) */
+        .info-row { display: flex; gap: 12px; margin-bottom: 12px; }
+        .info-box { border: 1.5px solid #94a3b8; border-radius: 6px; display: flex; font-size: 13px; overflow: hidden; background-color: white; }
+        .info-label { background-color: #f1f5f9; border-right: 1.5px solid #94a3b8; padding: 6px 12px; font-weight: bold; color: #334155; white-space: nowrap; font-size: 12px; text-transform: uppercase; align-items: center; display: flex; }
+        .info-value { padding: 6px 12px; flex-grow: 1; text-transform: uppercase; font-weight: 600; color: #0f172a; display: flex; align-items: center; }
         
-        /* Modernized Table Styles */
-        .table-custom { width: 100%; border-collapse: separate; border-spacing: 0; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 24px; overflow: hidden; }
-        .table-custom th { border-bottom: 1px solid #cbd5e1; border-right: 1px solid #cbd5e1; background-color: #f1f5f9; padding: 10px; font-size: 12px; font-weight: bold; color: #475569; text-transform: uppercase; }
-        .table-custom th:last-child { border-right: none; }
-        .table-custom td { border-bottom: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0; padding: 10px; font-size: 13px; color: #334155; }
-        .table-custom td:last-child { border-right: none; }
+        /* Table Styles */
+        .table-custom { width: 100%; border-collapse: separate; border-spacing: 0; border: 1.5px solid #94a3b8; border-radius: 8px; overflow: hidden; }
+        .table-custom th { border-bottom: 1.5px solid #94a3b8; border-right: 1.5px solid #94a3b8; background-color: #f1f5f9; padding: 8px; font-size: 12px; font-weight: bold; color: #334155; text-align: left; }
+        .table-custom th.center { text-align: center; }
+        .table-custom th:last-child { border-right: none; text-align: right; }
+        .table-custom td { border-bottom: 1px solid #cbd5e1; border-right: 1.5px solid #94a3b8; padding: 8px; font-size: 13px; color: #334155; }
+        .table-custom td.center { text-align: center; font-weight: 600; }
+        .table-custom td:last-child { border-right: none; text-align: right; font-weight: 600; }
         .table-custom tr:last-child td { border-bottom: none; }
         
-        .table-custom tr.obs-row td { background-color: #f8fafc; color: #475569; padding: 16px 10px; font-size: 12px; font-weight: 600; }
-        .table-custom tr.total-row td { border-top: 1px solid #94a3b8; background-color: #e2e8f0; color: #0f172a; font-weight: 800; font-size: 15px; padding: 12px 10px; }
-        .total-bg { text-align: center !important; text-transform: uppercase; letter-spacing: 0.05em; }
+        .table-custom tr.obs-row td { background-color: #f8fafc; padding: 12px 8px; border-bottom: 1.5px solid #94a3b8; }
+        
+        .total-wrapper { display: flex; justify-content: flex-end; width: 100%; margin-top: -1.5px; }
+        .total-box { border: 1.5px solid #94a3b8; border-top: none; border-radius: 0 0 8px 8px; display: flex; width: 30%; overflow: hidden; }
+        .total-label { background-color: #e2e8f0; padding: 8px 12px; font-weight: bold; font-size: 14px; border-right: 1.5px solid #94a3b8; color: #334155; }
+        .total-value { padding: 8px 12px; font-weight: 900; font-size: 15px; color: #0f172a; flex-grow: 1; text-align: right; background-color: white; }
         
         @media print {
             body { -webkit-print-color-adjust: exact; print-color-adjust: exact; background-color: white !important; }
@@ -47,17 +53,17 @@
             </button>
         </div>
 
-        <!-- Cabeçalho (Logo Esquerda, Textos Direita) -->
-        <div class="flex justify-between items-center mb-8 pb-4">
+        <!-- Cabeçalho idêntico à imagem -->
+        <div class="flex justify-between items-start mb-8">
             <div class="w-1/2">
                 {% if config_global.logo %}
-                    <img src="{{ config_global.logo.url }}" alt="{{ config_global.nome_loja }}" style="max-height: 90px; max-width: 250px; object-fit: contain;">
+                    <img src="{{ config_global.logo.url }}" alt="{{ config_global.nome_loja }}" style="max-height: 110px; max-width: 250px; object-fit: contain;">
                 {% else %}
-                    <img src="{% static 'img/logo.png' %}" alt="Ronan Auto Center" style="max-height: 90px; max-width: 250px; object-fit: contain;">
+                    <img src="{% static 'img/logo.png' %}" alt="Ronan Auto Center" style="max-height: 110px; max-width: 250px; object-fit: contain;">
                 {% endif %}
             </div>
-            <div class="w-1/2 text-right text-sm text-gray-700 leading-relaxed font-semibold">
-                <h1 class="text-lg font-black text-gray-900 uppercase tracking-tight">{{ config_global.nome_loja|default:'RONAN AUTO CENTER' }}</h1>
+            <div class="w-1/2 text-right text-xs text-gray-800 font-bold leading-relaxed">
+                <h1 class="text-sm uppercase">{{ config_global.nome_loja|default:'RONAN AUTO CENTER' }}</h1>
                 <p>CNPJ: 42.274.453/0001-56</p>
                 {% if config_global.endereco_completo %}
                     <p class="uppercase whitespace-pre-line">{{ config_global.endereco_completo }}</p>
@@ -65,77 +71,79 @@
                     <p class="uppercase">RUA T39 QD01 LT02 SETOR BUENO<br>GOIÂNIA/GO</p>
                 {% endif %}
                 <p>TEL: {{ config_global.telefone|default:'(62) 98245-7476' }}</p>
-                <p class="mt-4 text-gray-500">DATA: <span class="text-gray-900">{{ orcamento.criado_em|date:"d/m/Y" }}</span></p>
+                <p class="mt-6 uppercase">DATA: {{ orcamento.criado_em|date:"d/m/Y" }}</p>
             </div>
         </div>
 
-        <!-- Título do Documento -->
-        <h2 class="text-center text-xl font-black text-gray-900 uppercase mb-6 tracking-widest">{{ orcamento.tipo_documento|default:'ORÇAMENTO' }} DE PRODUTOS E SERVIÇOS</h2>
-
-        <!-- Blocos de Informação do Cliente (Estilo PDF Modernizado) -->
-        <div class="info-box">
-            <div class="info-label">CLIENTE:</div>
-            <div class="info-value">{{ orcamento.cliente.nome }}</div>
+        <!-- Campos Quadrados Modernizados (Grid) -->
+        <div class="info-row">
+            <div class="info-box w-full">
+                <div class="info-label">CLIENTE:</div>
+                <div class="info-value">{{ orcamento.cliente.nome }}</div>
+            </div>
         </div>
         
-        <div class="flex gap-3">
-            <div class="info-box flex-grow" style="flex: 2;">
+        <div class="info-row">
+            <div class="info-box" style="width: 45%;">
                 <div class="info-label">MODELO:</div>
                 <div class="info-value">{{ orcamento.cliente.veiculo|default:'' }}</div>
             </div>
-            <div class="info-box flex-grow" style="flex: 1;">
+            <div class="info-box" style="width: 30%;">
                 <div class="info-label">PLACA:</div>
                 <div class="info-value">{{ orcamento.cliente.placa|default:'' }}</div>
             </div>
-            <div class="info-box flex-grow" style="flex: 1;">
+            <div class="info-box" style="width: 25%;">
                 <div class="info-label">DESCONTO:</div>
                 <div class="info-value"></div>
             </div>
         </div>
 
-        <div class="flex gap-3">
-            <div class="info-box flex-grow">
+        <div class="info-row">
+            <div class="info-box" style="width: 45%;">
                 <div class="info-label">KM:</div>
                 <div class="info-value">{% if orcamento.quilometragem %}{{ orcamento.quilometragem }}{% endif %}</div>
             </div>
-            <div class="info-box flex-grow">
+            <div class="info-box" style="width: 30%;">
                 <div class="info-label">ANO:</div>
                 <div class="info-value"></div>
             </div>
-            <div class="info-box flex-grow">
+            <div class="info-box" style="width: 25%;">
                 <div class="info-label">COR:</div>
                 <div class="info-value"></div>
             </div>
         </div>
 
-        <div class="flex gap-3 mb-8">
-            <div class="info-box flex-grow" style="flex: 2;">
+        <div class="info-row mb-8">
+            <div class="info-box" style="width: 65%;">
                 <div class="info-label">FORMA DE PAGAMENTO:</div>
                 <div class="info-value"></div>
             </div>
-            <div class="info-box flex-grow" style="flex: 1;">
+            <div class="info-box" style="width: 35%;">
                 <div class="info-label">NÚMERO DE O.S:</div>
-                <div class="info-value text-center font-black text-blue-700" style="font-size: 15px;">{{ orcamento.id|stringformat:"04d" }}</div>
+                <div class="info-value text-blue-800" style="justify-content: center; font-size: 15px;">{{ orcamento.id|stringformat:"04d" }}</div>
             </div>
         </div>
 
-        <!-- Tabela Unificada de Produtos e Serviços -->
+        <!-- Título Centralizado -->
+        <h2 class="text-center text-lg font-black text-black uppercase mb-4 tracking-widest">{{ orcamento.tipo_documento|default:'ORÇAMENTO' }} DE PRODUTOS E SERVIÇOS</h2>
+
+        <!-- Tabela -->
         <table class="table-custom">
             <thead>
                 <tr>
-                    <th style="width: 12%; text-align: center;">QUANT.</th>
+                    <th style="width: 12%;" class="center">QUANT.</th>
                     <th style="width: 68%;">DESCRIÇÃO</th>
-                    <th style="width: 20%; text-align: center;">VALOR (R$)</th>
+                    <th style="width: 20%;">VALOR</th>
                 </tr>
             </thead>
             <tbody>
                 <!-- Loop nas Peças -->
                 {% for item in orcamento.itens.all %}
                     {% if item.tipo == 'PECA' %}
-                    <tr class="hover:bg-slate-50 transition-colors">
-                        <td style="text-align: center; font-weight: 600;">{{ item.quantidade }}</td>
-                        <td style="font-weight: 500;">{{ item.nome }}</td>
-                        <td style="text-align: right; font-weight: 600;">{{ item.preco_total }}</td>
+                    <tr>
+                        <td class="center">{{ item.quantidade }}</td>
+                        <td>{{ item.nome }}</td>
+                        <td>{{ item.preco_total }}</td>
                     </tr>
                     {% endif %}
                 {% endfor %}
@@ -143,43 +151,43 @@
                 <!-- Loop nos Serviços -->
                 {% for item in orcamento.itens.all %}
                     {% if item.tipo == 'SERVICO' %}
-                    <tr class="hover:bg-slate-50 transition-colors">
-                        <td style="text-align: center; color: #94a3b8;">-</td>
-                        <td style="font-weight: 500;">{{ item.nome }}</td>
-                        <td style="text-align: right; font-weight: 600;">{{ item.preco_total }}</td>
+                    <tr>
+                        <td class="center text-gray-400">-</td>
+                        <td>{{ item.nome }}</td>
+                        <td>{{ item.preco_total }}</td>
                     </tr>
                     {% endif %}
                 {% endfor %}
 
-                <!-- Linhas em branco estilizadas para preencher espaço -->
-                <tr><td style="height: 30px;"></td><td></td><td></td></tr>
-                <tr><td style="height: 30px;"></td><td></td><td></td></tr>
+                <!-- Espaçadores para design idêntico -->
+                <tr><td style="height: 28px;"></td><td></td><td></td></tr>
+                <tr><td style="height: 28px;"></td><td></td><td></td></tr>
+                <tr><td style="height: 28px;"></td><td></td><td></td></tr>
+                <tr><td style="height: 28px;"></td><td></td><td></td></tr>
 
-                <!-- Linha de Observação -->
+                <!-- Observação -->
                 <tr class="obs-row">
                     <td colspan="3">
-                        <div style="min-height: 40px; display: flex; flex-direction: column;">
-                            <span style="margin-bottom: auto;">OBS:</span>
+                        <div style="font-weight: bold; font-size: 13px;">
+                            OBS: <span class="text-gray-500 italic font-normal ml-2">(Notas adicionais)</span>
                         </div>
                     </td>
                 </tr>
-                
-                <!-- Linha de Total -->
-                <tr class="total-row">
-                    <td colspan="2" class="total-bg">TOTAL GERAL</td>
-                    <td style="text-align: right;">{{ orcamento.total }}</td>
-                </tr>
             </tbody>
         </table>
+        
+        <!-- Total (Anexado abaixo da tabela à direita) -->
+        <div class="total-wrapper">
+            <div class="total-box">
+                <div class="total-label">TOTAL</div>
+                <div class="total-value">{{ orcamento.total }}</div>
+            </div>
+        </div>
 
-        <!-- Assinaturas -->
-        <div class="mt-20 flex justify-between px-10 text-center text-xs font-bold text-gray-400 uppercase tracking-wider">
-            <div class="w-64 border-t-2 border-gray-300 pt-3 text-gray-500">
-                {{ config_global.nome_loja|default:'RONAN AUTO CENTER' }}
-            </div>
-            <div class="w-64 border-t-2 border-gray-300 pt-3 text-gray-500">
-                ASSINATURA DO CLIENTE
-            </div>
+        <!-- Fundo de Página / Assinaturas -->
+        <div style="margin-top: 100px; padding-bottom: 20px;">
+            <div style="width: 100%; height: 20px; background-color: #cbd5e1; border-top: 1.5px solid #94a3b8; border-bottom: 1.5px solid #94a3b8;"></div>
+            <div style="width: 100%; height: 80px; border: 1.5px solid #94a3b8; border-top: none;"></div>
         </div>
         
     </div>
