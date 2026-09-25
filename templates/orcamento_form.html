@@ -26,6 +26,21 @@
                     {% endfor %}
                 </select>
             </div>
+            
+            <div class="mt-6 border-t dark:border-gray-700 pt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Placa do Veículo (OS)</label>
+                    <input type="text" name="placa_veiculo" class="w-full mt-1 px-3 py-2 border rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-600 uppercase">
+                </div>
+                <div>
+                    <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Modelo do Veículo (OS)</label>
+                    <input type="text" name="modelo_veiculo" class="w-full mt-1 px-3 py-2 border rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-600 uppercase">
+                </div>
+                <div>
+                    <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Quilometragem Atual (Km)</label>
+                    <input type="number" name="quilometragem" class="w-full mt-1 px-3 py-2 border rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-600">
+                </div>
+            </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -127,7 +142,7 @@
             <select name="peca_id[]" onchange="calculateTotals()" required class="flex-1 px-2 py-1 border rounded text-sm bg-white dark:bg-gray-700 dark:text-white dark:border-gray-600">
                 ${options}
             </select>
-            <input type="number" name="peca_qtd[]" value="1" min="1" onchange="calculateTotals()" class="w-16 px-2 py-1 border rounded text-sm text-center">
+            <input type="number" name="peca_qtd[]" value="1" min="1" onchange="calculateTotals()" class="w-16 px-2 py-1 border rounded text-sm text-center bg-white dark:bg-gray-700 dark:text-white dark:border-gray-600">
             <button type="button" onclick="this.parentElement.remove(); calculateTotals();" class="text-red-500 font-bold px-2">&times;</button>
         `;
         container.appendChild(div);
