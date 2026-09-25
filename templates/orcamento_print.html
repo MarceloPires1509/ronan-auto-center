@@ -169,7 +169,7 @@
                 <tr class="obs-row">
                     <td colspan="3">
                         <div style="font-weight: bold; font-size: 14px;">
-                            OBS: <span class="text-gray-500 italic font-normal ml-2">(Notas adicionais)</span>
+                            OBS: <span class="text-gray-500 italic font-normal ml-2">{% if orcamento.observacao %}{{ orcamento.observacao|linebreaksbr }}{% endif %}</span>
                         </div>
                     </td>
                 </tr>

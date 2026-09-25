@@ -205,9 +205,10 @@ def novo_orcamento(request):
             
             orcamento = Orcamento.objects.create(
                 cliente=cliente,
-                placa_veiculo=cliente.placa,
-                modelo_veiculo=cliente.veiculo,
-                quilometragem=km_val
+                placa_veiculo=request.POST.get('placa_veiculo', cliente.placa),
+                modelo_veiculo=request.POST.get('modelo_veiculo', cliente.veiculo),
+                quilometragem=km_val,
+                observacao=request.POST.get('observacao', '')
             )
 
             

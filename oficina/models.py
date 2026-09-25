@@ -124,6 +124,7 @@ class Orcamento(models.Model):
     modelo_veiculo = models.CharField(max_length=100, blank=True, null=True)
     quilometragem = models.IntegerField(null=True, blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDENTE')
+    observacao = models.TextField(blank=True, null=True)
     total_pecas = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     total_mao_de_obra = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     total = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
