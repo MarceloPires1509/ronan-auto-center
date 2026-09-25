@@ -23,19 +23,45 @@
                     <input type="text" name="telefone" id="telefone" value="{{ config.telefone|default:'' }}" class="w-full px-3 py-2 border dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none">
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-2">
                     <div class="space-y-2 md:col-span-1">
                         <label class="text-sm font-medium text-gray-700 dark:text-gray-300">CEP</label>
-                        <input type="text" id="cep_loja" placeholder="00000-000" class="w-full px-3 py-2 border dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none">
+                        <input type="text" id="cep" name="cep" value="{{ config.cep|default:'' }}" placeholder="00000-000" class="w-full px-3 py-2 border dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none">
                     </div>
                     <div class="space-y-2 md:col-span-3">
-                        <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Endereço Completo</label>
-                        <textarea name="endereco_completo" id="endereco_completo" rows="3" class="w-full px-3 py-2 border dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none">{{ config.endereco_completo|default:'' }}</textarea>
+                        <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Logradouro (Rua, Av, etc)</label>
+                        <input type="text" id="endereco" name="endereco" value="{{ config.endereco|default:'' }}" class="w-full px-3 py-2 border dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none">
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-2">
+                    <div class="space-y-2 md:col-span-1">
+                        <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Número</label>
+                        <input type="text" id="numero" name="numero" value="{{ config.numero|default:'' }}" placeholder="S/N" class="w-full px-3 py-2 border dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none">
+                    </div>
+                    <div class="space-y-2 md:col-span-3">
+                        <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Complemento (Opcional)</label>
+                        <input type="text" id="complemento" name="complemento" value="{{ config.complemento|default:'' }}" placeholder="Sala, Galpão, Ponto de Referência..." class="w-full px-3 py-2 border dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none">
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-2">
+                    <div class="space-y-2 md:col-span-2">
+                        <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Bairro</label>
+                        <input type="text" id="bairro" name="bairro" value="{{ config.bairro|default:'' }}" class="w-full px-3 py-2 border dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none">
+                    </div>
+                    <div class="space-y-2 md:col-span-1">
+                        <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Cidade</label>
+                        <input type="text" id="cidade" name="cidade" value="{{ config.cidade|default:'' }}" class="w-full px-3 py-2 border dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none">
+                    </div>
+                    <div class="space-y-2 md:col-span-1">
+                        <label class="text-sm font-medium text-gray-700 dark:text-gray-300">UF</label>
+                        <input type="text" id="estado" name="estado" value="{{ config.estado|default:'' }}" placeholder="EX: SP" maxlength="2" class="w-full px-3 py-2 border dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white uppercase focus:outline-none">
                     </div>
                 </div>
 
                 <script>
-                    document.getElementById('cep_loja').addEventListener('input', function(e) {
+                    document.getElementById('cep').addEventListener('input', function(e) {
                         let v = e.target.value.replace(/\D/g, "");
                         if (v.length > 8) v = v.slice(0, 8);
                         if (v.length > 5) v = v.slice(0, 5) + "-" + v.slice(5);
@@ -46,9 +72,11 @@
                             .then(response => response.json())
                             .then(data => {
                                 if (!data.erro) {
-                                    const enderecoInput = document.getElementById('endereco_completo');
-                                    enderecoInput.value = `${data.logradouro}\nBairro: ${data.bairro}\n${data.localidade}/${data.uf}`;
-                                    enderecoInput.focus();
+                                    document.getElementById('endereco').value = data.logradouro;
+                                    document.getElementById('bairro').value = data.bairro;
+                                    document.getElementById('cidade').value = data.localidade;
+                                    document.getElementById('estado').value = data.uf;
+                                    document.getElementById('numero').focus();
                                 }
                             });
                         }

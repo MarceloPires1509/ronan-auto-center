@@ -378,7 +378,14 @@ def configuracoes(request):
     if request.method == 'POST' and 'salvar_dados' in request.POST:
         config.nome_loja = request.POST.get('nome_loja')
         config.telefone = request.POST.get('telefone')
-        config.endereco_completo = request.POST.get('endereco_completo')
+        config.cep = request.POST.get('cep')
+        config.endereco = request.POST.get('endereco')
+        config.numero = request.POST.get('numero')
+        config.complemento = request.POST.get('complemento')
+        config.bairro = request.POST.get('bairro')
+        config.cidade = request.POST.get('cidade')
+        config.estado = request.POST.get('estado')
+        
         if 'logo' in request.FILES:
             config.logo = request.FILES['logo']
         config.save()

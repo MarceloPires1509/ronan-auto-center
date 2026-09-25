@@ -17,9 +17,49 @@ class Perfil(models.Model):
 
 class Configuracao(models.Model):
     nome_loja = models.CharField(max_length=255, default='Ronan Auto Center')
-    endereco_completo = models.TextField(blank=True, null=True)
     telefone = models.CharField(max_length=20, blank=True, null=True)
     logo = models.ImageField(upload_to='logos/', blank=True, null=True)
+    
+    # Endereço
+    cep = models.CharField(max_length=20, blank=True, null=True)
+    endereco = models.CharField(max_length=255, blank=True, null=True)
+    numero = models.CharField(max_length=20, blank=True, null=True)
+    complemento = models.CharField(max_length=100, blank=True, null=True)
+    bairro = models.CharField(max_length=100, blank=True, null=True)
+    cidade = models.CharField(max_length=100, blank=True, null=True)
+    estado = models.CharField(max_length=2, blank=True, null=True)
+
+    @property
+    def endereco_completo(self):
+        parts = []
+        if self.endereco:
+            line1 = f"{self.endereco}"
+            if self.numero:
+                line1 += f", {self.numero}"
+            parts.append(line1)
+        if self.complemento:
+            parts.append(self.complemento)
+        
+        bairro_cidade = []
+        if self.bairro:
+            bairro_cidade.append(f"Bairro: {self.bairro}")
+        
+        cidade_estado = ""
+        if self.cidade:
+            cidade_estado = self.cidade
+        if self.estado:
+            cidade_estado += f"/{self.estado}"
+        
+        if cidade_estado:
+            bairro_cidade.append(cidade_estado)
+            
+        if bairro_cidade:
+            parts.append(" - ".join(bairro_cidade))
+            
+        if self.cep:
+            parts.append(f"CEP: {self.cep}")
+            
+        return "\n".join(parts)
     
     def __str__(self):
         return self.nome_loja
