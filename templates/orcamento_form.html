@@ -25,7 +25,7 @@
                 <select id="cliente_id" name="cliente_id" required onchange="autofillVeiculo()" class="w-full px-3 py-2 border rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-600">
                     <option value="" disabled selected>-- Escolha um cliente --</option>
                     {% for cliente in clientes %}
-                    <option value="{{ cliente.id }}" data-modelo="{{ cliente.veiculo|default:'' }}" data-placa="{{ cliente.placa|default:'' }}">{{ cliente.nome }} ({{ cliente.veiculo|default:"Sem veículo" }} - Placa: {{ cliente.placa|default:"N/D" }})</option>
+                    <option value="{{ cliente.id }}" data-modelo="{{ cliente.veiculo|default:'' }}" data-placa="{{ cliente.placa|default:'' }}">{{ cliente.nome }}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -258,8 +258,8 @@
                 .then(data => {
                     if(data.sucesso) {
                         const cliente = data.cliente;
-                        // Cria a nova option
-                        const optionText = `${cliente.nome} (${cliente.veiculo || 'Sem veículo'} - Placa: ${cliente.placa || 'N/D'})`;
+                        // Cria a nova option com apenas o nome (pedido do usuário)
+                        const optionText = `${cliente.nome}`;
                         const newOption = new Option(optionText, cliente.id, true, true);
                         newOption.setAttribute('data-modelo', cliente.veiculo);
                         newOption.setAttribute('data-placa', cliente.placa);
@@ -270,15 +270,25 @@
                         // Auto-preenche os campos em baixo
                         autofillVeiculo();
                         
+                        const isDark = document.documentElement.classList.contains('dark');
                         Swal.fire({
                             icon: 'success',
                             title: 'Cliente Cadastrado!',
-                            text: 'Cliente selecionado automaticamente.',
-                            timer: 2000,
-                            showConfirmButton: false
+                            text: 'O cliente foi adicionado e selecionado.',
+                            timer: 2500,
+                            showConfirmButton: false,
+                            background: isDark ? '#1f2937' : '#ffffff',
+                            color: isDark ? '#f9fafb' : '#374151'
                         });
                     } else {
-                        Swal.fire('Erro', data.erro, 'error');
+                        const isDark = document.documentElement.classList.contains('dark');
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Erro',
+                            text: data.erro,
+                            background: isDark ? '#1f2937' : '#ffffff',
+                            color: isDark ? '#f9fafb' : '#374151'
+                        });
                     }
                 })
                 .catch(err => {
