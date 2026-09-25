@@ -597,6 +597,10 @@ def busca_placa(request):
         
     return render(request, 'busca_placa.html', {'query': query, 'resultados': resultados})
 
+import json
+from datetime import datetime, date
+
+@login_required
 def lista_financeiro(request):
     mes_atual = timezone.now().month
     ano_atual = timezone.now().year
@@ -607,11 +611,35 @@ def lista_financeiro(request):
     despesas = sum([m.valor for m in movimentacoes if m.tipo == 'DESPESA' and m.status == 'PAGO'])
     saldo = receitas - despesas
     
+    # Dados para o Gráfico (Últimos 6 meses)
+    chart_labels = []
+    chart_receitas = []
+    chart_despesas = []
+    hoje = timezone.now().date()
+    meses_br = ['', 'JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ']
+    
+    for i in range(5, -1, -1):
+        y = hoje.year
+        m = hoje.month - i
+        if m <= 0:
+            m += 12
+            y -= 1
+        
+        chart_labels.append(f"{meses_br[m]}/{str(y)[2:]}")
+        movs = MovimentacaoFinanceira.objects.filter(data_vencimento__year=y, data_vencimento__month=m, status='PAGO')
+        rec = sum([m.valor for m in movs if m.tipo == 'RECEITA'])
+        desp = sum([m.valor for m in movs if m.tipo == 'DESPESA'])
+        chart_receitas.append(float(rec))
+        chart_despesas.append(float(desp))
+    
     return render(request, 'financeiro.html', {
         'movimentacoes': movimentacoes,
         'receitas': receitas,
         'despesas': despesas,
-        'saldo': saldo
+        'saldo': saldo,
+        'chart_labels': json.dumps(chart_labels),
+        'chart_receitas': json.dumps(chart_receitas),
+        'chart_despesas': json.dumps(chart_despesas)
     })
 
 def nova_movimentacao(request):

@@ -27,6 +27,14 @@
         </div>
     </div>
 
+    <!-- Gráfico Financeiro (Últimos 6 meses) -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg border dark:border-gray-700 shadow-sm p-4 w-full">
+        <h3 class="text-gray-500 dark:text-gray-400 text-xs font-bold uppercase mb-4">Fluxo de Caixa (Últimos 6 Meses)</h3>
+        <div class="relative w-full" style="height: 280px;">
+            <canvas id="financeChart"></canvas>
+        </div>
+    </div>
+
     <!-- Tabela -->
     <div class="bg-white dark:bg-gray-800 rounded-lg border dark:border-gray-700 shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
@@ -139,4 +147,96 @@
         </form>
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const isDark = document.documentElement.classList.contains('dark');
+    const textColor = isDark ? '#f9fafb' : '#374151';
+    const gridColor = isDark ? '#374151' : '#e5e7eb';
+
+    const ctx = document.getElementById('financeChart').getContext('2d');
+    
+    // Parse os dados vindos do Django (estão em string JSON)
+    const labels = JSON.parse('{{ chart_labels|safe }}');
+    const dataReceitas = JSON.parse('{{ chart_receitas|safe }}');
+    const dataDespesas = JSON.parse('{{ chart_despesas|safe }}');
+    
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Receitas',
+                    data: dataReceitas,
+                    backgroundColor: '#16a34a', // green-600
+                    borderRadius: 4,
+                    barPercentage: 0.6,
+                    categoryPercentage: 0.8
+                },
+                {
+                    label: 'Despesas',
+                    data: dataDespesas,
+                    backgroundColor: '#dc2626', // red-600
+                    borderRadius: 4,
+                    barPercentage: 0.6,
+                    categoryPercentage: 0.8
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: {
+                        color: textColor,
+                        usePointStyle: true,
+                        boxWidth: 8
+                    }
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false,
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            if (context.parsed.y !== null) {
+                                label += new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(context.parsed.y);
+                            }
+                            return label;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        color: textColor
+                    }
+                },
+                y: {
+                    grid: {
+                        color: gridColor
+                    },
+                    ticks: {
+                        color: textColor,
+                        callback: function(value) {
+                            return 'R$ ' + value;
+                        }
+                    }
+                }
+            }
+        }
+    });
+});
+</script>
 {% endblock %}
