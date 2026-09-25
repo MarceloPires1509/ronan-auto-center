@@ -26,6 +26,31 @@
             --color-primary: #2563eb; /* blue-600 */
             --color-primary-hover: #1d4ed8; /* blue-700 */
         }
+        
+        /* SweetAlert2 Dark Mode Overrides */
+        html.dark body.swal2-shown [class^="swal2-"] {
+            --swal2-background: #1f2937; /* gray-800 */
+            --swal2-title-color: #f9fafb; /* gray-50 */
+            --swal2-html-container-color: #d1d5db; /* gray-300 */
+        }
+        html.dark .swal2-popup {
+            border: 1px solid #374151; /* gray-700 */
+        }
+        html.dark .swal2-input, html.dark .swal2-select, html.dark .swal2-textarea {
+            background-color: #374151; /* gray-700 */
+            color: #f9fafb; /* gray-50 */
+            border-color: #4b5563; /* gray-600 */
+        }
+        html.dark .swal2-input::placeholder {
+            color: #9ca3af; /* gray-400 */
+        }
+        html.dark .swal2-input:focus {
+            box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.06), 0 0 0 3px rgba(37, 99, 235, 0.5); /* focus blue */
+        }
+        html.dark .swal2-validation-message {
+            background-color: #374151; /* gray-700 */
+            color: #f87171; /* red-400 */
+        }
     </style>
     <!-- Script para carregar o tema ANTES da página renderizar (evita a piscada branca) -->
     <script>
