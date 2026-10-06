@@ -195,48 +195,66 @@ def novo_orcamento(request):
         cliente_id = request.POST.get('cliente_id')
         pecas_ids = request.POST.getlist('peca_id[]')
         pecas_qtds = request.POST.getlist('peca_qtd[]')
+        pecas_garantias = request.POST.getlist('peca_garantia[]')
         servicos_ids = request.POST.getlist('servico_id[]')
-        
+        servicos_garantias = request.POST.getlist('servico_garantia[]')
         
         if cliente_id:
             cliente = get_object_or_404(Cliente, id=cliente_id)
             quilometragem = request.POST.get('quilometragem')
             km_val = int(quilometragem) if quilometragem and quilometragem.isdigit() else None
             
+            proxima_revisao_km = request.POST.get('proxima_revisao_km')
+            rev_km = int(proxima_revisao_km) if proxima_revisao_km and proxima_revisao_km.isdigit() else None
+            proxima_revisao_data = request.POST.get('proxima_revisao_data')
+            rev_data = proxima_revisao_data if proxima_revisao_data else None
+            
             orcamento = Orcamento.objects.create(
                 cliente=cliente,
                 placa_veiculo=request.POST.get('placa_veiculo', cliente.placa),
                 modelo_veiculo=request.POST.get('modelo_veiculo', cliente.veiculo),
                 quilometragem=km_val,
+                proxima_revisao_km=rev_km,
+                proxima_revisao_data=rev_data,
                 observacao=request.POST.get('observacao', '')
             )
 
-            
             total_pecas = 0.0
             total_servicos = 0.0
             
             # Adiciona peças
-            for pid, qtd_str in zip(pecas_ids, pecas_qtds):
+            for i, pid in enumerate(pecas_ids):
                 if pid:
                     peca = get_object_or_404(Peca, id=pid)
+                    qtd_str = pecas_qtds[i] if i < len(pecas_qtds) else '1'
                     qtd = int(qtd_str) if qtd_str else 1
                     preco_total = float(peca.preco_venda) * qtd
+                    
+                    garantia_str = pecas_garantias[i] if i < len(pecas_garantias) else '90'
+                    garantia = int(garantia_str) if garantia_str and garantia_str.isdigit() else 90
+                    
                     ItemOrcamento.objects.create(
                         orcamento=orcamento, tipo='PECA', peca=peca, 
                         nome=peca.nome, quantidade=qtd, 
-                        preco_unitario=peca.preco_venda, preco_total=preco_total
+                        preco_unitario=peca.preco_venda, preco_total=preco_total,
+                        garantia_dias=garantia
                     )
                     total_pecas += preco_total
             
             # Adiciona serviços
-            for sid in servicos_ids:
+            for i, sid in enumerate(servicos_ids):
                 if sid:
                     servico = get_object_or_404(Servico, id=sid)
                     preco_total = float(servico.preco_venda)
+                    
+                    garantia_str = servicos_garantias[i] if i < len(servicos_garantias) else '90'
+                    garantia = int(garantia_str) if garantia_str and garantia_str.isdigit() else 90
+                    
                     ItemOrcamento.objects.create(
                         orcamento=orcamento, tipo='SERVICO', servico=servico,
                         nome=servico.nome, quantidade=1,
-                        preco_unitario=servico.preco_venda, preco_total=preco_total
+                        preco_unitario=servico.preco_venda, preco_total=preco_total,
+                        garantia_dias=garantia
                     )
                     total_servicos += preco_total
                     
@@ -462,9 +480,13 @@ def arquivar_servico(request, id):
 @login_required
 def detalhe_cliente(request, id):
     cliente = get_object_or_404(Cliente, id=id)
-    # Mostra historico de orcamentos
     orcamentos = cliente.orcamentos.all().order_by('-criado_em')
-    return render(request, 'cliente_detail.html', {'cliente': cliente, 'orcamentos': orcamentos})
+    
+    ultima_revisao = cliente.orcamentos.exclude(proxima_revisao_km__isnull=True, proxima_revisao_data__isnull=True).order_by('-criado_em').first()
+    if not ultima_revisao:
+        ultima_revisao = cliente.orcamentos.filter(proxima_revisao_km__isnull=False).order_by('-criado_em').first()
+    
+    return render(request, 'cliente_detail.html', {'cliente': cliente, 'orcamentos': orcamentos, 'ultima_revisao': ultima_revisao})
 
 @login_required
 def exportar_historico_cliente(request, id):

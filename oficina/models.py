@@ -123,6 +123,8 @@ class Orcamento(models.Model):
     placa_veiculo = models.CharField(max_length=20, blank=True, null=True)
     modelo_veiculo = models.CharField(max_length=100, blank=True, null=True)
     quilometragem = models.IntegerField(null=True, blank=True)
+    proxima_revisao_km = models.IntegerField(null=True, blank=True, verbose_name='Próxima Revisão (Km)')
+    proxima_revisao_data = models.DateField(null=True, blank=True, verbose_name='Próxima Revisão (Data)')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDENTE')
     observacao = models.TextField(blank=True, null=True)
     total_pecas = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
@@ -130,6 +132,10 @@ class Orcamento(models.Model):
     total = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     criado_em = models.DateTimeField(auto_now_add=True)
     atualizado_em = models.DateTimeField(auto_now=True)
+
+    @property
+    def possui_garantia_ativa(self):
+        return any(item.em_garantia for item in self.itens.all())
 
     def __str__(self):
         return f"Orçamento #{self.id} - {self.cliente.nome}"
@@ -154,6 +160,22 @@ class ItemOrcamento(models.Model):
     quantidade = models.IntegerField(default=1)
     preco_unitario = models.DecimalField(max_digits=10, decimal_places=2)
     preco_total = models.DecimalField(max_digits=10, decimal_places=2)
+    garantia_dias = models.IntegerField(default=90, help_text='Dias de garantia')
+    
+    @property
+    def data_vencimento_garantia(self):
+        from datetime import timedelta
+        if self.orcamento and self.orcamento.criado_em:
+            return self.orcamento.criado_em.date() + timedelta(days=self.garantia_dias)
+        return None
+
+    @property
+    def em_garantia(self):
+        from django.utils import timezone
+        vencimento = self.data_vencimento_garantia
+        if vencimento:
+            return timezone.now().date() <= vencimento
+        return False
     
     def __str__(self):
         return f"{self.quantidade}x {self.nome}"

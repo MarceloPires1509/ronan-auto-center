@@ -103,13 +103,9 @@
                 <div class="info-label">KM:</div>
                 <div class="info-value">{% if orcamento.quilometragem %}{{ orcamento.quilometragem }}{% endif %}</div>
             </div>
-            <div class="info-box" style="width: 30%;">
-                <div class="info-label">ANO:</div>
-                <div class="info-value"></div>
-            </div>
-            <div class="info-box" style="width: 25%;">
-                <div class="info-label">COR:</div>
-                <div class="info-value"></div>
+            <div class="info-box" style="width: 55%;">
+                <div class="info-label">PRÓX. REVISÃO/TROCA:</div>
+                <div class="info-value" style="font-size: 13px;">{% if orcamento.proxima_revisao_km %}Km: {{ orcamento.proxima_revisao_km }} {% endif %}{% if orcamento.proxima_revisao_data %} | Data: {{ orcamento.proxima_revisao_data|date:"d/m/Y" }}{% endif %}</div>
             </div>
         </div>
 
@@ -142,7 +138,7 @@
                     {% if item.tipo == 'PECA' %}
                     <tr>
                         <td class="center">{{ item.quantidade }}</td>
-                        <td>{{ item.nome }}</td>
+                        <td>{{ item.nome }} <span class="text-gray-500 text-xs italic ml-1">{% if item.garantia_dias > 0 %}(Garantia: {{ item.garantia_dias }} dias){% endif %}</span></td>
                         <td>{{ item.preco_total }}</td>
                     </tr>
                     {% endif %}
@@ -153,7 +149,7 @@
                     {% if item.tipo == 'SERVICO' %}
                     <tr>
                         <td class="center text-gray-400">-</td>
-                        <td>{{ item.nome }}</td>
+                        <td>{{ item.nome }} <span class="text-gray-500 text-xs italic ml-1">{% if item.garantia_dias > 0 %}(Garantia: {{ item.garantia_dias }} dias){% endif %}</span></td>
                         <td>{{ item.preco_total }}</td>
                     </tr>
                     {% endif %}
