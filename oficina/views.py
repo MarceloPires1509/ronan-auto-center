@@ -16,7 +16,7 @@ from django.contrib import messages
 from .models import Cliente, Peca, Servico, Orcamento, ItemOrcamento, Perfil, Configuracao, MovimentacaoFinanceira, Agendamento
 import json
 
-from django.db.models import Sum, F
+from django.db.models import Sum, F, F
 from django.utils import timezone
 
 @login_required
@@ -928,3 +928,73 @@ def baixar_backup(request):
         return response
     messages.error(request, 'Arquivo de banco de dados não encontrado.')
     return redirect('configuracoes')
+
+@login_required
+def dashboard_drilldown(request, tipo):
+    agora = timezone.now()
+    mes_atual = agora.month
+    ano_atual = agora.year
+    
+    dados = []
+    titulo = ""
+    
+    if tipo == 'bruta':
+        titulo = "Receita Bruta do Mês (Por Cliente)"
+        orcamentos = Orcamento.objects.filter(status='APROVADO', criado_em__month=mes_atual, criado_em__year=ano_atual).select_related('cliente').order_by('cliente__nome')
+        
+        # Agrupar por cliente
+        clientes_dict = {}
+        for orc in orcamentos:
+            if orc.cliente.id not in clientes_dict:
+                clientes_dict[orc.cliente.id] = {'cliente': orc.cliente, 'orcamentos': [], 'total': 0}
+            clientes_dict[orc.cliente.id]['orcamentos'].append(orc)
+            clientes_dict[orc.cliente.id]['total'] += float(orc.total)
+            
+        dados = list(clientes_dict.values())
+        dados.sort(key=lambda x: x['total'], reverse=True)
+        
+    elif tipo == 'liquida':
+        titulo = "Receita Líquida do Mês (Por Cliente)"
+        orcamentos = Orcamento.objects.filter(status='APROVADO', criado_em__month=mes_atual, criado_em__year=ano_atual).select_related('cliente').order_by('cliente__nome')
+        
+        clientes_dict = {}
+        for orc in orcamentos:
+            # Calcular custo
+            custo = 0
+            for item in orc.itens.all():
+                if item.tipo == 'PECA' and item.peca:
+                    custo += float(item.peca.preco_custo) * item.quantidade
+                elif item.tipo == 'SERVICO' and item.servico:
+                    custo += float(item.servico.preco_custo) * item.quantidade
+            
+            lucro = float(orc.total) - custo
+            
+            if orc.cliente.id not in clientes_dict:
+                clientes_dict[orc.cliente.id] = {'cliente': orc.cliente, 'orcamentos': [], 'total': 0}
+            
+            orc.lucro = lucro
+            clientes_dict[orc.cliente.id]['orcamentos'].append(orc)
+            clientes_dict[orc.cliente.id]['total'] += lucro
+            
+        dados = list(clientes_dict.values())
+        dados.sort(key=lambda x: x['total'], reverse=True)
+        
+    elif tipo == 'pendentes':
+        titulo = "Orçamentos Pendentes (Por Cliente)"
+        orcamentos = Orcamento.objects.filter(status='PENDENTE').select_related('cliente').order_by('cliente__nome')
+        
+        clientes_dict = {}
+        for orc in orcamentos:
+            if orc.cliente.id not in clientes_dict:
+                clientes_dict[orc.cliente.id] = {'cliente': orc.cliente, 'orcamentos': [], 'total': 0}
+            clientes_dict[orc.cliente.id]['orcamentos'].append(orc)
+            clientes_dict[orc.cliente.id]['total'] += float(orc.total)
+            
+        dados = list(clientes_dict.values())
+        
+    elif tipo == 'pecas':
+        titulo = "Peças com Estoque Baixo"
+        pecas = Peca.objects.filter(quantidade_estoque__lte=F('estoque_minimo')).order_by('nome')
+        return render(request, 'drilldown.html', {'titulo': titulo, 'pecas': pecas, 'tipo': tipo})
+
+    return render(request, 'drilldown.html', {'titulo': titulo, 'dados': dados, 'tipo': tipo})
