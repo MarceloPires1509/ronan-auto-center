@@ -4,6 +4,16 @@
 
 {% block content %}
 <div class="max-w-6xl mx-auto space-y-6">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Configurações Gerais</h1>
+        {% if request.user.is_superuser %}
+        <a href="{% url 'baixar_backup' %}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium flex items-center gap-2 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            Fazer Download do Banco (Backup)
+        </a>
+        {% endif %}
+    </div>
+
     <div class="max-w-2xl mx-auto">
         
         <!-- Configurações Gerais da Loja -->

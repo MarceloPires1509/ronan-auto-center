@@ -1,4 +1,13 @@
 from django.shortcuts import render, redirect, get_object_or_404
+import sys
+import os
+from datetime import date
+from glob import glob
+try:
+    from backup_banco import realizar_backup, BACKUP_DIR
+except ImportError:
+    pass
+
 from django.http import HttpResponse
 import openpyxl
 from django.contrib.auth.models import User
@@ -33,6 +42,19 @@ def novo_usuario(request):
 
 @login_required
 def dashboard(request):
+    # --- Auto Backup ---
+    try:
+        data_hoje = date.today().strftime('%Y-%m-%d')
+        tem_backup_hoje = False
+        if os.path.exists(BACKUP_DIR):
+            if glob(os.path.join(BACKUP_DIR, f'backup_db_{data_hoje}*.sqlite3')):
+                tem_backup_hoje = True
+        if not tem_backup_hoje:
+            realizar_backup()
+    except Exception:
+        pass
+    # -------------------
+    
     agora = timezone.now()
     mes_atual = agora.month
     ano_atual = agora.year
@@ -893,3 +915,16 @@ def alterar_status_agendamento(request, id):
             agendamento.status = novo_status
             agendamento.save()
     return redirect('agenda')
+
+@login_required
+def baixar_backup(request):
+    if not request.user.is_superuser:
+        messages.error(request, 'Apenas super administradores podem baixar o backup.')
+        return redirect('configuracoes')
+        
+    db_path = os.path.join(settings.BASE_DIR, 'db.sqlite3')
+    if os.path.exists(db_path):
+        response = FileResponse(open(db_path, 'rb'), as_attachment=True, filename=f'backup_ronan_autocenter_{date.today().strftime("%Y%m%d")}.sqlite3')
+        return response
+    messages.error(request, 'Arquivo de banco de dados não encontrado.')
+    return redirect('configuracoes')
