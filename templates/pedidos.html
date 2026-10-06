@@ -78,7 +78,7 @@ function abrirModalFaturar(id, total) {
                     </thead>
                     <tbody class="divide-y divide-gray-200 dark:divide-gray-700 text-gray-900 dark:text-gray-100 flex flex-col sm:table-row-group">
                         {% for pedido in pedidos %}
-                        <tr class="flex flex-col sm:table-row hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors p-4 sm:p-0 {% if pedido.status == 'FINALIZADO' %}bg-green-50 dark:bg-green-900/10 opacity-70{% endif %}">
+                        <tr onclick="if(!event.target.closest('a') && !event.target.closest('button') && !event.target.closest('select')) window.location='{% url 'detalhe_orcamento' pedido.id %}'" class="flex flex-col sm:table-row hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors p-4 sm:p-0 cursor-pointer {% if pedido.status == 'FINALIZADO' %}bg-green-50 dark:bg-green-900/10 opacity-70{% endif %}">
                             <td class="px-2 sm:px-6 py-1 sm:py-4 font-semibold text-gray-900 dark:text-white"><span class="sm:hidden font-medium text-gray-500 text-xs uppercase mr-2"></span><a href="{% url 'detalhe_orcamento' pedido.id %}" class="hover:underline text-primary">OS #{{ pedido.id|stringformat:"04d" }}</a></td>
                             <td class="px-2 sm:px-6 py-1 sm:py-4 font-medium"><span class="sm:hidden font-medium text-gray-500 text-xs uppercase mr-2 font-normal">Cliente: </span>{{ pedido.cliente.nome }}</td>
                             <td class="px-2 sm:px-6 py-1 sm:py-4"><span class="sm:hidden font-medium text-gray-500 text-xs uppercase mr-2 font-normal">Data: </span>{{ pedido.atualizado_em|date:"d/m/Y H:i" }}</td>
@@ -106,7 +106,10 @@ function abrirModalFaturar(id, total) {
                                     {% endif %}
                                 </form>
                             </td>
-                            <td class="px-2 sm:px-6 py-3 sm:py-4 sm:text-right mt-2 sm:mt-0 border-t sm:border-0 dark:border-gray-700 flex justify-end">
+                            <td class="px-2 sm:px-6 py-3 sm:py-4 sm:text-right mt-2 sm:mt-0 border-t sm:border-0 dark:border-gray-700 flex justify-end gap-2">
+                                <a href="{% url 'detalhe_orcamento' pedido.id %}" class="bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300 px-3 py-1 rounded text-xs font-bold hover:bg-gray-200 dark:hover:bg-gray-600" title="Visualizar Detalhes">
+                                    👁️ Visualizar
+                                </a>
                                 <a href="{% url 'imprimir_orcamento' pedido.id %}" target="_blank" class="bg-blue-100 text-blue-700 dark:text-blue-300 px-3 py-1 rounded text-xs font-bold hover:bg-blue-200" title="Imprimir Via">
                                     🖨️ OS
                                 </a>
