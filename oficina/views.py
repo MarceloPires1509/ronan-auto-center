@@ -15,13 +15,14 @@ def novo_usuario(request):
     if request.method == 'POST':
         nome = request.POST.get('nome')
         telefone = request.POST.get('telefone')
+        username = request.POST.get('username')
         email = request.POST.get('email')
         senha = request.POST.get('senha')
         
-        if User.objects.filter(username=email).exists():
-            messages.error(request, 'Este e-mail já está cadastrado.')
+        if User.objects.filter(username=username).exists():
+            messages.error(request, 'Este login já está em uso.')
         else:
-            user = User.objects.create_user(username=email, email=email, password=senha, first_name=nome)
+            user = User.objects.create_user(username=username, email=email, password=senha, first_name=nome)
             Perfil.objects.create(user=user, telefone=telefone)
             messages.success(request, 'Usuário criado com sucesso!')
             return redirect('dashboard')
@@ -386,13 +387,14 @@ def meu_perfil(request):
         user.first_name = request.POST.get('first_name', '')
         user.last_name = request.POST.get('last_name', '')
         
-        novo_email = request.POST.get('email', '')
-        if novo_email and novo_email != user.email:
-            if User.objects.filter(username=novo_email).exists() or User.objects.filter(email=novo_email).exists():
-                messages.error(request, 'Este e-mail ja esta em uso por outro usuario.')
+        novo_username = request.POST.get('username', '')
+        if novo_username and novo_username != user.username:
+            if User.objects.filter(username=novo_username).exists():
+                messages.error(request, 'Este login já está em uso por outro usuário.')
                 return redirect('meu_perfil')
-            user.email = novo_email
-            user.username = novo_email
+            user.username = novo_username
+        
+        user.email = request.POST.get('email', '')
         
         nova_senha = request.POST.get('nova_senha')
         if nova_senha:
@@ -431,13 +433,14 @@ def editar_usuario(request, id):
         usuario.first_name = request.POST.get('first_name', '')
         usuario.last_name = request.POST.get('last_name', '')
         
-        novo_email = request.POST.get('email', '')
-        if novo_email and novo_email != usuario.email:
-            if User.objects.filter(username=novo_email).exclude(id=usuario.id).exists():
-                messages.error(request, 'E-mail ja esta em uso.')
+        novo_username = request.POST.get('username', '')
+        if novo_username and novo_username != usuario.username:
+            if User.objects.filter(username=novo_username).exclude(id=usuario.id).exists():
+                messages.error(request, 'Login já está em uso.')
                 return redirect('editar_usuario', id=usuario.id)
-            usuario.email = novo_email
-            usuario.username = novo_email
+            usuario.username = novo_username
+            
+        usuario.email = request.POST.get('email', '')
             
         nova_senha = request.POST.get('nova_senha')
         if nova_senha:
