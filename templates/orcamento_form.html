@@ -25,7 +25,7 @@
                 <select id="cliente_id" name="cliente_id" required onchange="autofillVeiculo()" class="w-full px-3 py-2 border rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-600">
                     <option value="" disabled selected>-- Escolha um cliente --</option>
                     {% for cliente in clientes %}
-                    <option value="{{ cliente.id }}" data-modelo="{{ cliente.veiculo|default:'' }}" data-placa="{{ cliente.placa|default:'' }}">{{ cliente.nome }}</option>
+                    <option value="{{ cliente.id }}" data-modelo="{{ cliente.veiculo|default:'' }}" data-placa="{{ cliente.placa|default:'' }}" data-cor="{{ cliente.cor_veiculo|default:'' }}">{{ cliente.nome }}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -38,6 +38,10 @@
                 <div>
                     <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Modelo do Veículo (OS)</label>
                     <input type="text" name="modelo_veiculo" class="w-full mt-1 px-3 py-2 border rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-600 uppercase">
+                </div>
+                <div>
+                    <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Cor do Veículo</label>
+                    <input type="text" name="cor_veiculo" class="w-full mt-1 px-3 py-2 border rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-600 uppercase">
                 </div>
                 <div>
                     <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Quilometragem Atual (Km)</label>
@@ -201,8 +205,10 @@
         if (selectedOption && selectedOption.value) {
             const placa = selectedOption.getAttribute('data-placa');
             const modelo = selectedOption.getAttribute('data-modelo');
+            const cor = selectedOption.getAttribute('data-cor');
             document.querySelector('input[name="placa_veiculo"]').value = placa || '';
             document.querySelector('input[name="modelo_veiculo"]').value = modelo || '';
+            document.querySelector('input[name="cor_veiculo"]').value = cor || '';
         }
     }
 
@@ -276,6 +282,7 @@
                         const newOption = new Option(optionText, cliente.id, true, true);
                         newOption.setAttribute('data-modelo', cliente.veiculo);
                         newOption.setAttribute('data-placa', cliente.placa);
+                        newOption.setAttribute('data-cor', cliente.cor_veiculo);
                         
                         // Adiciona ao select
                         document.getElementById('cliente_id').add(newOption);

@@ -33,7 +33,7 @@
                         <tr class="flex flex-col sm:table-row hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors p-4 sm:p-0">
                             <td class="px-2 sm:px-6 py-1 sm:py-4 font-semibold text-lg sm:text-sm"><a href="{% url 'detalhe_cliente' cliente.id %}" class="text-primary hover:underline">{{ cliente.nome }}</a></td>
                             <td class="px-2 sm:px-6 py-1 sm:py-4"><span class="sm:hidden font-medium text-gray-500 dark:text-gray-400 text-xs uppercase">Telefone: </span>{{ cliente.telefone|default:"-" }}</td>
-                            <td class="px-2 sm:px-6 py-1 sm:py-4"><span class="sm:hidden font-medium text-gray-500 dark:text-gray-400 text-xs uppercase">Veículo: </span>{{ cliente.veiculo|default:"-" }}</td>
+                            <td class="px-2 sm:px-6 py-1 sm:py-4"><span class="sm:hidden font-medium text-gray-500 dark:text-gray-400 text-xs uppercase">Veículo: </span>{{ cliente.veiculo|default:"-" }}{% if cliente.cor_veiculo %} - {{ cliente.cor_veiculo }}{% endif %}</td>
                             <td class="px-2 sm:px-6 py-1 sm:py-4"><span class="sm:hidden font-medium text-gray-500 dark:text-gray-400 text-xs uppercase">Placa: </span>{{ cliente.placa|default:"-" }}</td>
                             <td class="px-2 sm:px-6 py-3 sm:py-4 sm:text-right mt-2 sm:mt-0 border-t sm:border-0 dark:border-gray-700 flex justify-end">
                                 <a href="{% url 'editar_cliente' cliente.id %}" class="text-blue-600 dark:text-blue-400 hover:underline font-medium">Editar</a>

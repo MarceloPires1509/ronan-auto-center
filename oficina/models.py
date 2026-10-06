@@ -81,6 +81,7 @@ class Cliente(models.Model):
     
     veiculo = models.CharField(max_length=255, blank=True, null=True)
     placa = models.CharField(max_length=20, blank=True, null=True)
+    cor_veiculo = models.CharField(max_length=50, blank=True, null=True)
     criado_em = models.DateTimeField(auto_now_add=True)
     atualizado_em = models.DateTimeField(auto_now=True)
 
@@ -123,6 +124,7 @@ class Orcamento(models.Model):
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, related_name='orcamentos')
     placa_veiculo = models.CharField(max_length=20, blank=True, null=True)
     modelo_veiculo = models.CharField(max_length=100, blank=True, null=True)
+    cor_veiculo = models.CharField(max_length=50, blank=True, null=True)
     quilometragem = models.IntegerField(null=True, blank=True)
     proxima_revisao_km = models.IntegerField(null=True, blank=True, verbose_name='Próxima Revisão (Km)')
     proxima_revisao_data = models.DateField(null=True, blank=True, verbose_name='Próxima Revisão (Data)')

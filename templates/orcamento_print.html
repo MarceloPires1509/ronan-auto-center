@@ -86,11 +86,11 @@
         <div class="info-row">
             <div class="info-box" style="width: 45%;">
                 <div class="info-label">MODELO:</div>
-                <div class="info-value">{{ orcamento.cliente.veiculo|default:'' }}</div>
+                <div class="info-value">{{ orcamento.modelo_veiculo|default:orcamento.cliente.veiculo }}{% if orcamento.cor_veiculo %} - {{ orcamento.cor_veiculo }}{% endif %}</div>
             </div>
             <div class="info-box" style="width: 30%;">
                 <div class="info-label">PLACA:</div>
-                <div class="info-value">{{ orcamento.cliente.placa|default:'' }}</div>
+                <div class="info-value uppercase">{{ orcamento.placa_veiculo|default:orcamento.cliente.placa }}</div>
             </div>
             <div class="info-box" style="width: 25%;">
                 <div class="info-label">DESCONTO:</div>

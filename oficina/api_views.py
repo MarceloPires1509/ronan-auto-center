@@ -12,6 +12,7 @@ def api_criar_cliente(request):
             telefone = data.get('telefone', '')
             veiculo = data.get('veiculo', '')
             placa = data.get('placa', '')
+            cor_veiculo = data.get('cor_veiculo', '')
             
             if not nome:
                 return JsonResponse({'sucesso': False, 'erro': 'Nome é obrigatório.'})
@@ -20,7 +21,8 @@ def api_criar_cliente(request):
                 nome=nome,
                 telefone=telefone,
                 veiculo=veiculo,
-                placa=placa
+                placa=placa,
+                cor_veiculo=cor_veiculo
             )
             return JsonResponse({
                 'sucesso': True,
@@ -28,7 +30,8 @@ def api_criar_cliente(request):
                     'id': cliente.id,
                     'nome': cliente.nome,
                     'veiculo': cliente.veiculo,
-                    'placa': cliente.placa
+                    'placa': cliente.placa,
+                    'cor_veiculo': cliente.cor_veiculo
                 }
             })
         except Exception as e:

@@ -88,13 +88,14 @@ def novo_cliente(request):
         
         veiculo = request.POST.get('veiculo')
         placa = request.POST.get('placa')
+        cor_veiculo = request.POST.get('cor_veiculo')
         
         if nome:
             Cliente.objects.create(
                 nome=nome, telefone=telefone, email=email,
                 cep=cep, endereco=endereco, numero=numero, complemento=complemento,
                 bairro=bairro, cidade=cidade, estado=estado,
-                veiculo=veiculo, placa=placa
+                veiculo=veiculo, placa=placa, cor_veiculo=cor_veiculo
             )
             return redirect('lista_clientes')
             
@@ -213,6 +214,7 @@ def novo_orcamento(request):
                 cliente=cliente,
                 placa_veiculo=request.POST.get('placa_veiculo', cliente.placa),
                 modelo_veiculo=request.POST.get('modelo_veiculo', cliente.veiculo),
+                cor_veiculo=request.POST.get('cor_veiculo', getattr(cliente, 'cor_veiculo', '')),
                 quilometragem=km_val,
                 proxima_revisao_km=rev_km,
                 proxima_revisao_data=rev_data,
@@ -699,6 +701,7 @@ def editar_cliente(request, id):
         
         cliente.veiculo = request.POST.get('veiculo')
         cliente.placa = request.POST.get('placa')
+        cliente.cor_veiculo = request.POST.get('cor_veiculo')
         
         cliente.save()
         messages.success(request, 'Cliente atualizado com sucesso!')

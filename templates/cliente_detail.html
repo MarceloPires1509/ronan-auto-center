@@ -21,18 +21,22 @@
     </div>
 
     <!-- Dados do Cliente -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg border dark:border-gray-700 shadow-sm p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div class="bg-white dark:bg-gray-800 rounded-lg border dark:border-gray-700 shadow-sm p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
         <div>
             <p class="text-sm text-gray-500 dark:text-gray-400 font-medium">Telefone</p>
             <p class="font-semibold text-gray-900 dark:text-white mt-1">{{ cliente.telefone|default:"Não informado" }}</p>
         </div>
         <div>
             <p class="text-sm text-gray-500 dark:text-gray-400 font-medium">E-mail</p>
-            <p class="font-semibold text-gray-900 dark:text-white mt-1">{{ cliente.email|default:"Não informado" }}</p>
+            <p class="font-semibold text-gray-900 dark:text-white mt-1 truncate" title="{{ cliente.email }}">{{ cliente.email|default:"Não informado" }}</p>
         </div>
         <div>
             <p class="text-sm text-gray-500 dark:text-gray-400 font-medium">Veículo</p>
             <p class="font-semibold text-gray-900 dark:text-white mt-1">{{ cliente.veiculo|default:"Não informado" }}</p>
+        </div>
+        <div>
+            <p class="text-sm text-gray-500 dark:text-gray-400 font-medium">Cor</p>
+            <p class="font-semibold text-gray-900 dark:text-white mt-1">{{ cliente.cor_veiculo|default:"-" }}</p>
         </div>
         <div>
             <p class="text-sm text-gray-500 dark:text-gray-400 font-medium">Placa</p>
