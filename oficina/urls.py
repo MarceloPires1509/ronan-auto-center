@@ -11,6 +11,7 @@ urlpatterns = [
     
     # Rotas padrão
     path('', views.dashboard, name='dashboard'),
+    path('dashboard/detalhe/<str:tipo>/', views.dashboard_drilldown, name='dashboard_drilldown'),
     path('usuarios/novo/', views.novo_usuario, name='novo_usuario'),
     path('configuracoes/', views.configuracoes, name='configuracoes'),
     path('configuracoes/baixar-backup/', views.baixar_backup, name='baixar_backup'),
