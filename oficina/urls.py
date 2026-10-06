@@ -58,5 +58,6 @@ urlpatterns = [
     
     path('pedidos/', views.lista_pedidos, name='lista_pedidos'),
     path('pedidos/status/<int:id>/', views.alterar_status_pedido, name='alterar_status_pedido'),
+    path('orcamentos/<int:id>/', views.detalhe_orcamento, name='detalhe_orcamento'),
     path('orcamentos/imprimir/<int:id>/', views.imprimir_orcamento, name='imprimir_orcamento'),
 ]

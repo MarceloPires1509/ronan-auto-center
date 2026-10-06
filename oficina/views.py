@@ -306,6 +306,12 @@ def imprimir_os(request, id):
     return render(request, 'os_print.html', {'orcamento': orcamento})
 
 
+
+@login_required
+def detalhe_orcamento(request, id):
+    orcamento = get_object_or_404(Orcamento, id=id)
+    return render(request, 'orcamento_detail.html', {'orcamento': orcamento})
+
 @login_required
 def imprimir_orcamento(request, id):
     orcamento = get_object_or_404(Orcamento, id=id)
