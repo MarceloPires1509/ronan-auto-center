@@ -23,7 +23,9 @@ def novo_usuario(request):
             messages.error(request, 'Este login já está em uso.')
         else:
             user = User.objects.create_user(username=username, email=email, password=senha, first_name=nome)
-            Perfil.objects.create(user=user, telefone=telefone)
+            perfil = user.perfil
+            perfil.telefone = telefone
+            perfil.save()
             messages.success(request, 'Usuário criado com sucesso!')
             return redirect('dashboard')
             
