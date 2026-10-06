@@ -368,6 +368,88 @@ def excluir_usuario(request, id):
             
     return redirect('usuarios')
 
+
+@login_required
+def meu_perfil(request):
+    if request.method == 'POST':
+        user = request.user
+        perfil = user.perfil
+        
+        user.first_name = request.POST.get('first_name', '')
+        user.last_name = request.POST.get('last_name', '')
+        
+        novo_email = request.POST.get('email', '')
+        if novo_email and novo_email != user.email:
+            if User.objects.filter(username=novo_email).exists() or User.objects.filter(email=novo_email).exists():
+                messages.error(request, 'Este e-mail ja esta em uso por outro usuario.')
+                return redirect('meu_perfil')
+            user.email = novo_email
+            user.username = novo_email
+        
+        nova_senha = request.POST.get('nova_senha')
+        if nova_senha:
+            user.set_password(nova_senha)
+            from django.contrib.auth import update_session_auth_hash
+            update_session_auth_hash(request, user)
+        
+        user.save()
+        
+        perfil.telefone = request.POST.get('telefone', '')
+        
+        if 'foto' in request.FILES:
+            perfil.foto = request.FILES['foto']
+            
+        perfil.save()
+        messages.success(request, 'Perfil atualizado com sucesso!')
+        return redirect('meu_perfil')
+        
+    return render(request, 'meu_perfil.html')
+
+@login_required
+def editar_usuario(request, id):
+    if not request.user.is_superuser and not request.user.perfil.acesso_configuracoes:
+        messages.error(request, 'Você não tem permissão para acessar.')
+        return redirect('dashboard')
+        
+    usuario = get_object_or_404(User, id=id)
+    
+    # Previne que um admin normal edite um superuser
+    if usuario.is_superuser and not request.user.is_superuser:
+        messages.error(request, 'Você não tem permissão para editar um Super Administrador.')
+        return redirect('usuarios')
+    perfil = usuario.perfil
+    
+    if request.method == 'POST':
+        usuario.first_name = request.POST.get('first_name', '')
+        usuario.last_name = request.POST.get('last_name', '')
+        
+        novo_email = request.POST.get('email', '')
+        if novo_email and novo_email != usuario.email:
+            if User.objects.filter(username=novo_email).exclude(id=usuario.id).exists():
+                messages.error(request, 'E-mail ja esta em uso.')
+                return redirect('editar_usuario', id=usuario.id)
+            usuario.email = novo_email
+            usuario.username = novo_email
+            
+        nova_senha = request.POST.get('nova_senha')
+        if nova_senha:
+            usuario.set_password(nova_senha)
+            if request.user.id == usuario.id:
+                from django.contrib.auth import update_session_auth_hash
+                update_session_auth_hash(request, usuario)
+        
+        usuario.save()
+        perfil.telefone = request.POST.get('telefone', '')
+        
+        if 'foto' in request.FILES:
+            perfil.foto = request.FILES['foto']
+            
+        perfil.save()
+        messages.success(request, f'Usuario {usuario.first_name} atualizado!')
+        return redirect('usuarios')
+        
+    return render(request, 'editar_usuario.html', {'usuario_alvo': usuario})
+
 @login_required
 def toggle_status_usuario(request, id):
     if not request.user.is_superuser and not request.user.perfil.acesso_configuracoes:

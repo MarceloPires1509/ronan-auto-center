@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 class Perfil(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='perfil')
     telefone = models.CharField(max_length=20, blank=True, null=True)
+    foto = models.ImageField(upload_to='perfil_fotos/', blank=True, null=True)
     
     # Permissões
     acesso_clientes = models.BooleanField(default=True)

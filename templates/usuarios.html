@@ -34,6 +34,8 @@
                             {% endif %}
                         </form>
 
+                        <a href="{% url 'editar_usuario' u.id %}" class="text-xs bg-blue-600 text-white px-3 py-1.5 rounded hover:bg-blue-700 w-full text-center">Editar</a>
+
                         <form id="form-excluir-{{ u.id }}" method="POST" action="{% url 'excluir_usuario' u.id %}">
                             {% csrf_token %}
                             <button type="button" class="text-xs bg-red-800 text-white px-3 py-1.5 rounded hover:bg-red-900 w-full" onclick="confirmarExclusao('{{ u.id }}')">Excluir</button>
