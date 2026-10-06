@@ -4,13 +4,13 @@ from django.db.models import F
 def configuracao_global(request):
     config = Configuracao.objects.first()
     
-    # Notificações de Estoque Baixo (quando quantidade_estoque <= estoque_minimo)
+    # Notificações de Estoque Baixo (quando estoque <= estoque_minimo)
     # Somente para usuários autenticados que têm permissão de estoque
     notificacoes_estoque = []
     if request.user.is_authenticated:
         if request.user.is_superuser or (hasattr(request.user, 'perfil') and request.user.perfil.acesso_estoque):
             # F usa o valor do outro campo
-            pecas_baixo_estoque = Peca.objects.filter(quantidade_estoque__lte=F('estoque_minimo'))
+            pecas_baixo_estoque = Peca.objects.filter(estoque__lte=F('estoque_minimo'))
             notificacoes_estoque = pecas_baixo_estoque
             
     return {

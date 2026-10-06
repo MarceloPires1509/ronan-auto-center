@@ -28,7 +28,7 @@
                     <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
                         <td class="px-4 py-3 font-medium text-gray-900 dark:text-white">{{ peca.nome }}</td>
                         <td class="px-4 py-3">R$ {{ peca.preco_custo }}</td>
-                        <td class="px-4 py-3 font-bold text-red-600 dark:text-red-400">{{ peca.quantidade_estoque }}</td>
+                        <td class="px-4 py-3 font-bold text-red-600 dark:text-red-400">{{ peca.estoque }}</td>
                         <td class="px-4 py-3">{{ peca.estoque_minimo }}</td>
                     </tr>
                     {% empty %}

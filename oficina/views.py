@@ -994,7 +994,7 @@ def dashboard_drilldown(request, tipo):
         
     elif tipo == 'pecas':
         titulo = "Peças com Estoque Baixo"
-        pecas = Peca.objects.filter(quantidade_estoque__lte=F('estoque_minimo')).order_by('nome')
+        pecas = Peca.objects.filter(estoque__lte=F('estoque_minimo')).order_by('nome')
         return render(request, 'drilldown.html', {'titulo': titulo, 'pecas': pecas, 'tipo': tipo})
 
     return render(request, 'drilldown.html', {'titulo': titulo, 'dados': dados, 'tipo': tipo})
