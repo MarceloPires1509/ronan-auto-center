@@ -41,7 +41,7 @@
             <table class="w-full text-sm text-left">
                 <thead class="text-xs text-gray-500 dark:text-gray-400 uppercase bg-gray-50 dark:bg-gray-900/50">
                     <tr>
-                        <th class="px-6 py-3">Data Venc.</th>
+                        <th class="px-6 py-3">Data Pgto/Venc.</th>
                         <th class="px-6 py-3">Descrição</th>
                         <th class="px-6 py-3">Categoria</th>
                         <th class="px-6 py-3">Forma PGTO</th>
@@ -52,7 +52,7 @@
                 <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                     {% for item in movimentacoes %}
                     <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                        <td class="px-6 py-4 whitespace-nowrap">{{ item.data_vencimento|date:"d/m/Y" }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{% if item.status == 'PAGO' and item.data_pagamento %}{{ item.data_pagamento|date:"d/m/Y" }}{% else %}{{ item.data_vencimento|date:"d/m/Y" }}{% endif %}</td>
                         <td class="px-6 py-4 font-medium">{{ item.descricao }}</td>
                         <td class="px-6 py-4">
                             {% if item.tipo == 'RECEITA' %}

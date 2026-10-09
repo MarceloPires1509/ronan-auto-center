@@ -163,6 +163,7 @@ class ItemOrcamento(models.Model):
     quantidade = models.IntegerField(default=1)
     preco_unitario = models.DecimalField(max_digits=10, decimal_places=2)
     preco_total = models.DecimalField(max_digits=10, decimal_places=2)
+    custo_unitario = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, help_text='Custo unitário registrado na criação do item')
     garantia_dias = models.IntegerField(default=90, help_text='Dias de garantia')
     
     @property

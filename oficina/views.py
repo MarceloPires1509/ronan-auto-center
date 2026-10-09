@@ -16,7 +16,8 @@ from django.contrib import messages
 from .models import Cliente, Peca, Servico, Orcamento, ItemOrcamento, Perfil, Configuracao, MovimentacaoFinanceira, Agendamento
 import json
 
-from django.db.models import Sum, F, F
+from django.db.models import Sum, F
+from django.db import transaction
 from django.utils import timezone
 
 @login_required
@@ -59,17 +60,15 @@ def dashboard(request):
     mes_atual = agora.month
     ano_atual = agora.year
     
-    orcamentos_aprovados = Orcamento.objects.filter(status='APROVADO', criado_em__month=mes_atual, criado_em__year=ano_atual)
+    status_em_andamento = ['APROVADO', 'OFICINA', 'TESTANDO', 'FINALIZADO']
+    orcamentos_aprovados = Orcamento.objects.filter(status__in=status_em_andamento, criado_em__month=mes_atual, criado_em__year=ano_atual)
     receita_bruta = orcamentos_aprovados.aggregate(Sum('total'))['total__sum'] or 0.0
     
     # Receita Liquida simplificada: Receita Bruta - Custo das Peças e Serviços
     custo_total = 0
     for orc in orcamentos_aprovados:
         for item in orc.itens.all():
-            if item.tipo == 'PECA' and item.peca:
-                custo_total += float(item.peca.preco_custo) * item.quantidade
-            elif item.tipo == 'SERVICO' and item.servico:
-                custo_total += float(item.servico.custo_mecanico) * item.quantidade
+            custo_total += float(item.custo_unitario) * item.quantidade
                 
     receita_liquida = float(receita_bruta) - custo_total
     
@@ -264,6 +263,7 @@ def novo_orcamento(request):
                         orcamento=orcamento, tipo='PECA', peca=peca, 
                         nome=peca.nome, quantidade=qtd, 
                         preco_unitario=peca.preco_venda, preco_total=preco_total,
+                        custo_unitario=peca.preco_custo,
                         garantia_dias=garantia
                     )
                     total_pecas += preco_total
@@ -281,6 +281,7 @@ def novo_orcamento(request):
                         orcamento=orcamento, tipo='SERVICO', servico=servico,
                         nome=servico.nome, quantidade=1,
                         preco_unitario=servico.preco_venda, preco_total=preco_total,
+                        custo_unitario=servico.custo_mecanico,
                         garantia_dias=garantia
                     )
                     total_servicos += preco_total
@@ -312,17 +313,38 @@ def excluir_orcamento(request, id):
     return redirect('lista_orcamentos')
 
 @login_required
+@transaction.atomic
 def aprovar_orcamento(request, id):
-    orcamento = get_object_or_404(Orcamento, id=id)
+    if not request.user.perfil.acesso_orcamentos:
+        messages.error(request, 'Você não tem permissão para aprovar orçamentos.')
+        return redirect('dashboard')
+
+    orcamento = get_object_or_404(Orcamento.objects.select_for_update(), id=id)
+    if request.method != 'POST':
+        return redirect('lista_orcamentos')
+    if orcamento.status != 'PENDENTE':
+        messages.error(request, 'Este orçamento não está pendente e não pode ser aprovado novamente.')
+        return redirect('lista_orcamentos')
+
+    itens = list(orcamento.itens.filter(tipo='PECA').select_related('peca'))
+    sem_estoque = [
+        f'{item.nome} (disponível: {item.peca.estoque}, necessário: {item.quantidade})'
+        for item in itens
+        if item.peca and item.peca.estoque < item.quantidade
+    ]
+    if sem_estoque:
+        messages.error(request, 'Estoque insuficiente: ' + '; '.join(sem_estoque))
+        return redirect('lista_orcamentos')
+
+    for item in itens:
+        if item.peca_id:
+            peca = Peca.objects.select_for_update().get(pk=item.peca_id)
+            peca.estoque -= item.quantidade
+            peca.save(update_fields=['estoque'])
+
     orcamento.status = 'APROVADO'
-    orcamento.save()
-    
-    # Baixar estoque
-    for item in orcamento.itens.filter(tipo='PECA'):
-        if item.peca:
-            item.peca.estoque -= item.quantidade
-            item.peca.save()
-            
+    orcamento.save(update_fields=['status', 'atualizado_em'])
+    messages.success(request, f'Orçamento #{orcamento.id} aprovado e estoque atualizado.')
     return redirect('lista_orcamentos')
 
 @login_required
@@ -693,18 +715,6 @@ def alterar_status_pedido(request, id):
         pedido = get_object_or_404(Orcamento, id=id)
         novo_status = request.POST.get('status')
         if novo_status in dict(Orcamento.STATUS_CHOICES).keys():
-            if novo_status == 'FINALIZADO' and pedido.pagamentos.count() == 0:
-                MovimentacaoFinanceira.objects.create(
-                    tipo='RECEITA',
-                    descricao=f'Pagamento OS #{pedido.id} - {pedido.cliente.nome}',
-                    valor=pedido.total,
-                    data_vencimento=timezone.now().date(),
-                    data_pagamento=timezone.now().date(),
-                    status='PAGO',
-                    forma_pagamento='Dinheiro', # Padrão
-                    orcamento=pedido
-                )
-            
             pedido.status = novo_status
             pedido.save()
             messages.success(request, f'Status do pedido #{pedido.id} atualizado para {pedido.get_status_display()}.')
@@ -754,24 +764,18 @@ from datetime import datetime, date
 
 @login_required
 def lista_financeiro(request):
-    # Auto-correção de divergência: Se houver OS FINALIZADA sem lançamento, cria retroativo
-    orcamentos_sem_pagamento = Orcamento.objects.filter(status='FINALIZADO', pagamentos__isnull=True)
-    for o in orcamentos_sem_pagamento:
-        MovimentacaoFinanceira.objects.create(
-            tipo='RECEITA',
-            descricao=f'Pagamento OS #{o.id} - {o.cliente.nome}',
-            valor=o.total,
-            data_vencimento=o.criado_em.date() if o.criado_em else timezone.now().date(),
-            data_pagamento=o.criado_em.date() if o.criado_em else timezone.now().date(),
-            status='PAGO',
-            forma_pagamento='Dinheiro (Retroativo)',
-            orcamento=o
-        )
-
     mes_atual = timezone.now().month
     ano_atual = timezone.now().year
     
-    movimentacoes = MovimentacaoFinanceira.objects.filter(data_vencimento__month=mes_atual, data_vencimento__year=ano_atual).order_by('data_vencimento')
+    from django.db.models import Q
+    from django.db.models.functions import Coalesce
+    movimentacoes_com_data = MovimentacaoFinanceira.objects.annotate(
+        data_referencia=Coalesce('data_pagamento', 'data_vencimento')
+    )
+    movimentacoes = movimentacoes_com_data.filter(
+        Q(status='PAGO', data_referencia__month=mes_atual, data_referencia__year=ano_atual)
+        | Q(status='PENDENTE', data_vencimento__month=mes_atual, data_vencimento__year=ano_atual)
+    ).order_by('data_vencimento')
     
     receitas = sum([m.valor for m in movimentacoes if m.tipo == 'RECEITA' and m.status == 'PAGO'])
     despesas = sum([m.valor for m in movimentacoes if m.tipo == 'DESPESA' and m.status == 'PAGO'])
@@ -792,7 +796,9 @@ def lista_financeiro(request):
             y -= 1
         
         chart_labels.append(f"{meses_br[m]}/{str(y)[2:]}")
-        movs = MovimentacaoFinanceira.objects.filter(data_vencimento__year=y, data_vencimento__month=m, status='PAGO')
+        movs = MovimentacaoFinanceira.objects.annotate(
+            data_referencia=Coalesce('data_pagamento', 'data_vencimento')
+        ).filter(data_referencia__year=y, data_referencia__month=m, status='PAGO')
         rec = sum([m.valor for m in movs if m.tipo == 'RECEITA'])
         desp = sum([m.valor for m in movs if m.tipo == 'DESPESA'])
         chart_receitas.append(float(rec))
@@ -808,6 +814,7 @@ def lista_financeiro(request):
         'chart_despesas': json.dumps(chart_despesas)
     })
 
+@login_required
 def nova_movimentacao(request):
     if request.method == 'POST':
         tipo = request.POST.get('tipo')
@@ -829,27 +836,40 @@ def nova_movimentacao(request):
         return redirect('lista_financeiro')
     return redirect('lista_financeiro')
 
+@login_required
 def faturar_orcamento(request, id):
-    orcamento = get_object_or_404(Orcamento, id=id)
-    if request.method == 'POST':
-        # Aqui podemos receber parcelas
+    if not request.user.perfil.acesso_orcamentos:
+        messages.error(request, 'Você não tem permissão para faturar ordens de serviço.')
+        return redirect('dashboard')
+    if request.method != 'POST':
+        return redirect('lista_pedidos')
+
+    with transaction.atomic():
+        orcamento = get_object_or_404(Orcamento.objects.select_for_update(), id=id)
+        if orcamento.pagamentos.exists():
+            messages.error(request, f'A OS #{orcamento.id} já possui pagamento registrado.')
+            return redirect('lista_pedidos')
+
         forma_pagamento = request.POST.get('forma_pagamento')
-        
-        # Cria uma nica parcela paga para simplificar, mas a base j permite mltiplas
+        if not forma_pagamento:
+            messages.error(request, 'Selecione a forma de pagamento.')
+            return redirect('lista_pedidos')
+
+        hoje = timezone.now().date()
         MovimentacaoFinanceira.objects.create(
             tipo='RECEITA',
             descricao=f'Pagamento OS #{orcamento.id} - {orcamento.cliente.nome}',
             valor=orcamento.total,
-            data_vencimento=timezone.now().date(),
-            data_pagamento=timezone.now().date(),
+            data_vencimento=hoje,
+            data_pagamento=hoje,
             status='PAGO',
             forma_pagamento=forma_pagamento,
             orcamento=orcamento
         )
-        
         orcamento.status = 'FINALIZADO'
-        orcamento.save()
-        return redirect('lista_pedidos')
+        orcamento.save(update_fields=['status', 'atualizado_em'])
+        messages.success(request, f'Pagamento da OS #{orcamento.id} registrado.')
+    return redirect('lista_pedidos')
 
 def agenda(request):
     hoje = timezone.now().date()
@@ -940,7 +960,7 @@ def dashboard_drilldown(request, tipo):
     
     if tipo == 'bruta':
         titulo = "Receita Bruta do Mês (Por Cliente)"
-        orcamentos = Orcamento.objects.filter(status='APROVADO', criado_em__month=mes_atual, criado_em__year=ano_atual).select_related('cliente').order_by('cliente__nome')
+        orcamentos = Orcamento.objects.filter(status__in=['APROVADO', 'OFICINA', 'TESTANDO', 'FINALIZADO'], criado_em__month=mes_atual, criado_em__year=ano_atual).select_related('cliente').order_by('cliente__nome')
         
         # Agrupar por cliente
         clientes_dict = {}
@@ -955,17 +975,14 @@ def dashboard_drilldown(request, tipo):
         
     elif tipo == 'liquida':
         titulo = "Receita Líquida do Mês (Por Cliente)"
-        orcamentos = Orcamento.objects.filter(status='APROVADO', criado_em__month=mes_atual, criado_em__year=ano_atual).select_related('cliente').order_by('cliente__nome')
+        orcamentos = Orcamento.objects.filter(status__in=['APROVADO', 'OFICINA', 'TESTANDO', 'FINALIZADO'], criado_em__month=mes_atual, criado_em__year=ano_atual).select_related('cliente').order_by('cliente__nome')
         
         clientes_dict = {}
         for orc in orcamentos:
             # Calcular custo
             custo = 0
             for item in orc.itens.all():
-                if item.tipo == 'PECA' and item.peca:
-                    custo += float(item.peca.preco_custo) * item.quantidade
-                elif item.tipo == 'SERVICO' and item.servico:
-                    custo += float(item.servico.preco_custo) * item.quantidade
+                custo += float(item.custo_unitario) * item.quantidade
             
             lucro = float(orc.total) - custo
             
