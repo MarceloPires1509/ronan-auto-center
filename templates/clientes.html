@@ -39,7 +39,7 @@
                                 <a href="{% url 'editar_cliente' cliente.id %}" class="text-blue-600 dark:text-blue-400 hover:underline font-medium">Editar</a>
                                 <form action="{% url 'excluir_cliente' cliente.id %}" method="POST" class="inline m-0">
                                     {% csrf_token %}
-                                    <button type="submit" class="text-red-600 dark:text-red-400 hover:underline font-medium" onclick="return confirm('Tem certeza que deseja excluir o cliente {{ cliente.nome }}?\n\nATENÇÃO: Todos os orçamentos e histórico deste cliente também serão excluídos permanentemente.')">
+                                    <button type="button" class="text-red-600 dark:text-red-400 hover:underline font-medium" onclick="confirmarExclusao(this.form, 'Excluir Cliente?', 'Deseja realmente excluir <b>{{ cliente.nome|escapejs }}</b>?<br><br><span class=\'text-xs text-red-500 font-semibold\'>⚠️ ATENÇÃO: Todos os orçamentos e histórico deste cliente serão excluídos permanentemente.</span>')">
                                         Excluir
                                     </button>
                                 </form>

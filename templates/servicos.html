@@ -39,7 +39,7 @@
                             <td class="px-2 sm:px-6 py-3 sm:py-4 sm:text-right mt-2 sm:mt-0 border-t sm:border-0 dark:border-gray-700 flex justify-end">
                                 <form action="{% url 'excluir_servico' servico.id %}" method="POST" class="inline m-0">
                                     {% csrf_token %}
-                                    <button type="submit" class="text-red-600 dark:text-red-400 hover:underline font-medium" onclick="return confirm('Deseja realmente excluir o serviço {{ servico.nome }}?')">
+                                    <button type="button" class="text-red-600 dark:text-red-400 hover:underline font-medium" onclick="confirmarExclusao(this.form, 'Excluir Serviço?', 'Deseja realmente excluir o serviço <b>{{ servico.nome|escapejs }}</b>?')">
                                         Excluir
                                     </button>
                                 </form>

@@ -22,7 +22,7 @@
             </a>
             <form action="{% url 'excluir_cliente' cliente.id %}" method="POST" class="inline m-0">
                 {% csrf_token %}
-                <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded-md font-medium hover:bg-red-700 transition-colors flex items-center gap-2" onclick="return confirm('Tem certeza que deseja excluir o cliente {{ cliente.nome }}?\n\nATENÇÃO: Todos os orçamentos e histórico deste cliente também serão excluídos permanentemente.')">
+                <button type="button" class="bg-red-600 text-white px-4 py-2 rounded-md font-medium hover:bg-red-700 transition-colors flex items-center gap-2" onclick="confirmarExclusao(this.form, 'Excluir Cliente?', 'Deseja realmente excluir <b>{{ cliente.nome|escapejs }}</b>?<br><br><span class=\'text-xs text-red-500 font-semibold\'>⚠️ ATENÇÃO: Todos os orçamentos e histórico deste cliente serão excluídos permanentemente.</span>')">
                     <i data-lucide="trash-2" class="w-4 h-4"></i> Excluir
                 </button>
             </form>
@@ -130,7 +130,7 @@
                             <a href="{% url 'imprimir_orcamento' orc.id %}" target="_blank" class="bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 px-4 py-2 sm:bg-transparent sm:p-0 sm:text-primary rounded sm:rounded-none text-sm sm:hover:underline font-bold sm:font-medium text-center flex-1 sm:flex-none">PDF</a>
                             <form action="{% url 'excluir_orcamento' orc.id %}" method="POST" class="inline m-0 flex-1 sm:flex-none">
                                 {% csrf_token %}
-                                <button type="submit" class="w-full bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 px-4 py-2 sm:bg-transparent sm:p-0 sm:text-red-600 sm:dark:text-red-400 rounded sm:rounded-none text-sm sm:hover:underline font-bold sm:font-medium text-center" onclick="return confirm('Deseja realmente excluir a OS #{{ orc.id|stringformat:'04d' }}?')">Excluir</button>
+                                <button type="button" class="w-full bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 px-4 py-2 sm:bg-transparent sm:p-0 sm:text-red-600 sm:dark:text-red-400 rounded sm:rounded-none text-sm sm:hover:underline font-bold sm:font-medium text-center" onclick="confirmarExclusao(this.form, 'Excluir OS?', 'Deseja realmente excluir a <b>OS #{{ orc.id|stringformat:\'04d\' }}</b>?<br><br><span class=\'text-xs text-gray-500\'>As peças reservadas retornarão ao estoque.</span>')">Excluir</button>
                             </form>
                         </td>
                     </tr>

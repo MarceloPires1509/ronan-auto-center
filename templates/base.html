@@ -323,6 +323,26 @@
             localStorage.setItem('theme-color', primary);
             localStorage.setItem('theme-hover', hover);
         }
+
+        function confirmarExclusao(form, titulo, texto) {
+            Swal.fire({
+                title: titulo || 'Confirmar Exclusão?',
+                html: texto || 'Esta ação não poderá ser desfeita.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc2626',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Sim, excluir',
+                cancelButtonText: 'Cancelar',
+                reverseButtons: true,
+                focusCancel: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+            return false;
+        }
     </script>
 </body>
 </html>

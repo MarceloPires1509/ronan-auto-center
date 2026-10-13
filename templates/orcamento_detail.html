@@ -46,7 +46,7 @@
 
             <form action="{% url 'excluir_orcamento' orcamento.id %}" method="POST" class="inline m-0">
                 {% csrf_token %}
-                <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded-md font-medium hover:bg-red-700 transition-colors flex items-center gap-2" onclick="return confirm('Deseja realmente excluir este orçamento/OS #{{ orcamento.id|stringformat:\'04d\' }}?\n\nEsta ação é irreversível!')">
+                <button type="button" class="bg-red-600 text-white px-4 py-2 rounded-md font-medium hover:bg-red-700 transition-colors flex items-center gap-2" onclick="confirmarExclusao(this.form, 'Excluir Orçamento / OS?', 'Deseja realmente excluir a <b>OS #{{ orcamento.id|stringformat:\'04d\' }}</b>?<br><br><span class=\'text-xs text-gray-200\'>Esta ação é irreversível e as peças reservadas retornarão ao estoque.</span>')">
                     <i data-lucide="trash-2" class="w-4 h-4"></i> Excluir OS
                 </button>
             </form>

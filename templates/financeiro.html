@@ -76,7 +76,7 @@
                         <td class="px-6 py-4 text-right">
                             <form action="{% url 'excluir_movimentacao' item.id %}" method="POST" class="inline m-0">
                                 {% csrf_token %}
-                                <button type="submit" class="text-gray-400 hover:text-red-600 transition-colors inline-block" onclick="return confirm('Deseja realmente excluir a movimentação \'{{ item.descricao }}\'?')" title="Excluir Lançamento">
+                                <button type="button" class="text-gray-400 hover:text-red-600 transition-colors inline-block" onclick="confirmarExclusao(this.form, 'Excluir Movimentação?', 'Deseja realmente excluir a movimentação <b>{{ item.descricao|escapejs }}</b>?')" title="Excluir Lançamento">
                                     <i data-lucide="trash-2" class="w-4 h-4"></i>
                                 </button>
                             </form>

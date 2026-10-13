@@ -81,7 +81,7 @@
                             </a>
                             <form action="{% url 'excluir_agendamento' item.id %}" method="POST" class="inline m-0">
                                 {% csrf_token %}
-                                <button type="submit" class="text-gray-400 hover:text-red-600 transition-colors inline-block" onclick="return confirm('Deseja realmente excluir este agendamento?')" title="Excluir Agendamento">
+                                <button type="button" class="text-gray-400 hover:text-red-600 transition-colors inline-block" onclick="confirmarExclusao(this.form, 'Excluir Agendamento?', 'Deseja realmente excluir o agendamento de <b>{{ item.cliente.nome|escapejs }}</b>?')" title="Excluir Agendamento">
                                     <i data-lucide="trash-2" class="w-5 h-5"></i>
                                 </button>
                             </form>
