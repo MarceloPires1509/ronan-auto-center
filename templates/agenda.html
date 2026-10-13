@@ -75,10 +75,16 @@
                                 </select>
                             </form>
                         </td>
-                        <td class="px-6 py-4 text-right">
+                        <td class="px-6 py-4 text-right flex items-center justify-end gap-3">
                             <a href="{% url 'editar_cliente' item.cliente.id %}" class="text-gray-400 hover:text-primary transition-colors inline-block" title="Ver Cliente">
                                 <i data-lucide="user" class="w-5 h-5"></i>
                             </a>
+                            <form action="{% url 'excluir_agendamento' item.id %}" method="POST" class="inline m-0">
+                                {% csrf_token %}
+                                <button type="submit" class="text-gray-400 hover:text-red-600 transition-colors inline-block" onclick="return confirm('Deseja realmente excluir este agendamento?')" title="Excluir Agendamento">
+                                    <i data-lucide="trash-2" class="w-5 h-5"></i>
+                                </button>
+                            </form>
                         </td>
                     </tr>
                     {% empty %}

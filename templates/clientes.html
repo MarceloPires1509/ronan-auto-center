@@ -35,8 +35,14 @@
                             <td class="px-2 sm:px-6 py-1 sm:py-4"><span class="sm:hidden font-medium text-gray-500 dark:text-gray-400 text-xs uppercase">Telefone: </span>{{ cliente.telefone|default:"-" }}</td>
                             <td class="px-2 sm:px-6 py-1 sm:py-4"><span class="sm:hidden font-medium text-gray-500 dark:text-gray-400 text-xs uppercase">Veículo: </span>{{ cliente.veiculo|default:"-" }}{% if cliente.cor_veiculo %} - {{ cliente.cor_veiculo }}{% endif %}</td>
                             <td class="px-2 sm:px-6 py-1 sm:py-4"><span class="sm:hidden font-medium text-gray-500 dark:text-gray-400 text-xs uppercase">Placa: </span>{{ cliente.placa|default:"-" }}</td>
-                            <td class="px-2 sm:px-6 py-3 sm:py-4 sm:text-right mt-2 sm:mt-0 border-t sm:border-0 dark:border-gray-700 flex justify-end">
+                            <td class="px-2 sm:px-6 py-3 sm:py-4 sm:text-right mt-2 sm:mt-0 border-t sm:border-0 dark:border-gray-700 flex items-center justify-end gap-3">
                                 <a href="{% url 'editar_cliente' cliente.id %}" class="text-blue-600 dark:text-blue-400 hover:underline font-medium">Editar</a>
+                                <form action="{% url 'excluir_cliente' cliente.id %}" method="POST" class="inline m-0">
+                                    {% csrf_token %}
+                                    <button type="submit" class="text-red-600 dark:text-red-400 hover:underline font-medium" onclick="return confirm('Tem certeza que deseja excluir o cliente {{ cliente.nome }}?\n\nATENÇÃO: Todos os orçamentos e histórico deste cliente também serão excluídos permanentemente.')">
+                                        Excluir
+                                    </button>
+                                </form>
                             </td>
                         </tr>
                         {% endfor %}

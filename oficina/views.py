@@ -127,9 +127,14 @@ def novo_cliente(request):
 
 @login_required
 def excluir_cliente(request, id):
+    if not request.user.perfil.acesso_clientes:
+        messages.error(request, 'Você não tem permissão para excluir clientes.')
+        return redirect('dashboard')
     cliente = get_object_or_404(Cliente, id=id)
     if request.method == 'POST':
+        nome = cliente.nome
         cliente.delete()
+        messages.success(request, f'Cliente "{nome}" e seu histórico foram excluídos com sucesso.')
     return redirect('lista_clientes')
 
 # --- PEÇAS (ESTOQUE) ---
@@ -163,9 +168,14 @@ def nova_peca(request):
 
 @login_required
 def excluir_peca(request, id):
+    if not request.user.perfil.acesso_estoque:
+        messages.error(request, 'Você não tem permissão para excluir peças.')
+        return redirect('dashboard')
     peca = get_object_or_404(Peca, id=id)
     if request.method == 'POST':
+        nome = peca.nome
         peca.delete()
+        messages.success(request, f'Peça "{nome}" excluída com sucesso.')
     return redirect('lista_pecas')
 
 # --- SERVIÇOS ---
@@ -195,9 +205,14 @@ def novo_servico(request):
 
 @login_required
 def excluir_servico(request, id):
+    if not request.user.perfil.acesso_servicos:
+        messages.error(request, 'Você não tem permissão para excluir serviços.')
+        return redirect('dashboard')
     servico = get_object_or_404(Servico, id=id)
     if request.method == 'POST':
+        nome = servico.nome
         servico.delete()
+        messages.success(request, f'Serviço "{nome}" excluído com sucesso.')
     return redirect('lista_servicos')
 
 # --- ORÇAMENTOS E PDV ---
@@ -306,10 +321,28 @@ def novo_orcamento(request):
     return render(request, 'orcamento_form.html', context)
 
 @login_required
+@transaction.atomic
 def excluir_orcamento(request, id):
-    orcamento = get_object_or_404(Orcamento, id=id)
+    if not request.user.perfil.acesso_orcamentos:
+        messages.error(request, 'Você não tem permissão para excluir orçamentos.')
+        return redirect('dashboard')
+    orcamento = get_object_or_404(Orcamento.objects.select_for_update(), id=id)
     if request.method == 'POST':
+        # Se a OS havia baixado estoque, devolve as peças ao estoque
+        if orcamento.status in ['APROVADO', 'OFICINA', 'TESTANDO']:
+            for item in orcamento.itens.filter(tipo='PECA').select_related('peca'):
+                if item.peca:
+                    item.peca.estoque += item.quantidade
+                    item.peca.save(update_fields=['estoque'])
+        # Deleta registros financeiros associados para manter o financeiro íntegro
+        orcamento.pagamentos.all().delete()
+        oid = orcamento.id
         orcamento.delete()
+        messages.success(request, f'Orçamento/OS #{oid:04d} excluído com sucesso.')
+    
+    referer = request.META.get('HTTP_REFERER', '')
+    if 'pedidos' in referer:
+        return redirect('lista_pedidos')
     return redirect('lista_orcamentos')
 
 @login_required
@@ -833,7 +866,20 @@ def nova_movimentacao(request):
             status=status,
             forma_pagamento=forma_pagamento
         )
+        messages.success(request, 'Movimentação financeira registrada com sucesso.')
         return redirect('lista_financeiro')
+    return redirect('lista_financeiro')
+
+@login_required
+def excluir_movimentacao(request, id):
+    if not request.user.perfil.acesso_configuracoes and not request.user.is_superuser:
+        messages.error(request, 'Você não tem permissão para excluir movimentações financeiras.')
+        return redirect('lista_financeiro')
+    mov = get_object_or_404(MovimentacaoFinanceira, id=id)
+    if request.method == 'POST':
+        desc = mov.descricao
+        mov.delete()
+        messages.success(request, f'Movimentação "{desc}" excluída com sucesso.')
     return redirect('lista_financeiro')
 
 @login_required
@@ -871,6 +917,7 @@ def faturar_orcamento(request, id):
         messages.success(request, f'Pagamento da OS #{orcamento.id} registrado.')
     return redirect('lista_pedidos')
 
+@login_required
 def agenda(request):
     hoje = timezone.now().date()
     agendamentos = Agendamento.objects.filter(data__gte=hoje).order_by('data', 'hora')
@@ -906,6 +953,7 @@ def agenda(request):
         'eventos_json': json.dumps(eventos_json)
     })
 
+@login_required
 def novo_agendamento(request):
     if request.method == 'POST':
         cliente_id = request.POST.get('cliente_id')
@@ -925,8 +973,10 @@ def novo_agendamento(request):
                 hora=hora,
                 descricao=descricao
             )
+            messages.success(request, 'Agendamento criado com sucesso.')
     return redirect('agenda')
 
+@login_required
 def alterar_status_agendamento(request, id):
     if request.method == 'POST':
         agendamento = get_object_or_404(Agendamento, id=id)
@@ -934,6 +984,15 @@ def alterar_status_agendamento(request, id):
         if novo_status in dict(Agendamento.STATUS_CHOICES):
             agendamento.status = novo_status
             agendamento.save()
+            messages.success(request, f'Status do agendamento atualizado para {agendamento.get_status_display()}.')
+    return redirect('agenda')
+
+@login_required
+def excluir_agendamento(request, id):
+    agendamento = get_object_or_404(Agendamento, id=id)
+    if request.method == 'POST':
+        agendamento.delete()
+        messages.success(request, 'Agendamento excluído com sucesso.')
     return redirect('agenda')
 
 @login_required

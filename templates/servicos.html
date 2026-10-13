@@ -37,9 +37,9 @@
                             <td class="px-2 sm:px-6 py-1 sm:py-4"><span class="sm:hidden font-medium text-gray-500 text-xs uppercase mr-2">Custo Mecânico: </span>R$ {{ servico.custo_mecanico }}</td>
                             <td class="px-2 sm:px-6 py-1 sm:py-4 font-medium text-green-600"><span class="sm:hidden font-medium text-gray-500 text-xs uppercase mr-2">Venda: </span>R$ {{ servico.preco_venda }}</td>
                             <td class="px-2 sm:px-6 py-3 sm:py-4 sm:text-right mt-2 sm:mt-0 border-t sm:border-0 dark:border-gray-700 flex justify-end">
-                                <form action="{% url 'excluir_servico' servico.id %}" method="POST" class="inline">
+                                <form action="{% url 'excluir_servico' servico.id %}" method="POST" class="inline m-0">
                                     {% csrf_token %}
-                                    <button type="submit" class="text-red-600 dark:text-red-400 hover:underline font-medium" onclick="return confirm('Deseja excluir este serviço?')">
+                                    <button type="submit" class="text-red-600 dark:text-red-400 hover:underline font-medium" onclick="return confirm('Deseja realmente excluir o serviço {{ servico.nome }}?')">
                                         Excluir
                                     </button>
                                 </form>

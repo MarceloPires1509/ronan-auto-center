@@ -27,8 +27,10 @@ urlpatterns = [
     path('agenda/', views.agenda, name='agenda'),
     path('agenda/novo/', views.novo_agendamento, name='novo_agendamento'),
     path('agenda/status/<int:id>/', views.alterar_status_agendamento, name='alterar_status_agendamento'),
+    path('agenda/excluir/<int:id>/', views.excluir_agendamento, name='excluir_agendamento'),
 
     path('financeiro/nova/', views.nova_movimentacao, name='nova_movimentacao'),
+    path('financeiro/excluir/<int:id>/', views.excluir_movimentacao, name='excluir_movimentacao'),
     path('pedidos/faturar/<int:id>/', views.faturar_orcamento, name='faturar_orcamento'),
 
     path('orcamentos/exportar/', views.exportar_orcamentos_excel, name='exportar_orcamentos_excel'),

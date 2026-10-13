@@ -47,6 +47,7 @@
                         <th class="px-6 py-3">Forma PGTO</th>
                         <th class="px-6 py-3">Status</th>
                         <th class="px-6 py-3 text-right">Valor</th>
+                        <th class="px-6 py-3 text-right">Ações</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
@@ -72,10 +73,18 @@
                         <td class="px-6 py-4 text-right font-medium {% if item.tipo == 'RECEITA' %}text-green-600 dark:text-green-400{% else %}text-red-600 dark:text-red-400{% endif %}">
                             R$ {{ item.valor }}
                         </td>
+                        <td class="px-6 py-4 text-right">
+                            <form action="{% url 'excluir_movimentacao' item.id %}" method="POST" class="inline m-0">
+                                {% csrf_token %}
+                                <button type="submit" class="text-gray-400 hover:text-red-600 transition-colors inline-block" onclick="return confirm('Deseja realmente excluir a movimentação \'{{ item.descricao }}\'?')" title="Excluir Lançamento">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                </button>
+                            </form>
+                        </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="6" class="px-6 py-8 text-center text-gray-500">Nenhuma movimentação neste mês.</td>
+                        <td colspan="7" class="px-6 py-8 text-center text-gray-500">Nenhuma movimentação neste mês.</td>
                     </tr>
                     {% endfor %}
                 </tbody>

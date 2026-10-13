@@ -13,10 +13,19 @@
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ cliente.nome }}</h1>
         </div>
         
-        <div class="flex gap-2">
+        <div class="flex flex-wrap gap-2">
+            <a href="{% url 'editar_cliente' cliente.id %}" class="bg-blue-600 text-white px-4 py-2 rounded-md font-medium hover:bg-blue-700 transition-colors flex items-center gap-2">
+                <i data-lucide="edit" class="w-4 h-4"></i> Editar
+            </a>
             <a href="{% url 'exportar_historico_cliente' cliente.id %}" class="bg-green-600 text-white px-4 py-2 rounded-md font-medium hover:bg-green-700 transition-colors flex items-center gap-2">
                 <i data-lucide="file-spreadsheet" class="w-4 h-4"></i> Exportar Histórico
             </a>
+            <form action="{% url 'excluir_cliente' cliente.id %}" method="POST" class="inline m-0">
+                {% csrf_token %}
+                <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded-md font-medium hover:bg-red-700 transition-colors flex items-center gap-2" onclick="return confirm('Tem certeza que deseja excluir o cliente {{ cliente.nome }}?\n\nATENÇÃO: Todos os orçamentos e histórico deste cliente também serão excluídos permanentemente.')">
+                    <i data-lucide="trash-2" class="w-4 h-4"></i> Excluir
+                </button>
+            </form>
         </div>
     </div>
 
@@ -119,6 +128,10 @@
                         <td class="px-2 sm:px-6 py-3 sm:py-4 sm:text-center mt-2 sm:mt-0 border-t sm:border-0 dark:border-gray-700 flex justify-end gap-2">
                             <a href="{% url 'detalhe_orcamento' orc.id %}" class="bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300 px-4 py-2 sm:bg-transparent sm:p-0 sm:text-gray-600 sm:dark:text-gray-400 rounded sm:rounded-none text-sm sm:hover:underline font-bold sm:font-medium text-center flex-1 sm:flex-none">Visualizar</a>
                             <a href="{% url 'imprimir_orcamento' orc.id %}" target="_blank" class="bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 px-4 py-2 sm:bg-transparent sm:p-0 sm:text-primary rounded sm:rounded-none text-sm sm:hover:underline font-bold sm:font-medium text-center flex-1 sm:flex-none">PDF</a>
+                            <form action="{% url 'excluir_orcamento' orc.id %}" method="POST" class="inline m-0 flex-1 sm:flex-none">
+                                {% csrf_token %}
+                                <button type="submit" class="w-full bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 px-4 py-2 sm:bg-transparent sm:p-0 sm:text-red-600 sm:dark:text-red-400 rounded sm:rounded-none text-sm sm:hover:underline font-bold sm:font-medium text-center" onclick="return confirm('Deseja realmente excluir a OS #{{ orc.id|stringformat:'04d' }}?')">Excluir</button>
+                            </form>
                         </td>
                     </tr>
                     {% empty %}

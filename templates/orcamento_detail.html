@@ -43,6 +43,13 @@
             <a href="{% url 'imprimir_orcamento' orcamento.id %}" target="_blank" class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-md font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors flex items-center gap-2 border dark:border-gray-600">
                 <i data-lucide="printer" class="w-4 h-4"></i> Imprimir PDF
             </a>
+
+            <form action="{% url 'excluir_orcamento' orcamento.id %}" method="POST" class="inline m-0">
+                {% csrf_token %}
+                <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded-md font-medium hover:bg-red-700 transition-colors flex items-center gap-2" onclick="return confirm('Deseja realmente excluir este orçamento/OS #{{ orcamento.id|stringformat:\'04d\' }}?\n\nEsta ação é irreversível!')">
+                    <i data-lucide="trash-2" class="w-4 h-4"></i> Excluir OS
+                </button>
+            </form>
         </div>
     </div>
 
